@@ -24,6 +24,40 @@
   --sans: "Manrope", "Segoe UI", sans-serif;
 }
 
+:root[data-font="fraunces-manrope"] {
+  --serif: "Fraunces", "Times New Roman", serif;
+  --sans: "Manrope", "Segoe UI", sans-serif;
+}
+
+:root[data-font="helvetica-neue"] {
+  --serif: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+:root[data-font="georgia"] {
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: Georgia, "Times New Roman", serif;
+}
+
+:root[data-font="inter"] {
+  --serif: "Inter", "Segoe UI", sans-serif;
+  --sans: "Inter", "Segoe UI", sans-serif;
+}
+
+:root[data-font="source-pair"] {
+  --serif: "Source Serif 4", Georgia, serif;
+  --sans: "Source Sans 3", "Segoe UI", sans-serif;
+}
+
+:root[data-font="roboto"] {
+  --serif: "Roboto", "Segoe UI", sans-serif;
+  --sans: "Roboto", "Segoe UI", sans-serif;
+}
+
+:root[data-theme="atlantic"] {
+  --scheme-name: "Atlantic";
+}
+
 :root[data-theme="red"] {
   --scheme-name: "Red";
   --page-bg: #fbefee;
@@ -506,10 +540,11 @@ a {
 }
 
 .site-footer__panel {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: minmax(14rem, 1.1fr) auto minmax(14rem, 18rem) auto;
+  grid-template-areas: "note links social legal";
+  align-items: start;
+  gap: 0.9rem 1rem;
   padding: 1.4rem 1.5rem;
   border-radius: var(--radius);
   background: var(--surface-strong);
@@ -521,9 +556,11 @@ a {
 }
 
 .footer-links {
+  grid-area: links;
   display: flex;
   flex-wrap: wrap;
   gap: 0.9rem 1rem;
+  align-self: start;
 }
 
 .footer-links a {
@@ -533,16 +570,73 @@ a {
   font-size: 0.77rem;
 }
 
+.social-panel {
+  grid-area: social;
+  display: grid;
+  gap: 0.65rem;
+  width: min(100%, 18rem);
+  align-self: start;
+}
+
+.social-panel__hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.social-panel__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.social-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.58rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  background:
+    linear-gradient(135deg, var(--accent-soft), transparent 76%),
+    var(--surface);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.72rem;
+}
+
+.social-chip::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 0.18rem var(--accent-soft);
+}
+
+.social-chip:hover,
+.social-chip:focus-visible {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
 .template-note {
+  grid-area: note;
   margin: 0;
   color: var(--muted);
   font-size: 0.9rem;
 }
 
 .template-legal {
+  grid-area: legal;
   display: grid;
   gap: 0.35rem;
   justify-items: end;
+  justify-self: end;
+  align-self: start;
   text-align: right;
 }
 
@@ -632,6 +726,19 @@ a {
   border: 0;
 }
 
+@media (max-width: 1020px) {
+  .site-footer__panel {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "note legal"
+      "links social";
+  }
+
+  .social-panel {
+    justify-self: end;
+  }
+}
+
 @media (max-width: 900px) {
   .site-header__inner,
   .poster-hero__frame,
@@ -677,6 +784,20 @@ a {
 
   .button-link {
     width: 100%;
+  }
+
+  .site-footer__panel {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "note"
+      "links"
+      "social"
+      "legal";
+  }
+
+  .social-panel,
+  .template-legal {
+    justify-self: start;
   }
 
   .template-legal {
