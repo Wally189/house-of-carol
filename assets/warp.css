@@ -1,3 +1,5 @@
+@import url("bristol.css?v=20260829-bristol1");
+
 .chapter-hero{padding:4.4rem 0 3.2rem;background:linear-gradient(115deg,var(--paper-bright),#edf5fc);border-bottom:2px solid var(--ink)}
 .chapter-hero .chapter-inner{max-width:920px}.chapter-hero h1{max-width:14ch;font-size:clamp(3rem,7vw,6.2rem)}.chapter-hero .lede{max-width:62ch}.chapter-hero .actions{margin-bottom:0}
 .story-band{border-block:2px solid var(--ink);background:var(--paper-bright)}
