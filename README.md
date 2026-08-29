@@ -1,27 +1,15 @@
-# Small Business Template
+# House of Carol
 
-Reusable small business website template repository.
+Website source for **House of Carol** — small-business operations, made saner.
 
-This is a management wrapper only. It records the purpose and status of the repository without changing any published website content, appearance or behaviour.
+House of Carol helps small organisations simplify awkward back-office processes before adding more software, automation or AI.
 
-## Status
+## House principles
 
-- **Classification:** Template
-- **Current status:** Needs QA review
-- **Public showcase status:** Keep public only if clean and understandable; do not pin by default
+- Process first. Technology has to earn its place.
+- Plain English over transformation theatre.
+- Accessibility, privacy and security are designed in from the start.
+- No fabricated testimonials, claims or client logos.
+- No secrets, credentials or customer-confidential material belong in this repository.
 
-## Intended use
-
-This repository should act as a reusable starting point for a small business website.
-
-## What this demonstrates
-
-Potentially demonstrates reusable website structure, service presentation, contact routes, public information organisation and low-maintenance static-site thinking.
-
-## Maintenance notes
-
-Before promotion, check that the template is safe, generic, documented and not confused with a live business site.
-
-## Safety notes
-
-Do not include secrets, credentials, private personal material, third-party personal data, or confidential business/customer information.
+The public website is currently served from this repository. Customer contact, legal identity and permanent-domain configuration are handled separately from source code.
