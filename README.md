@@ -20,3 +20,11 @@ House of Carol helps good small businesses find and repair the operational, cust
 The public website currently operates as a controlled preview. It includes local interactive features such as the House Window, Counter and Workbench, but the enquiry desk remains disabled and the site remains `noindex,nofollow` until the permanent domain, business email and live privacy/contact stack are ready.
 
 Customer contracts, controlled service-address information, payment details and private business records do not belong in this repository.
+
+## Engineering and recovery
+
+The current Business Repair House source is on `main`. The older `house-of-carol-prelaunch` branch is an ancestor of `main`, not the current build source; do not use it as a recovery copy without comparing it to `main` first.
+
+The site is deliberately a static HTML/CSS/JavaScript build with no package manager, framework or build dependency. A competent maintainer can recover it from repository source alone. Keep core information usable when JavaScript is unavailable, keep data collection disabled until the live privacy/enquiry stack is authorised, and prefer small reversible changes over framework rewrites.
+
+For a bad source change, revert the specific commit rather than restoring the older prelaunch branch wholesale. After any consequential change, verify the actual hosted preview as well as the repository source before calling the release successful.
