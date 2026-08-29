@@ -9,7 +9,7 @@
 }
 
 /* Give the first frame a recognisable Bristol horizon without competing with the proposition. */
-.shopfront{
+body .shopfront{
   isolation:isolate;
   background:
     linear-gradient(90deg,rgba(255,253,247,.98) 0 48%,rgba(255,253,247,.88) 66%,rgba(255,253,247,.45) 100%),
@@ -35,7 +35,7 @@
 .triple-rule span:nth-child(1){background:var(--house-blue-deep)}
 .triple-rule span:nth-child(2){background:var(--bristol-terracotta)}
 .triple-rule span:nth-child(3){background:var(--bristol-gold)}
-.shop-sign{box-shadow:18px 20px 0 rgba(185,87,70,.13)}
+body .shop-sign{box-shadow:18px 20px 0 rgba(185,87,70,.13)}
 .shop-sign:after{
   content:"BRISTOL";
   position:absolute;
@@ -83,13 +83,13 @@
   pointer-events:none;
 }
 
-.house-window-section{
+body .house-window-section{
   background:
     linear-gradient(115deg,rgba(217,234,247,.95),rgba(244,231,211,.64)),
     var(--house-blue-wash);
 }
-.window-display .window-eyebrow,.note-strip .note-no{color:var(--bristol-terracotta)}
-.repair-no{color:#e3bd79}
+body .window-display .window-eyebrow,body .note-strip .note-no{color:var(--bristol-terracotta)}
+body .repair-no{color:#e3bd79}
 .repair-row.active{box-shadow:inset 6px 0 0 var(--bristol-terracotta)}
 
 /* The House should feel rooted in Bristol, not themed like a souvenir shop. */
