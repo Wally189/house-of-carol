@@ -3,86 +3,86 @@
 
   const windowItems = [
     {
-      eyebrow: 'IN THE WINDOW · KEY-PERSON RISK',
-      title: 'The employee who remembers everything is doing two jobs.',
-      body: 'One job is the work you hired them for. The other is being the undocumented operating system. Growth, holiday or illness eventually sends you the invoice.',
+      eyebrow: 'IN THE WINDOW · QUOTE TO CASH',
+      title: 'A late invoice can start before the invoice exists.',
+      body: 'If nobody owns the moment when finished work becomes ready to invoice, the delay begins upstream. Chasing payment later cannot repair a missing hand-off earlier.',
       link: '#counter',
-      linkText: 'Check where your process depends on memory'
+      linkText: 'Check where your path from yes to paid breaks'
+    },
+    {
+      eyebrow: 'IN THE WINDOW · HAND-OFFS',
+      title: '“I thought you had invoiced it” is a process diagnostic.',
+      body: 'When a commercial hand-off lives in memory, email or assumption, everybody can do their individual job correctly and the invoice can still wait.',
+      link: '#workbench',
+      linkText: 'See the hand-off on the Workbench'
     },
     {
       eyebrow: 'IN THE WINDOW · DIGITAL',
-      title: 'Before automating a spreadsheet, ask why the spreadsheet exists.',
-      body: 'Sometimes the clever automation is to stop entering the same information twice. The House starts with the reason for the work, not the most fashionable tool for doing it.',
-      link: '#repairs',
-      linkText: 'See how the repair menu works'
-    },
-    {
-      eyebrow: 'IN THE WINDOW · CUSTOMER EXPERIENCE',
-      title: 'A customer should not need your organisation chart to buy from you.',
-      body: 'If people have to understand which inbox, form, team or person owns the next step, the internal structure has leaked into the service. That is repairable.',
-      link: '#workbench',
-      linkText: 'Open the Workbench'
+      title: 'Accounting software cannot fix a missing trigger.',
+      body: 'A good package can send invoices and reminders beautifully. It still needs the business to know when work is billable, what information is authoritative and who owns the next move.',
+      link: '#fix',
+      linkText: 'See what the Fix actually changes'
     },
     {
       eyebrow: 'IN THE WINDOW · SMALL NUMBERS',
-      title: 'The irritating fifteen-minute job may be bigger than it looks.',
-      body: 'Repeated work hides in small units. A job that only takes minutes can quietly absorb days across a year. Measure the repetition before deciding whether it deserves a repair.',
+      title: 'Ten minutes of chasing is still work you had to win twice.',
+      body: 'Repeated admin hides in small units. Count the time before buying another tool or deciding the irritation is too small to matter.',
       link: '#cabinet',
       linkText: 'Open the Cabinet and count it'
     },
     {
-      eyebrow: 'IN THE WINDOW · GROWTH',
-      title: 'The old way can be perfectly sensible and still be finished.',
-      body: 'A process that worked for twenty customers can become ridiculous at two hundred. Outgrowing a method is evidence of change, not incompetence.',
+      eyebrow: 'IN THE WINDOW · PROCESS',
+      title: 'The customer should not be your workflow monitor.',
+      body: 'If customers have to ask whether a quote was accepted, whether work is complete, whether an invoice is coming or whether payment was received, internal status has leaked into their experience.',
       link: '#counter',
       linkText: 'Bring the symptom to the Counter'
     }
   ];
 
   const symptomMap = {
-    chase: {
-      label: 'We keep chasing',
-      inspect: 'ownership, waiting points, triggers, approvals and whether the next action is visible without another email',
+    invoicewaits: {
+      label: 'Finished work waits to be invoiced',
+      inspect: 'the exact ready-to-invoice trigger, who owns it, what evidence proves it and where that status becomes visible',
+      lane: 'process'
+    },
+    handoff: {
+      label: 'Nobody is quite sure when to invoice',
+      inspect: 'the hand-off between delivery and billing, responsibility, exceptions and whether the next action depends on memory or email',
       lane: 'process'
     },
     retype: {
-      label: 'We type the same thing again',
-      inspect: 'duplicate records, hand-offs, authoritative sources and what can be captured once instead of reconstructed',
+      label: 'We retype quote, job or invoice details',
+      inspect: 'duplicate fields, authoritative sources and what can be captured once rather than reconstructed between systems',
       lane: 'process'
     },
-    memory: {
-      label: 'One person remembers everything',
-      inspect: 'exceptions, undocumented decisions, key-person dependency and what needs to become visible without turning into bureaucracy',
+    chase: {
+      label: 'We keep chasing internally for status',
+      inspect: 'waiting points, missing states, triggers and whether people can see what needs attention without another message',
       lane: 'process'
-    },
-    website: {
-      label: 'The website does not feel like us',
-      inspect: 'customer intent, hierarchy, content, trust, navigation, accessibility, conversion friction and whether the digital experience matches the real business',
-      lane: 'whole'
     },
     customer: {
-      label: 'Customers get lost',
-      inspect: 'the end-to-end customer journey, hand-offs, messages, response points and places where your internal structure becomes their problem',
-      lane: 'whole'
-    },
-    onboarding: {
-      label: 'Onboarding is a scavenger hunt',
-      inspect: 'inputs, roles, documents, sequence, missing information and which steps are genuinely necessary',
+      label: 'Customers keep asking what happens next',
+      inspect: 'customer messages, timing, status visibility and where internal uncertainty is becoming customer effort',
       lane: 'process'
     },
-    reports: {
-      label: 'Reporting eats the day',
-      inspect: 'source data, repeated manipulation, ownership, frequency, decision value and whether the report still deserves to exist in its current form',
+    reminders: {
+      label: 'Payment follow-up is completely manual',
+      inspect: 'the agreed reminder route, what the existing accounting/payment tools can already do and which exceptions genuinely need human judgement',
       lane: 'process'
     },
     tools: {
-      label: 'We have too many tools',
-      inspect: 'what each tool is actually for, overlap, subscriptions, data duplication, manual bridges and what can be retired before anything new is bought',
-      lane: 'whole'
+      label: 'The information lives in too many places',
+      inspect: 'system roles, duplicate status, manual bridges and what can be removed before another integration or subscription is considered',
+      lane: 'process'
+    },
+    memory: {
+      label: 'The owner remembers where every job is',
+      inspect: 'key-person dependency, hidden status, exceptions and the smallest shared view that can replace heroic memory',
+      lane: 'process'
     },
     whole: {
-      label: 'I cannot name it — the whole place feels harder',
-      inspect: 'the business end to end: customer experience, operations, information, digital tools, website, controls and the points where several small irritations share one cause',
+      label: 'From yes to paid, the whole path feels improvised',
+      inspect: 'the bounded commercial workflow end to end: acceptance, delivery hand-off, billable status, invoice information, payment visibility, follow-up and exceptions',
       lane: 'whole'
     }
   };
@@ -140,21 +140,20 @@
 
       if (!selected.size) {
         heading.textContent = 'Pick the things that feel familiar.';
-        copy.textContent = 'Nothing leaves this page. The Counter simply shows what the House would look at first.';
+        copy.textContent = 'Nothing leaves this page. The Counter simply shows what the House would inspect first.';
         list.innerHTML = '';
-        route.textContent = 'No diagnosis yet — which is exactly how a counter should behave before you tell it anything.';
+        route.textContent = 'No diagnosis yet. A fit check comes before any paid work.';
         result.dataset.state = 'empty';
         return;
       }
 
       const items = [...selected].map((key) => symptomMap[key]);
-      const wholeCount = items.filter((item) => item.lane === 'whole').length;
-      const broad = selected.has('whole') || wholeCount >= 2 || selected.size >= 4;
+      const connected = selected.has('whole') || selected.size >= 3;
 
-      heading.textContent = broad ? 'This looks connected, not isolated.' : 'There is a sensible first place to look.';
-      copy.textContent = broad
-        ? 'Several symptoms are touching different parts of the business. The useful question is whether one root cause is creating several local workarounds.'
-        : 'The irritation is narrow enough to trace without turning the whole company upside down.';
+      heading.textContent = connected ? 'These may be one commercial workflow, not several little problems.' : 'There is a sensible first place to look.';
+      copy.textContent = connected
+        ? 'The House would trace the path from accepted work to payment before deciding whether one bounded Fix can own the problem.'
+        : 'The symptom is specific enough to inspect without redesigning the whole business.';
 
       list.innerHTML = '';
       items.forEach((item) => {
@@ -163,9 +162,9 @@
         list.appendChild(li);
       });
 
-      route.innerHTML = broad
-        ? '<strong>Likely starting route:</strong> a Full House Review or a deliberately bounded multi-area review — priced only after the boundary is clear.'
-        : '<strong>Likely starting route:</strong> the £149 One-Process Rescue. If the diagnosis shows the issue is broader, we say so before enlarging the job.';
+      route.innerHTML = connected
+        ? '<strong>Likely route:</strong> a fit check for the £495 Quote-to-Cash Fix. If the real boundary is materially larger, regulated or outside this workflow, we say so before taking the job.'
+        : '<strong>Likely route:</strong> the £495 Quote-to-Cash Fix if the problem is bounded and within House competence. The fit check is included; there is no compulsory paid diagnostic first.';
       result.dataset.state = 'ready';
     }
 
