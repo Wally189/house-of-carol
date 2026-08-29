@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 680" role="img" aria-labelledby="title desc">
+<title id="title">House of Carol workroom</title>
+<desc id="desc">A calm editorial illustration of an orderly workroom with desk, lamp, folders, process notes and a subtle house silhouette.</desc>
+<rect width="900" height="680" fill="#fffdf8"/>
+<path d="M70 235 450 56l380 179v340H70Z" fill="#dbeaf8" stroke="#163f75" stroke-width="7"/>
+<path d="M128 252h644v284H128Z" fill="#f5f0e8" stroke="#163f75" stroke-width="5"/>
+<path d="M450 56v174M70 235h760" stroke="#79a9d8" stroke-width="5"/>
+
+<!-- shelves -->
+<g fill="#163f75">
+  <rect x="170" y="302" width="210" height="10"/>
+  <rect x="520" y="302" width="210" height="10"/>
+  <rect x="170" y="420" width="210" height="10"/>
+  <rect x="520" y="420" width="210" height="10"/>
+</g>
+
+<!-- folders and books -->
+<g>
+  <rect x="190" y="246" width="42" height="56" fill="#2f6fb5"/>
+  <rect x="238" y="230" width="38" height="72" fill="#163f75"/>
+  <rect x="282" y="252" width="54" height="50" fill="#79a9d8"/>
+  <rect x="542" y="244" width="44" height="58" fill="#17191c"/>
+  <rect x="592" y="222" width="38" height="80" fill="#2f6fb5"/>
+  <rect x="638" y="248" width="62" height="54" fill="#79a9d8"/>
+</g>
+
+<!-- process board -->
+<rect x="190" y="342" width="168" height="74" fill="#fffdf8" stroke="#c8c1b6" stroke-width="3"/>
+<g fill="#2f6fb5"><circle cx="218" cy="370" r="8"/><circle cx="274" cy="370" r="8"/><circle cx="330" cy="370" r="8"/></g>
+<path d="M226 370h40M282 370h40" stroke="#163f75" stroke-width="5"/>
+<path d="M218 393h112" stroke="#79a9d8" stroke-width="5"/>
+
+<!-- desk -->
+<rect x="232" y="474" width="436" height="18" fill="#17191c"/>
+<path d="M276 492v118M624 492v118" stroke="#17191c" stroke-width="16"/>
+<rect x="334" y="430" width="204" height="44" fill="#163f75"/>
+<rect x="354" y="412" width="164" height="18" fill="#79a9d8"/>
+<rect x="374" y="396" width="124" height="16" fill="#2f6fb5"/>
+
+<!-- lamp -->
+<path d="M577 474v-82l58-48" fill="none" stroke="#163f75" stroke-width="9"/>
+<path d="m624 328 54 22-38 44-54-22Z" fill="#163f75"/>
+<circle cx="577" cy="474" r="13" fill="#2f6fb5"/>
+
+<!-- paper and pen -->
+<rect x="380" y="506" width="132" height="70" fill="#fffdf8" stroke="#c8c1b6" stroke-width="3"/>
+<path d="M400 528h92M400 548h70" stroke="#79a9d8" stroke-width="5"/>
+<path d="m520 520 58 42" stroke="#163f75" stroke-width="8" stroke-linecap="round"/>
+
+<!-- window / sunrise -->
+<rect x="390" y="162" width="120" height="120" fill="#fffdf8" stroke="#163f75" stroke-width="5"/>
+<circle cx="450" cy="224" r="29" fill="#79a9d8"/>
+<path d="M450 162v120M390 222h120" stroke="#163f75" stroke-width="4" opacity=".6"/>
+
+<!-- geometric plant -->
+<g transform="translate(684 504)">
+  <rect x="0" y="52" width="62" height="54" fill="#163f75"/>
+  <path d="M30 54 4 4l34 26L48 0l4 46 30-26-24 42" fill="#79a9d8" stroke="#163f75" stroke-width="4"/>
+</g>
+
+<!-- restrained ornament -->
+<path d="M78 620h172M78 642h104" stroke="#2f6fb5" stroke-width="8"/>
+<path d="M650 106h168M716 128h102" stroke="#163f75" stroke-width="8"/>
+</svg>
