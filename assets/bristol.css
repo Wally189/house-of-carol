@@ -1,0 +1,106 @@
+/* House of Carol — Bristol character, used as identity not tourism decoration.
+   Original artwork only. The 1930s influence stays in geometry, print rhythm and restraint. */
+:root{
+  --bristol-terracotta:#b95746;
+  --bristol-gold:#d8a24e;
+  --bristol-river:#2f7087;
+  --bristol-sage:#607962;
+  --bristol-cream:#f4e7d3;
+}
+
+/* Give the first frame a recognisable Bristol horizon without competing with the proposition. */
+.shopfront{
+  isolation:isolate;
+  background:
+    linear-gradient(90deg,rgba(255,253,247,.98) 0 48%,rgba(255,253,247,.88) 66%,rgba(255,253,247,.45) 100%),
+    var(--house-paper-bright);
+}
+.shopfront:after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  right:-7vw;
+  bottom:3.9rem;
+  width:min(59vw,900px);
+  height:min(35vw,530px);
+  background:url("hoc-bristol-panorama.svg") center/contain no-repeat;
+  opacity:.26;
+  filter:saturate(.86) contrast(1.04);
+  pointer-events:none;
+}
+.shopfront-grid,.shopfront-rule{z-index:1}
+.shopfront-grid{position:relative}
+
+/* A little Bristol warmth inside the House blue system. */
+.triple-rule span:nth-child(1){background:var(--house-blue-deep)}
+.triple-rule span:nth-child(2){background:var(--bristol-terracotta)}
+.triple-rule span:nth-child(3){background:var(--bristol-gold)}
+.shop-sign{box-shadow:18px 20px 0 rgba(185,87,70,.13)}
+.shop-sign:after{
+  content:"BRISTOL";
+  position:absolute;
+  right:1.2rem;
+  top:48%;
+  transform:rotate(90deg) translateX(50%);
+  transform-origin:right center;
+  font:800 .58rem/1 "Segoe UI",Arial,sans-serif;
+  letter-spacing:.34em;
+  color:rgba(255,255,255,.34);
+}
+.shopfront-rule{position:relative}
+.shopfront-rule:before{
+  content:"";
+  width:10px;
+  height:10px;
+  border:2px solid var(--bristol-terracotta);
+  transform:rotate(45deg);
+  position:absolute;
+  left:-22px;
+}
+
+/* Inter-war print hints: stepped corners and fine rules rather than Art Deco costume. */
+.window-frame,.workbench-board,.counter-shell{position:relative}
+.window-frame:after,.workbench-board:after,.counter-shell:after{
+  content:"";
+  position:absolute;
+  width:24px;
+  height:24px;
+  right:-8px;
+  top:-8px;
+  border-top:3px solid var(--bristol-gold);
+  border-right:3px solid var(--bristol-gold);
+  pointer-events:none;
+}
+.window-frame:before,.workbench-board:before,.counter-shell:before{
+  content:"";
+  position:absolute;
+  width:18px;
+  height:18px;
+  left:-7px;
+  bottom:-7px;
+  border-left:3px solid var(--bristol-terracotta);
+  border-bottom:3px solid var(--bristol-terracotta);
+  pointer-events:none;
+}
+
+.house-window-section{
+  background:
+    linear-gradient(115deg,rgba(217,234,247,.95),rgba(244,231,211,.64)),
+    var(--house-blue-wash);
+}
+.window-display .window-eyebrow,.note-strip .note-no{color:var(--bristol-terracotta)}
+.repair-no{color:#e3bd79}
+.repair-row.active{box-shadow:inset 6px 0 0 var(--bristol-terracotta)}
+
+/* The House should feel rooted in Bristol, not themed like a souvenir shop. */
+@media (max-width:980px){
+  .shopfront:after{right:-18vw;bottom:5.5rem;width:82vw;height:52vw;opacity:.18}
+}
+@media (max-width:720px){
+  .shopfront:after{right:-34vw;bottom:6.5rem;width:115vw;height:72vw;opacity:.14}
+  .shop-sign:after{display:none}
+  .shopfront-rule:before{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .shopfront:after{filter:none}
+}
