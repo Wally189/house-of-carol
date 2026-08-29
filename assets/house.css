@@ -123,6 +123,8 @@ nav a[aria-current="page"],nav a[aria-current="true"]{border-color:var(--house-b
 /* SAFETY / ACCESSIBILITY */
 .house-js [data-js-only]{display:initial}
 html:not(.house-js) [data-js-only]{display:none!important}
+html:not(.house-js) .workbench-tabs{display:none!important}
+html:not(.house-js) .workbench-foot p:after{content:" JavaScript is unavailable; use the full static example to see Breakpoint and Better state."}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
 
 @media(max-width:1000px){
