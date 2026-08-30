@@ -1,0 +1,53 @@
+name: site-qa
+
+on:
+  push:
+    branches:
+      - main
+      - hoc-experience-run09
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Static integrity checks
+        run: python scripts/site_check.py
+
+      - name: JavaScript syntax
+        run: node --check assets/hoc-experience.js
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Serve site
+        run: |
+          python -m http.server 8000 --bind 127.0.0.1 > /tmp/hoc-http.log 2>&1 &
+          echo $! > /tmp/hoc-http.pid
+          sleep 2
+
+      - name: Browser interaction and screenshots
+        run: node scripts/render_check.mjs
+
+      - name: Upload QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hoc-site-qa-${{ github.sha }}
+          path: qa-artifacts/
+          if-no-files-found: warn
+          retention-days: 7
