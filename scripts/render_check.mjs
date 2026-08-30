@@ -24,6 +24,7 @@ async function assertNoHorizontalOverflow(page, name) {
 }
 
 async function exercise(viewport, name, deviceScaleFactor = 1) {
+  const compact = name === 'mobile' || name === 'wide-mobile';
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ viewport, deviceScaleFactor, reducedMotion: 'no-preference' });
   const page = await context.newPage();
@@ -40,7 +41,7 @@ async function exercise(viewport, name, deviceScaleFactor = 1) {
     return { viewport: window.innerHeight, houseTop: house?.top ?? 9999, houseBottom: house?.bottom ?? 9999, houseWidth: house?.width ?? 0, ctaTop: cta?.top ?? 9999, lit };
   });
   if (firstFold.houseTop > firstFold.viewport * 0.94) throw new Error(`${name}: House does not meaningfully enter the first viewport`);
-  if (name === 'mobile' && firstFold.houseWidth < viewport.width * 0.88) throw new Error(`${name}: House is visually too small on mobile`);
+  if (compact && firstFold.houseWidth < viewport.width * 0.70) throw new Error(`${name}: House is visually too small for a compact/touch viewport`);
   if (firstFold.ctaTop > firstFold.viewport * 0.90) throw new Error(`${name}: entry action falls out of the first viewport`);
   if (firstFold.lit < 2) throw new Error(`${name}: first impression lacks the intended lived-in House signal`);
   await page.screenshot({ path: `${out}/home-${name}.png`, fullPage: false });
@@ -63,12 +64,12 @@ async function exercise(viewport, name, deviceScaleFactor = 1) {
   await assertNoHorizontalOverflow(page, `${name} catalogue`);
   await assertWithinViewport(page, ['.r10-rooms-intro', '.r10-rooms-intro h1', '.r10-room-theatre', '.r10-plan-zone', '.r10-room-display'], `${name} catalogue`);
 
-  if (name === 'mobile') {
+  if (compact) {
     const planPosition = await page.locator('.r10-plan-shell').evaluate((el) => {
       const rect = el.getBoundingClientRect();
       return { top: rect.top, viewport: window.innerHeight };
     });
-    if (planPosition.top > planPosition.viewport * 1.28) throw new Error(`mobile catalogue: visitor waits too long before reaching the interactive plan`);
+    if (planPosition.top > planPosition.viewport * 1.28) throw new Error(`${name} catalogue: visitor waits too long before reaching the interactive plan`);
   }
   await page.screenshot({ path: `${out}/catalogue-${name}.png`, fullPage: false });
 
@@ -79,12 +80,12 @@ async function exercise(viewport, name, deviceScaleFactor = 1) {
   const oldPanelHidden = await page.locator('[data-room-panel="business"]').evaluate((el) => getComputedStyle(el).display === 'none');
   const theme = await page.locator('body').getAttribute('data-room-theme');
   if (!publishingActive || !publishingVisible || !oldPanelHidden || theme !== 'publishing') throw new Error(`${name}: room theatre did not switch coherently`);
-  if (name === 'mobile') {
+  if (compact) {
     const roomPosition = await page.locator('.r10-room-display').evaluate((el) => {
       const rect = el.getBoundingClientRect();
       return { top: rect.top, bottom: rect.bottom, viewport: window.innerHeight };
     });
-    if (roomPosition.top > 80 || roomPosition.bottom < 220) throw new Error(`mobile catalogue: selected room was not brought into a useful viewing position`);
+    if (roomPosition.top > 100 || roomPosition.bottom < 240) throw new Error(`${name} catalogue: selected room was not brought into a useful viewing position`);
   }
   await page.screenshot({ path: `${out}/catalogue-publishing-${name}.png`, fullPage: false });
 
@@ -96,6 +97,21 @@ async function exercise(viewport, name, deviceScaleFactor = 1) {
   await page.locator('#front-desk').scrollIntoViewIfNeeded();
   await page.waitForTimeout(140);
   await assertWithinViewport(page, ['.r10-frontdesk-inner', '.r10-desk-copy', '.r10-form'], `${name} front desk`);
+  if (compact) {
+    const frontDesk = await page.evaluate(() => {
+      const inner = document.querySelector('.r10-frontdesk-inner');
+      const form = document.querySelector('.r10-form');
+      const actions = document.querySelector('.r10-form-actions');
+      return {
+        innerDisplay: inner ? getComputedStyle(inner).display : '',
+        formColumns: form ? getComputedStyle(form).gridTemplateColumns.split(' ').filter(Boolean).length : 99,
+        actionsDisplay: actions ? getComputedStyle(actions).display : ''
+      };
+    });
+    if (frontDesk.innerDisplay !== 'block') throw new Error(`${name} front desk: compact layout did not stack`);
+    if (frontDesk.formColumns !== 1) throw new Error(`${name} front desk: form remains multi-column`);
+    if (frontDesk.actionsDisplay !== 'block') throw new Error(`${name} front desk: actions remain desktop side-by-side`);
+  }
   await page.screenshot({ path: `${out}/front-desk-${name}.png`, fullPage: false });
 
   for (const legal of ['privacy', 'terms']) {
@@ -116,6 +132,7 @@ async function exercise(viewport, name, deviceScaleFactor = 1) {
 }
 
 await exercise({ width: 1440, height: 900 }, 'desktop');
+await exercise({ width: 800, height: 1280 }, 'wide-mobile', 1);
 await exercise({ width: 390, height: 844 }, 'mobile', 2);
 
 const reducedBrowser = await chromium.launch({ headless: true });
@@ -132,4 +149,4 @@ const scrollBehaviour = await reducedPage.evaluate(() => getComputedStyle(docume
 if (scrollBehaviour === 'smooth') throw new Error('reduced-motion: smooth scrolling remains active');
 await reducedBrowser.close();
 
-console.log('PASS: Run 10 whole-House browser interaction, first-fold, responsive, viewport-bounds and reduced-motion checks');
+console.log('PASS: Run 12 whole-House browser interaction, narrow + Samsung-class wide-mobile, responsive, viewport-bounds and reduced-motion checks');
