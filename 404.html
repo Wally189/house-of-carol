@@ -3,21 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#f2efe7">
+<meta name="theme-color" content="#07080c">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
-<title>Page not found — House of Carol</title>
+<title>Wrong room — House of Carol</title>
+<meta name="description" content="The page you were looking for is not in this room.">
 <link rel="icon" href="assets/hoc-mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/hoc-public.css">
+<link rel="stylesheet" href="assets/hoc-run10.css">
+<link rel="stylesheet" href="assets/hoc-run10-polish.css">
 </head>
-<body>
-<main class="error-stage shell">
-  <div>
-    <p class="folio">HOC / 404</p>
+<body class="r10-error">
+<a class="r10-skip" href="#main">Skip to content</a>
+<header class="r10-header r10-header-dark" aria-label="House navigation">
+  <a class="r10-brand" href="index.html" aria-label="House of Carol home"><span class="r10-brand-mark" aria-hidden="true">H</span><span>House of Carol</span></a>
+  <nav class="r10-nav" aria-label="Primary navigation"><a href="index.html">Outside</a><a href="catalogue.html">Rooms</a></nav>
+</header>
+<main id="main" class="r10-error-main">
+  <div class="r10-error-copy">
+    <p class="r10-error-code">HOC / 404</p>
     <h1>Wrong room.</h1>
-    <p>The page you were looking for is not here.</p>
-    <p><a href="index.html">Return to the façade</a> · <a href="catalogue.html">Open the catalogue</a></p>
+    <p class="r10-error-lede">You found a wall where a door should be. Nothing sinister — this page simply does not live here.</p>
+    <div class="r10-error-actions"><a href="catalogue.html">Go to the rooms →</a><a href="index.html">Step outside</a></div>
   </div>
 </main>
 </body>
