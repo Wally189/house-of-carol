@@ -4,136 +4,137 @@
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = window.matchMedia('(pointer: fine)');
-  const roomNames = {
-    business: 'Business & systems',
-    products: 'Products & tools',
-    publishing: 'Media & publishing',
-    other: 'Other ventures'
-  };
 
-  requestAnimationFrame(() => document.body.classList.add('page-ready'));
+  const roomCopy = {
+    business: ['Business & systems', 'Make the hard thing simpler.'],
+    products: ['Products & tools', 'Useful beats impressive.'],
+    publishing: ['Media & publishing', 'Make curiosity travel.'],
+    other: ['Other ventures', 'Keep a room for the unexpected.']
+  };
 
   const stage = document.querySelector('[data-house-stage]');
   const perspective = document.querySelector('[data-house-perspective]');
-  const whisper = document.querySelector('[data-house-whisper]');
+  const readout = document.querySelector('[data-house-readout]');
+  const exterior = document.querySelector('[data-exterior]');
   let ambientTimers = [];
 
   const stopAmbient = () => {
     ambientTimers.forEach(window.clearTimeout);
     ambientTimers = [];
-    document.querySelectorAll('[data-facade-room]').forEach((room) => room.classList.remove('is-ambient'));
+    document.querySelectorAll('[data-facade-room]').forEach((el) => el.classList.remove('is-ambient'));
   };
 
   if (stage && perspective) {
-    const clearRoom = () => {
-      stage.classList.remove('has-room-focus');
-      document.querySelectorAll('[data-facade-room]').forEach((room) => room.classList.remove('is-active'));
-      if (whisper) whisper.textContent = 'Move closer. The House will tell you what is here.';
-    };
-
-    const showRoom = (roomKey) => {
+    const showRoom = (key) => {
       stopAmbient();
       stage.classList.add('has-room-focus');
-      document.querySelectorAll('[data-facade-room]').forEach((room) => {
-        room.classList.toggle('is-active', room.dataset.facadeRoom === roomKey);
-      });
-      if (whisper) whisper.textContent = `${roomNames[roomKey]}. Open the window to go straight there.`;
+      document.querySelectorAll('[data-facade-room]').forEach((el) => el.classList.toggle('is-active', el.dataset.facadeRoom === key));
+      if (readout && roomCopy[key]) {
+        readout.querySelector('span').textContent = roomCopy[key][0];
+        readout.querySelector('strong').textContent = roomCopy[key][1];
+      }
     };
 
-    document.querySelectorAll('[data-room-hotspot]').forEach((hotspot) => {
-      const roomKey = hotspot.dataset.roomHotspot;
-      ['mouseenter', 'focus'].forEach((eventName) => hotspot.addEventListener(eventName, () => showRoom(roomKey)));
-      ['mouseleave', 'blur'].forEach((eventName) => hotspot.addEventListener(eventName, clearRoom));
+    const clearRoom = () => {
+      stage.classList.remove('has-room-focus');
+      document.querySelectorAll('[data-facade-room]').forEach((el) => el.classList.remove('is-active'));
+      if (readout) {
+        readout.querySelector('span').textContent = 'House of Carol';
+        readout.querySelector('strong').textContent = 'Move closer.';
+      }
+    };
+
+    document.querySelectorAll('[data-room-hotspot]').forEach((link) => {
+      const key = link.dataset.roomHotspot;
+      link.addEventListener('mouseenter', () => showRoom(key));
+      link.addEventListener('focus', () => showRoom(key));
+      link.addEventListener('mouseleave', clearRoom);
+      link.addEventListener('blur', clearRoom);
     });
 
     if (!reducedMotion.matches) {
       const rooms = [...document.querySelectorAll('[data-facade-room]')];
       rooms.forEach((room, index) => {
-        ambientTimers.push(window.setTimeout(() => room.classList.add('is-ambient'), 700 + index * 190));
-        ambientTimers.push(window.setTimeout(() => room.classList.remove('is-ambient'), 1900 + index * 190));
+        ambientTimers.push(window.setTimeout(() => room.classList.add('is-ambient'), 650 + index * 170));
+        ambientTimers.push(window.setTimeout(() => room.classList.remove('is-ambient'), 1600 + index * 210));
       });
     }
 
-    if (!reducedMotion.matches && finePointer.matches) {
-      const arrival = document.querySelector('.arrival');
-      arrival?.addEventListener('pointermove', (event) => {
-        const rect = arrival.getBoundingClientRect();
-        const x = (event.clientX - rect.left) / rect.width;
-        const y = (event.clientY - rect.top) / rect.height;
-        arrival.style.setProperty('--mx', `${Math.round(x * 100)}%`);
-        arrival.style.setProperty('--my', `${Math.round(y * 100)}%`);
-        perspective.style.setProperty('--tilt-y', `${((x - 0.5) * 5).toFixed(2)}deg`);
-        perspective.style.setProperty('--tilt-x', `${((0.5 - y) * 3).toFixed(2)}deg`);
+    if (!reducedMotion.matches && finePointer.matches && exterior) {
+      exterior.addEventListener('pointermove', (event) => {
+        const rect = exterior.getBoundingClientRect();
+        const x = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
+        const y = Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height));
+        exterior.style.setProperty('--mx', `${Math.round(x * 100)}%`);
+        exterior.style.setProperty('--my', `${Math.round(y * 100)}%`);
+        perspective.style.setProperty('--tilt-y', `${((x - 0.5) * 3.2).toFixed(2)}deg`);
+        perspective.style.setProperty('--tilt-x', `${((0.5 - y) * 2.2).toFixed(2)}deg`);
       });
-      arrival?.addEventListener('pointerleave', () => {
+      exterior.addEventListener('pointerleave', () => {
         perspective.style.setProperty('--tilt-y', '0deg');
         perspective.style.setProperty('--tilt-x', '0deg');
       });
     }
 
     document.querySelectorAll('[data-enter-house]').forEach((link) => {
-      link.addEventListener('mouseenter', () => { stopAmbient(); stage.classList.add('is-door-open'); });
-      link.addEventListener('focus', () => { stopAmbient(); stage.classList.add('is-door-open'); });
-      link.addEventListener('mouseleave', () => stage.classList.remove('is-door-open'));
-      link.addEventListener('blur', () => stage.classList.remove('is-door-open'));
+      const open = () => { stopAmbient(); stage.classList.add('is-door-open'); };
+      const close = () => stage.classList.remove('is-door-open');
+      link.addEventListener('mouseenter', open);
+      link.addEventListener('focus', open);
+      link.addEventListener('mouseleave', close);
+      link.addEventListener('blur', close);
       link.addEventListener('click', (event) => {
         if (reducedMotion.matches || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button > 0) return;
-        const destination = link.href;
         event.preventDefault();
-        stopAmbient();
-        stage.classList.add('is-door-open');
+        const destination = link.href;
+        open();
         document.body.classList.add('is-entering');
-        if (whisper) whisper.textContent = 'The door is open.';
-        window.setTimeout(() => { window.location.href = destination; }, 520);
+        window.setTimeout(() => { window.location.href = destination; }, 360);
       });
     });
   }
 
-  const theatre = document.querySelector('[data-plan-theatre]');
+  const planLinks = [...document.querySelectorAll('[data-plan-room]')];
+  const indexLinks = [...document.querySelectorAll('[data-room-index]')];
+  const panels = [...document.querySelectorAll('[data-room-panel]')];
+  const planArts = [...document.querySelectorAll('[data-plan-art]')];
   const caption = document.querySelector('[data-plan-caption]');
-  const planRooms = [...document.querySelectorAll('[data-plan-room]')];
+  const validRooms = new Set(Object.keys(roomCopy));
 
-  if (theatre && planRooms.length) {
-    const planCopy = {
-      business: 'Business & systems. Practical work that makes the complicated useful.',
-      products: 'Products & tools. Things stay only when they are worth keeping.',
-      publishing: 'Media & publishing. Curiosity, explanation and work worth returning to.',
-      other: 'Other ventures. Space for the useful thing that refuses a familiar label.'
-    };
-
-    const setCurrent = (roomKey) => {
-      planRooms.forEach((room) => room.classList.toggle('is-current', room.dataset.planRoom === roomKey));
-      document.querySelectorAll('[data-plan-art]').forEach((room) => room.classList.toggle('is-current', room.dataset.planArt === roomKey));
-      if (caption && planCopy[roomKey]) caption.textContent = planCopy[roomKey];
-    };
-
-    planRooms.forEach((room) => {
-      const roomKey = room.dataset.planRoom;
-      ['mouseenter', 'focus'].forEach((eventName) => room.addEventListener(eventName, () => setCurrent(roomKey)));
+  const setRoom = (key, updateUrl = false) => {
+    if (!validRooms.has(key)) return;
+    planLinks.forEach((link) => {
+      const active = link.dataset.planRoom === key;
+      link.classList.toggle('is-current', active);
+      if (active) link.setAttribute('aria-current', 'true'); else link.removeAttribute('aria-current');
     });
+    indexLinks.forEach((link) => {
+      const active = link.dataset.roomIndex === key;
+      link.classList.toggle('is-current', active);
+      if (active) link.setAttribute('aria-current', 'true'); else link.removeAttribute('aria-current');
+    });
+    planArts.forEach((art) => art.classList.toggle('is-current', art.dataset.planArt === key));
+    panels.forEach((panel) => panel.classList.toggle('is-current', panel.dataset.roomPanel === key));
+    document.body.dataset.roomTheme = key;
+    if (caption) caption.textContent = `${roomCopy[key][0]} selected`;
+    if (updateUrl) history.replaceState(null, '', `#${key}`);
+  };
 
-    if (!reducedMotion.matches && finePointer.matches) {
-      theatre.addEventListener('pointermove', (event) => {
-        const rect = theatre.getBoundingClientRect();
-        theatre.style.setProperty('--plan-x', `${Math.round(((event.clientX - rect.left) / rect.width) * 100)}%`);
-        theatre.style.setProperty('--plan-y', `${Math.round(((event.clientY - rect.top) / rect.height) * 100)}%`);
-      });
-    }
+  [...planLinks, ...indexLinks].forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const key = link.dataset.planRoom || link.dataset.roomIndex;
+      if (!validRooms.has(key)) return;
+      event.preventDefault();
+      setRoom(key, true);
+    });
+  });
 
-    const chapters = [...document.querySelectorAll('[data-room-chapter]')];
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            const roomKey = entry.target.dataset.roomChapter;
-            if (roomKey) setCurrent(roomKey);
-          }
-        });
-      }, { threshold: 0.32 });
-      chapters.forEach((chapter) => observer.observe(chapter));
-    } else {
-      chapters.forEach((chapter) => chapter.classList.add('is-visible'));
-    }
+  if (panels.length) {
+    const requested = location.hash.slice(1);
+    setRoom(validRooms.has(requested) ? requested : 'business', false);
+    window.addEventListener('hashchange', () => {
+      const key = location.hash.slice(1);
+      if (validRooms.has(key)) setRoom(key, false);
+    });
   }
 })();
