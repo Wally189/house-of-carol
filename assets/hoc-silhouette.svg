@@ -1,18 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" aria-hidden="true" focusable="false">
-  <g fill="#151515">
-    <path d="M402 302 604 154l202 148v28H402z" opacity=".82"/>
-    <path d="M444 318h320v276H444z" opacity=".78"/>
-    <path d="M560 231h88v363h-88z" opacity=".78"/>
-    <rect x="482" y="372" width="56" height="92" rx="2" opacity=".24"/>
-    <rect x="670" y="372" width="56" height="92" rx="2" opacity=".24"/>
-    <rect x="573" y="464" width="62" height="130" rx="2" opacity=".30"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="house" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3eee5" stop-opacity=".9"/>
+      <stop offset=".55" stop-color="#d7b77a" stop-opacity=".62"/>
+      <stop offset="1" stop-color="#c04362" stop-opacity=".38"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#house)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M365 338 602 158 839 338" stroke-width="10"/>
+    <path d="M410 322v348h384V322" stroke-width="8" opacity=".72"/>
+    <path d="M548 670V476h108v194" stroke-width="7" opacity=".65"/>
+    <path d="M466 412h72v92h-72zm200 0h72v92h-72" stroke-width="6" opacity=".48"/>
+    <path d="M603 671c92 8 168 44 238 110" stroke-width="7" opacity=".32"/>
+    <path d="M603 671c-79 12-144 47-206 106" stroke-width="7" opacity=".28"/>
+    <path d="M474 751c-54 2-109 17-166 47" stroke-width="5" opacity=".22"/>
+    <path d="M775 748c59 2 112 16 164 42" stroke-width="5" opacity=".22"/>
   </g>
-  <g fill="none" stroke="#151515" stroke-linecap="round" opacity=".38">
-    <path d="M602 594c88 18 138 58 184 116" stroke-width="12"/>
-    <path d="M602 594c50 8 86 30 112 62" stroke-width="9"/>
-    <path d="M704 655c58-4 108 8 162 38" stroke-width="8"/>
-    <path d="M784 710c44-15 90-17 140-7" stroke-width="7"/>
-    <path d="M600 594c-48 18-86 47-122 88" stroke-width="9"/>
-    <path d="M481 682c-39 5-78 19-116 42" stroke-width="7"/>
-  </g>
+  <circle cx="602" cy="344" r="260" fill="#8f1838" opacity=".035"/>
 </svg>
