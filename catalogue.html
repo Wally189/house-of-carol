@@ -3,87 +3,105 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#f4efe5">
+<meta name="theme-color" content="#0b0909">
 <meta name="robots" content="noindex,nofollow">
 <title>Catalogue — House of Carol</title>
 <meta name="description" content="The public catalogue of House of Carol ventures.">
+<meta property="og:title" content="Catalogue — House of Carol">
+<meta property="og:description" content="The public rooms of House of Carol.">
+<meta property="og:type" content="website">
 <link rel="icon" href="assets/hoc-mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/hoc-public.css">
 </head>
-<body>
+<body class="page-catalogue">
 <a class="skip" href="#main">Skip to content</a>
 <header>
   <div class="shell masthead">
     <a class="wordmark" href="index.html" aria-label="House of Carol home">House of Carol</a>
-    <a class="quiet-link" href="index.html">Home</a>
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a class="quiet-link" href="index.html">Home</a>
+      <a class="nav-pill" href="#contact">Contact</a>
+    </nav>
   </div>
 </header>
 <main id="main">
   <section class="catalogue-intro shell">
-    <p class="kicker">Catalogue</p>
-    <h1>What lives here.</h1>
-    <p class="intro intro--catalogue">House of Carol develops and operates a growing collection of independent ventures. Only work that is genuinely public appears in the catalogue.</p>
+    <p class="eyebrow">Catalogue</p>
+    <h1>The public rooms.</h1>
+    <p class="intro--catalogue">House of Carol is built to hold more than one kind of useful work. The catalogue stays deliberately sparse: a venture appears here only when there is something real to show.</p>
   </section>
 
   <section class="catalogue shell" aria-label="House of Carol venture categories">
-    <article class="catalogue-group">
-      <p class="kicker">Business &amp; systems</p>
-      <h2>Practical work.</h2>
-      <p class="catalogue-empty">Public ventures will appear here as they open.</p>
-    </article>
-    <article class="catalogue-group">
-      <p class="kicker">Products &amp; tools</p>
-      <h2>Things made to be useful.</h2>
-      <p class="catalogue-empty">Public ventures will appear here as they open.</p>
-    </article>
-    <article class="catalogue-group">
-      <p class="kicker">Media &amp; publishing</p>
-      <h2>Things worth exploring.</h2>
-      <p class="catalogue-empty">Public ventures will appear here as they open.</p>
-    </article>
-    <article class="catalogue-group">
-      <p class="kicker">Other ventures</p>
-      <h2>Whatever does not fit neatly elsewhere.</h2>
-      <p class="catalogue-empty">Public ventures will appear here as they open.</p>
-    </article>
+    <div class="catalogue-grid">
+      <article class="catalogue-card">
+        <div class="catalogue-index"><span>01</span><span>Business &amp; systems</span></div>
+        <h2>Practical work.</h2>
+        <p>Useful interventions, systems and services designed around the problem rather than the software.</p>
+        <p class="catalogue-state">Opening when ready</p>
+      </article>
+      <article class="catalogue-card">
+        <div class="catalogue-index"><span>02</span><span>Products &amp; tools</span></div>
+        <h2>Things made to earn their place.</h2>
+        <p>Small tools, products and repeatable assets that justify their complexity through use.</p>
+        <p class="catalogue-state">Opening when ready</p>
+      </article>
+      <article class="catalogue-card">
+        <div class="catalogue-index"><span>03</span><span>Media &amp; publishing</span></div>
+        <h2>Things worth staying for.</h2>
+        <p>Editorial, cultural and educational work where curiosity and substance matter more than noise.</p>
+        <p class="catalogue-state">Opening when ready</p>
+      </article>
+      <article class="catalogue-card">
+        <div class="catalogue-index"><span>04</span><span>Other ventures</span></div>
+        <h2>The room without a label.</h2>
+        <p>For useful ideas that do not become better merely because somebody forces them into a category.</p>
+        <p class="catalogue-state">Opening when ready</p>
+      </article>
+    </div>
   </section>
 
-  <section class="contact shell" id="contact">
-    <p class="kicker">Contact</p>
-    <div class="contact-grid">
-      <div>
-        <h2>Start a conversation.</h2>
-        <p>If something in the House is relevant to you, or you have a business enquiry, send a short message.</p>
+  <section class="contact-wrap" id="contact">
+    <div class="contact shell">
+      <p class="eyebrow">Contact</p>
+      <div class="contact-grid">
+        <div>
+          <h2>Start quietly.</h2>
+          <p class="contact-copy">If something in the House is relevant to you, or you have a serious business enquiry, a short message is enough. No account, mailing list or unnecessary form-filling.</p>
+        </div>
+        <form class="contact-form" action="https://formspree.io/f/mgvgrgvb" method="POST" accept-charset="UTF-8">
+          <input type="hidden" name="_subject" value="House of Carol website enquiry">
+          <div class="form-field">
+            <label for="contact-name">Name</label>
+            <input id="contact-name" name="name" type="text" autocomplete="name" required>
+          </div>
+          <div class="form-field">
+            <label for="contact-email">Email</label>
+            <input id="contact-email" name="email" type="email" autocomplete="email" inputmode="email" required>
+          </div>
+          <div class="form-field">
+            <label for="contact-message">Message</label>
+            <textarea id="contact-message" name="message" rows="7" required></textarea>
+          </div>
+          <button class="button" type="submit">Send message</button>
+          <p class="form-note">We use the details you send only to deal with your enquiry and any resulting relationship. See our <a href="privacy.html">privacy information</a>.</p>
+        </form>
       </div>
-      <form class="contact-form" action="https://formspree.io/f/mgvgrgvb" method="POST" accept-charset="UTF-8">
-        <input type="hidden" name="_subject" value="Message from House of Carol">
-        <div class="form-field">
-          <label for="contact-name">Name</label>
-          <input id="contact-name" name="name" type="text" autocomplete="name" required>
-        </div>
-        <div class="form-field">
-          <label for="contact-email">Email</label>
-          <input id="contact-email" name="email" type="email" autocomplete="email" required>
-        </div>
-        <div class="form-field">
-          <label for="contact-message">Message</label>
-          <textarea id="contact-message" name="message" rows="7" required></textarea>
-        </div>
-        <button class="button" type="submit">Send message</button>
-        <p class="form-note">We use the details you send to respond to your enquiry. See our <a href="privacy.html">privacy information</a>.</p>
-      </form>
     </div>
   </section>
 </main>
 <footer>
   <div class="shell footer-grid">
-    <div>
-      <strong>House of Carol</strong><br>
-      <a href="https://www.alanwpgallagher.info/" rel="me noopener">Alan W Gallagher</a> t/a House of Carol<br>
-      <span>[FULL SERVICE ADDRESS REQUIRED]</span><br>
-      <span>[HOC PUBLIC EMAIL REQUIRED]</span>
+    <div class="footer-brand">
+      <strong>House of Carol</strong>
+      <p><a href="https://www.alanwpgallagher.info/" rel="me noopener">Alan W Gallagher</a> t/a House of Carol · Bristol, United Kingdom</p>
     </div>
-    <nav aria-label="Supporting information"><a href="privacy.html">Privacy</a><a href="terms.html">Website terms</a></nav>
+    <nav class="footer-nav" aria-label="Supporting information">
+      <a href="index.html">Home</a>
+      <a href="https://www.waylight-atlantic.co.uk/" rel="noopener">Waylight Atlantic</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Website terms</a>
+    </nav>
+    <div class="footer-status"><span>Independent UK business</span><span>Current site remains noindex while the House is in controlled public preview</span></div>
   </div>
 </footer>
 </body>
