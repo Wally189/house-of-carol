@@ -1,34 +1,51 @@
-# House of Carol
+# House of Carol — maturity preview
 
-Website source for **House of Carol** — an implementation-led UK small-business workflow-improvement practice.
+This repository is the current public-preview source for **House of Carol**.
 
-The current external product hypothesis is the **£495 Quote-to-Cash Fix**: one bounded implementation that improves the path from accepted or completed work through billable status, invoicing and payment visibility. House of Carol uses the customer's existing tools first and sells a working Better State rather than a diagnostic report or an AI project.
+## Current status
 
-The selected operations-implementation business category is current. Older £149 One-Process Rescue / Business Repair House / Review / Fix / Refit material is development history where inconsistent with the current site and controlling House records.
+- GitHub Pages is enabled.
+- The site is a controlled maturity preview and remains `noindex,nofollow`.
+- Customer acquisition is paused until the House maturity gate returns GO.
+- Identity/contact/legal fields deliberately remain placeholders: `[LEGAL NAME]`, `[SERVICE ADDRESS]`, `[HOC PUBLIC EMAIL]`.
+- The site contains no enquiry form, payment facility, analytics, ad tracker or non-essential cookie.
+- No product or service is currently represented as approved for sale.
 
-## House principles
+## What changed in this maturity build
 
-- Protect what is good. Fix what gets in the way.
-- Process first. Technology has to earn its place.
-- Use the smallest intervention that can solve the real problem.
-- Existing tools get a fair trial before new subscriptions or platforms.
-- Customers should be more capable after the repair, not more dependent on House of Carol.
-- Accessibility, privacy, security, testing and recovery are designed into consequential changes.
-- No fabricated testimonials, client logos, results, savings or history.
-- No secrets, credentials or customer-confidential material belong in this repository.
+The previous workflow-improvement/£495 positioning is not current House strategy and must not be restored as the default business model. House of Carol is a portfolio business and may operate multiple lawful income streams.
 
-## Customer 000 preview
+The corporate site now does four jobs only:
 
-The public website currently operates as a controlled **Customer 000** preview. It remains `noindex,nofollow`, accepts no enquiries or payments and intentionally contains no live customer-data route.
+1. identify House of Carol;
+2. explain the portfolio model without promising an unvalidated offer;
+3. demonstrate the customer-facing quality/trust standard;
+4. provide a controlled shell into which validated venture pages can later be released.
 
-Permanent domain and dedicated House email are **not current prerequisites**. House of Carol has deliberately maturity-gated those final-mile launch acts until the internal business is coherent, manually operable and ready to acquire and serve Customer 2.
+## Engineering approach
 
-Customer contracts, controlled service-address information, payment details and private business records do not belong in this repository.
+The preview is intentionally static HTML/CSS with no package manager, framework, database or build step. This keeps the £0 hosting path simple and provides a direct manual recovery route.
 
-## Engineering and recovery
+Important files:
 
-`main` is the current source of truth. The older `house-of-carol-prelaunch` branch is an ancestor, not a current build or backup; never restore it wholesale without comparing it with `main`.
+- `index.html` — corporate home;
+- `portfolio.html` — multi-income-stream portfolio shell;
+- `trust.html` — external standards;
+- `privacy.html` and `terms.html` — placeholder-controlled legal pages;
+- `assets/hoc-preview.css` — current presentation layer;
+- `robots.txt` — blocks crawling while the maturity gate is closed.
 
-The site is deliberately static HTML/CSS/JavaScript with no package manager, framework or build dependency. A competent maintainer can recover it from repository source alone. Keep core information usable without JavaScript, keep data collection disabled until maturity/privacy/launch controls are satisfied, and prefer small reversible changes over framework rewrites.
+Older repository assets remain historical only where they are not referenced by the current pages. Do not treat their content as current HOC authority.
 
-For a bad source change, revert the specific commit. After any consequential change, verify the actual hosted preview as well as repository source before calling the release successful.
+## Release gate
+
+Before customer acquisition or indexing is enabled:
+
+- replace placeholders with CEO-approved HOC identity/contact details;
+- approve at least one sale-ready venture with price, delivery, support and legal/privacy checks;
+- complete the actual privacy and customer terms for the live stack;
+- run accessibility, mobile, link and human-voice QA;
+- test the enquiry-to-payment-to-delivery manual path;
+- receive GO from the House maturity gate.
+
+No secrets, bank details, customer-confidential data or personal Gmail content belong in this repository.
