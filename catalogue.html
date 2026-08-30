@@ -3,8 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0b0909">
+<meta name="theme-color" content="#f2efe7">
 <meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; img-src 'self' data:; form-action https://formspree.io; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
 <title>Catalogue — House of Carol</title>
 <meta name="description" content="The public catalogue of House of Carol ventures.">
 <meta property="og:title" content="Catalogue — House of Carol">
@@ -15,93 +17,96 @@
 </head>
 <body class="page-catalogue">
 <a class="skip" href="#main">Skip to content</a>
-<header>
+<header class="site-header">
   <div class="shell masthead">
-    <a class="wordmark" href="index.html" aria-label="House of Carol home">House of Carol</a>
-    <nav class="nav-links" aria-label="Primary navigation">
-      <a class="quiet-link" href="index.html">Home</a>
-      <a class="nav-pill" href="#contact">Contact</a>
-    </nav>
+    <a class="wordmark" href="index.html" aria-label="House of Carol home"><span class="mark" aria-hidden="true">H</span><span>House of Carol</span></a>
+    <nav class="nav-links" aria-label="Primary navigation"><a href="index.html">Façade</a><a class="nav-enter" href="#enquiries">Enquiries</a></nav>
   </div>
 </header>
 <main id="main">
-  <section class="catalogue-intro shell">
-    <p class="eyebrow">Catalogue</p>
-    <h1>The public rooms.</h1>
-    <p class="intro--catalogue">House of Carol is built to hold more than one kind of useful work. The catalogue stays deliberately sparse: a venture appears here only when there is something real to show.</p>
-  </section>
-
-  <section class="catalogue shell" aria-label="House of Carol venture categories">
-    <div class="catalogue-grid">
-      <article class="catalogue-card">
-        <div class="catalogue-index"><span>01</span><span>Business &amp; systems</span></div>
-        <h2>Practical work.</h2>
-        <p>Useful interventions, systems and services designed around the problem rather than the software.</p>
-        <p class="catalogue-state">Opening when ready</p>
-      </article>
-      <article class="catalogue-card">
-        <div class="catalogue-index"><span>02</span><span>Products &amp; tools</span></div>
-        <h2>Things made to earn their place.</h2>
-        <p>Small tools, products and repeatable assets that justify their complexity through use.</p>
-        <p class="catalogue-state">Opening when ready</p>
-      </article>
-      <article class="catalogue-card">
-        <div class="catalogue-index"><span>03</span><span>Media &amp; publishing</span></div>
-        <h2>Things worth staying for.</h2>
-        <p>Editorial, cultural and educational work where curiosity and substance matter more than noise.</p>
-        <p class="catalogue-state">Opening when ready</p>
-      </article>
-      <article class="catalogue-card">
-        <div class="catalogue-index"><span>04</span><span>Other ventures</span></div>
-        <h2>The room without a label.</h2>
-        <p>For useful ideas that do not become better merely because somebody forces them into a category.</p>
-        <p class="catalogue-state">Opening when ready</p>
-      </article>
+  <section class="catalogue-head shell">
+    <div>
+      <p class="folio">HOC / PUBLIC INDEX / 002</p>
+      <h1>The rooms.</h1>
     </div>
+    <p class="catalogue-lede">Only public work lives here. A room opens when there is something real to put in it.</p>
   </section>
 
-  <section class="contact-wrap" id="contact">
-    <div class="contact shell">
-      <p class="eyebrow">Contact</p>
-      <div class="contact-grid">
-        <div>
-          <h2>Start quietly.</h2>
-          <p class="contact-copy">If something in the House is relevant to you, or you have a serious business enquiry, a short message is enough. No account, mailing list or unnecessary form-filling.</p>
+  <div class="catalogue-layout shell">
+    <nav class="room-index" aria-label="Catalogue rooms">
+      <p class="index-label">Floor plan</p>
+      <a href="#business"><span>01</span> Business &amp; systems</a>
+      <a href="#products"><span>02</span> Products &amp; tools</a>
+      <a href="#publishing"><span>03</span> Media &amp; publishing</a>
+      <a href="#other"><span>04</span> Other ventures</a>
+      <a href="#enquiries"><span>05</span> Enquiries</a>
+    </nav>
+
+    <div class="room-sequence">
+      <section class="room" id="business" aria-labelledby="business-title">
+        <div class="room-number">01</div>
+        <div class="room-body">
+          <p class="room-type">Business &amp; systems</p>
+          <h2 id="business-title">Useful work, made simpler.</h2>
+          <p>Services, systems and interventions belong here when they solve a real problem and justify the effort required to deliver them.</p>
         </div>
-        <form class="contact-form" action="https://formspree.io/f/mgvgrgvb" method="POST" accept-charset="UTF-8">
-          <input type="hidden" name="_subject" value="House of Carol website enquiry">
-          <div class="form-field">
-            <label for="contact-name">Name</label>
-            <input id="contact-name" name="name" type="text" autocomplete="name" required>
-          </div>
-          <div class="form-field">
-            <label for="contact-email">Email</label>
-            <input id="contact-email" name="email" type="email" autocomplete="email" inputmode="email" required>
-          </div>
-          <div class="form-field">
-            <label for="contact-message">Message</label>
-            <textarea id="contact-message" name="message" rows="7" required></textarea>
-          </div>
-          <button class="button" type="submit">Send message</button>
-          <p class="form-note">We use the details you send only to deal with your enquiry and any resulting relationship. See our <a href="privacy.html">privacy information</a>.</p>
-        </form>
+        <p class="room-state">No public venture yet.</p>
+      </section>
+
+      <section class="room" id="products" aria-labelledby="products-title">
+        <div class="room-number">02</div>
+        <div class="room-body">
+          <p class="room-type">Products &amp; tools</p>
+          <h2 id="products-title">Things that earn their place.</h2>
+          <p>Products and tools belong here only when they are more useful than the process, spreadsheet or existing tool they replace.</p>
+        </div>
+        <p class="room-state">No public venture yet.</p>
+      </section>
+
+      <section class="room" id="publishing" aria-labelledby="publishing-title">
+        <div class="room-number">03</div>
+        <div class="room-body">
+          <p class="room-type">Media &amp; publishing</p>
+          <h2 id="publishing-title">Things worth returning to.</h2>
+          <p>Editorial, cultural and educational work belongs here when curiosity, accuracy and a distinctive point of view have something worth sustaining.</p>
+        </div>
+        <p class="room-state">No public venture yet.</p>
+      </section>
+
+      <section class="room" id="other" aria-labelledby="other-title">
+        <div class="room-number">04</div>
+        <div class="room-body">
+          <p class="room-type">Other ventures</p>
+          <h2 id="other-title">The room without a label.</h2>
+          <p>Some useful things become worse when forced into a familiar category. They can live here instead.</p>
+        </div>
+        <p class="room-state">No public venture yet.</p>
+      </section>
+    </div>
+  </div>
+
+  <section class="enquiries" id="enquiries" aria-labelledby="enquiries-title">
+    <div class="shell enquiries-grid">
+      <div class="enquiries-copy">
+        <p class="folio">HOC / FRONT DESK</p>
+        <h2 id="enquiries-title">Enquiries.</h2>
+        <p>A short message is enough. No account, mailing list or unnecessary form-filling.</p>
       </div>
+      <form class="contact-form" action="https://formspree.io/f/mgvgrgvb" method="POST" accept-charset="UTF-8">
+        <input type="hidden" name="_subject" value="House of Carol website enquiry">
+        <div class="form-field"><label for="contact-name">Name</label><input id="contact-name" name="name" type="text" autocomplete="name" required></div>
+        <div class="form-field"><label for="contact-email">Email</label><input id="contact-email" name="email" type="email" autocomplete="email" inputmode="email" required></div>
+        <div class="form-field"><label for="contact-message">Message</label><textarea id="contact-message" name="message" rows="6" required></textarea></div>
+        <div class="form-trap" aria-hidden="true"><label for="company-website">Leave empty</label><input id="company-website" name="_gotcha" type="text" tabindex="-1" autocomplete="off"></div>
+        <div class="form-actions"><button class="send" type="submit">Send enquiry <span aria-hidden="true">↗</span></button><p>We use the details you send only to deal with your enquiry and any resulting relationship. <a href="privacy.html">Privacy information</a>.</p></div>
+      </form>
     </div>
   </section>
 </main>
-<footer>
+<footer class="site-footer">
   <div class="shell footer-grid">
-    <div class="footer-brand">
-      <strong>House of Carol</strong>
-      <p><a href="https://www.alanwpgallagher.info/" rel="me noopener">Alan W Gallagher</a> t/a House of Carol · Bristol, United Kingdom</p>
-    </div>
-    <nav class="footer-nav" aria-label="Supporting information">
-      <a href="index.html">Home</a>
-      <a href="https://www.waylight-atlantic.co.uk/" rel="noopener">Waylight Atlantic</a>
-      <a href="privacy.html">Privacy</a>
-      <a href="terms.html">Website terms</a>
-    </nav>
-    <div class="footer-status"><span>Independent UK business</span><span>Current site remains noindex while the House is in controlled public preview</span></div>
+    <div class="footer-brand"><strong>House of Carol</strong><p><a href="https://www.alanwpgallagher.info/" rel="me noopener">Alan W Gallagher</a> t/a House of Carol · Bristol, United Kingdom</p></div>
+    <nav class="footer-nav" aria-label="Supporting information"><a href="index.html">Façade</a><a href="https://www.waylight-atlantic.co.uk/" rel="noopener">Waylight Atlantic</a><a href="privacy.html">Privacy</a><a href="terms.html">Website terms</a></nav>
   </div>
 </footer>
 </body>

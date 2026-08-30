@@ -3,45 +3,80 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0b0909">
+<meta name="theme-color" content="#f2efe7">
 <meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; img-src 'self' data:; form-action https://formspree.io; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
 <title>House of Carol</title>
 <meta name="description" content="House of Carol is an independent UK business and home for a growing collection of ventures.">
 <meta property="og:title" content="House of Carol">
-<meta property="og:description" content="A quiet house for useful things.">
+<meta property="og:description" content="A house for things that earn their place.">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/hoc-mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/hoc-public.css">
 </head>
 <body class="page-home">
 <a class="skip" href="#main">Skip to content</a>
-<header>
+<header class="site-header">
   <div class="shell masthead">
-    <a class="wordmark" href="index.html" aria-label="House of Carol home">House of Carol</a>
+    <a class="wordmark" href="index.html" aria-label="House of Carol home"><span class="mark" aria-hidden="true">H</span><span>House of Carol</span></a>
     <nav class="nav-links" aria-label="Primary navigation">
-      <a class="quiet-link" href="https://www.alanwpgallagher.info/" rel="me noopener">Proprietor</a>
-      <a class="nav-pill" href="catalogue.html">Catalogue</a>
+      <a href="https://www.alanwpgallagher.info/" rel="me noopener">Proprietor</a>
+      <a class="nav-enter" href="catalogue.html">Enter</a>
     </nav>
   </div>
 </header>
 <main id="main">
-  <section class="hero shell">
-    <div class="hero-copy">
-      <p class="eyebrow">Independent portfolio · Bristol</p>
-      <h1>A quiet house for <em>useful things.</em></h1>
-      <p class="intro">Some become businesses. Some become products. Some become better ways of doing something.</p>
-      <div class="doorway">
-        <a href="catalogue.html">Enter the catalogue <span aria-hidden="true">&nbsp;↗</span></a>
-        <span class="doorway-note">The public rooms only</span>
-      </div>
+  <section class="front shell" aria-labelledby="home-title">
+    <div class="front-copy">
+      <p class="folio">HOC / BRISTOL / 001</p>
+      <h1 id="home-title">House<br>of Carol.</h1>
+      <p class="front-lede">A house for things that earn their place.</p>
+      <a class="text-link" href="catalogue.html">Enter the house <span aria-hidden="true">↗</span></a>
     </div>
-    <div class="hero-meta" aria-hidden="true">
-      <span>House of Carol · United Kingdom</span>
-      <span>Built carefully · Kept deliberately small</span>
+
+    <a class="elevation" href="catalogue.html" aria-label="Enter the House catalogue">
+      <svg viewBox="0 0 760 780" role="img" aria-labelledby="elevation-title elevation-desc">
+        <title id="elevation-title">House of Carol</title>
+        <desc id="elevation-desc">A simple architectural elevation of a house with four windows and an open door.</desc>
+        <g class="measure" aria-hidden="true">
+          <path d="M72 686H688"/>
+          <path d="M92 706V666M668 706V666"/>
+          <text x="333" y="730">HOUSE / 001</text>
+          <path d="M68 112V656"/>
+          <path d="M48 132H88M48 636H88"/>
+          <text x="30" y="420" transform="rotate(-90 30 420)">INDEPENDENT / BRISTOL</text>
+        </g>
+        <g class="building">
+          <path class="draw d1" d="M130 358L380 138L630 358"/>
+          <path class="draw d2" d="M172 324V648H588V324"/>
+          <path class="draw d3" d="M172 410H588"/>
+          <path class="draw d4" d="M380 138V82"/>
+          <path class="draw d5" d="M354 82H406"/>
+          <rect class="window draw d2" x="232" y="455" width="90" height="92"/>
+          <rect class="window draw d3" x="438" y="455" width="90" height="92"/>
+          <rect class="window draw d4" x="232" y="270" width="90" height="84"/>
+          <rect class="window draw d5" x="438" y="270" width="90" height="84"/>
+          <path class="door draw d1" d="M338 648V490H422V648"/>
+          <path class="step draw d4" d="M314 648H446M292 668H468"/>
+        </g>
+        <g class="labels" aria-hidden="true">
+          <text x="232" y="574">BUSINESS</text>
+          <text x="438" y="574">PRODUCTS</text>
+          <text x="232" y="381">PUBLISHING</text>
+          <text x="438" y="381">OTHER</text>
+          <text x="351" y="475">ENTER</text>
+        </g>
+      </svg>
+    </a>
+
+    <div class="front-note" aria-hidden="true">
+      <span>Independent UK business</span>
+      <span>One house · many possible rooms</span>
     </div>
   </section>
 </main>
-<footer>
+<footer class="site-footer">
   <div class="shell footer-grid">
     <div class="footer-brand">
       <strong>House of Carol</strong>
@@ -53,7 +88,6 @@
       <a href="privacy.html">Privacy</a>
       <a href="terms.html">Website terms</a>
     </nav>
-    <div class="footer-status"><span>Independent UK business</span><span>Current site remains noindex while the House is in controlled public preview</span></div>
   </div>
 </footer>
 </body>
