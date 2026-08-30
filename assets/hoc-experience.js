@@ -4,6 +4,7 @@
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = window.matchMedia('(pointer: fine)');
+  const coarsePointer = window.matchMedia('(pointer: coarse)');
   const compactScreen = window.matchMedia('(max-width: 1024px)');
 
   const roomCopy = {
@@ -122,8 +123,8 @@
     if (updateUrl) history.replaceState(null, '', `#${key}`);
   };
 
-  const showSelectedRoomOnCompactScreen = () => {
-    if (!compactScreen.matches || !roomDisplay) return;
+  const showSelectedRoomOnCompactExperience = () => {
+    if ((!compactScreen.matches && !coarsePointer.matches) || !roomDisplay) return;
     roomDisplay.scrollIntoView({ behavior: reducedMotion.matches ? 'auto' : 'smooth', block: 'start' });
   };
 
@@ -133,7 +134,7 @@
       if (!validRooms.has(key)) return;
       event.preventDefault();
       setRoom(key, true);
-      showSelectedRoomOnCompactScreen();
+      showSelectedRoomOnCompactExperience();
     });
   });
 
@@ -144,5 +145,47 @@
       const key = location.hash.slice(1);
       if (validRooms.has(key)) setRoom(key, false);
     });
+  }
+
+  // Local-only diagnostic mode. Nothing here is transmitted. It exists so a real
+  // device can disprove our browser assumptions rather than forcing another guess.
+  if (new URLSearchParams(location.search).get('hocdiag') === '1') {
+    const build = document.querySelector('meta[name="hoc-build"]')?.content || 'missing';
+    const vv = window.visualViewport;
+    const facts = [
+      ['Build', build],
+      ['inner', `${window.innerWidth} × ${window.innerHeight}`],
+      ['client', `${document.documentElement.clientWidth} × ${document.documentElement.clientHeight}`],
+      ['visual', vv ? `${Math.round(vv.width)} × ${Math.round(vv.height)} @ ${vv.scale.toFixed(2)}` : 'unavailable'],
+      ['screen', `${screen.width} × ${screen.height}`],
+      ['DPR', String(window.devicePixelRatio)],
+      ['coarse', String(coarsePointer.matches)],
+      ['fine', String(finePointer.matches)],
+      ['hover-none', String(matchMedia('(hover:none)').matches)],
+      ['orientation', screen.orientation?.type || 'unavailable']
+    ];
+    const panel = document.createElement('aside');
+    panel.id = 'hoc-diagnostic-panel';
+    panel.setAttribute('role', 'status');
+    panel.setAttribute('aria-label', 'House of Carol local diagnostic information');
+    panel.style.cssText = [
+      'position:fixed','z-index:2147483647','left:8px','right:8px','bottom:8px',
+      'padding:10px 12px','background:rgba(0,0,0,.94)','color:#fff','border:2px solid #f0d79f',
+      'font:600 12px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace','letter-spacing:0',
+      'box-shadow:0 4px 20px rgba(0,0,0,.55)','max-height:42vh','overflow:auto'
+    ].join(';');
+    const heading = document.createElement('strong');
+    heading.style.cssText = 'display:block;margin-bottom:5px;color:#f0d79f';
+    heading.textContent = 'HOC LOCAL DIAGNOSTIC — nothing is transmitted';
+    panel.append(heading);
+    facts.forEach(([key, value]) => {
+      const item = document.createElement('span');
+      item.style.cssText = 'display:inline-block;margin:0 14px 3px 0';
+      const label = document.createElement('b');
+      label.textContent = `${key}: `;
+      item.append(label, document.createTextNode(value));
+      panel.append(item);
+    });
+    document.body.append(panel);
   }
 })();
