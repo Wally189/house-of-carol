@@ -3,79 +3,105 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#ece5da">
+<meta name="theme-color" content="#eee7db">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; form-action https://formspree.io; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
-<title>Catalogue — House of Carol</title>
+<title>Rooms — House of Carol</title>
 <meta name="description" content="Explore the public rooms of House of Carol.">
-<meta property="og:title" content="Catalogue — House of Carol">
-<meta property="og:description" content="Explore the public rooms of House of Carol.">
+<meta property="og:title" content="Rooms — House of Carol">
+<meta property="og:description" content="Four rooms for useful work, products, publishing and the unexpected.">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/hoc-mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/hoc-public.css">
-<link rel="stylesheet" href="assets/hoc-run09.css">
+<link rel="stylesheet" href="assets/hoc-run10.css">
+<link rel="stylesheet" href="assets/hoc-run10-polish.css">
 <script src="assets/hoc-experience.js" defer></script>
 </head>
-<body class="page-catalogue">
-<a class="skip" href="#main">Skip to content</a>
-<header class="topline topline-light" aria-label="House navigation">
-  <a class="house-name" href="index.html" aria-label="House of Carol home"><span class="house-monogram" aria-hidden="true">H</span><span>House of Carol</span></a>
-  <nav class="utility-nav" aria-label="Primary navigation"><a href="index.html">Outside</a><a href="#front-desk">Front desk</a></nav>
+<body class="r10-catalogue" data-room-theme="business">
+<a class="r10-skip" href="#main">Skip to content</a>
+<header class="r10-header r10-header-light" aria-label="House navigation">
+  <a class="r10-brand" href="index.html" aria-label="House of Carol home"><span class="r10-brand-mark" aria-hidden="true">H</span><span>House of Carol</span></a>
+  <nav class="r10-nav" aria-label="Primary navigation"><a href="index.html">Outside</a><a href="#front-desk">Front desk</a></nav>
 </header>
 <main id="main">
-  <section class="interior-intro shell" aria-labelledby="rooms-title">
-    <div class="interior-copy">
-      <p class="interior-kicker">Inside the House</p>
-      <h1 id="rooms-title">Choose<br>a room.</h1>
-      <p>Not everything belongs in the same place. The House keeps different kinds of work apart until there is a good reason to bring them together.</p>
-      <p class="interior-note">The rooms are quiet for now. Public work appears only when it is ready.</p>
+  <section class="r10-rooms" aria-labelledby="rooms-title">
+    <div class="r10-rooms-intro">
+      <p class="r10-eyebrow">Inside the House</p>
+      <h1 id="rooms-title">Four rooms.<br><span>Nothing in them by accident.</span></h1>
+      <p>An empty room has a purpose: it keeps half-formed ideas off the shelves. When something earns its place, you will find it here.</p>
     </div>
-
-    <div class="plan-theatre" data-plan-theatre>
-      <div class="plan-glow" aria-hidden="true"></div>
-      <svg class="floor-plan" viewBox="0 0 760 650" role="img" aria-labelledby="plan-title plan-desc">
-        <title id="plan-title">House of Carol floor plan</title>
-        <desc id="plan-desc">Four rooms arranged around a central hall. Each room links to its public section below.</desc>
-        <rect class="plan-shell" x="80" y="72" width="600" height="500" rx="3"/>
-        <path class="plan-wall" d="M380 72V572M80 322H680"/>
-        <path class="plan-hall" d="M338 272H422V372H338Z"/>
-        <path class="plan-door" d="M338 322H300M422 322H460M380 272V230M380 372V414"/>
-        <g class="plan-zone-art" data-plan-art="business"><rect x="80" y="72" width="300" height="250"/><text class="plan-zone-no" x="112" y="112">01</text><text class="plan-zone-title" x="112" y="168">Business &amp;</text><text class="plan-zone-title" x="112" y="203">systems</text><text class="plan-zone-note" x="112" y="250">MAKE THE COMPLICATED USEFUL</text></g>
-        <g class="plan-zone-art" data-plan-art="products"><rect x="380" y="72" width="300" height="250"/><text class="plan-zone-no" x="412" y="112">02</text><text class="plan-zone-title" x="412" y="168">Products &amp;</text><text class="plan-zone-title" x="412" y="203">tools</text><text class="plan-zone-note" x="412" y="250">MAKE SOMETHING WORTH KEEPING</text></g>
-        <g class="plan-zone-art" data-plan-art="publishing"><rect x="80" y="322" width="300" height="250"/><text class="plan-zone-no" x="112" y="362">03</text><text class="plan-zone-title" x="112" y="418">Media &amp;</text><text class="plan-zone-title" x="112" y="453">publishing</text><text class="plan-zone-note" x="112" y="500">MAKE CURIOSITY TRAVEL</text></g>
-        <g class="plan-zone-art" data-plan-art="other"><rect x="380" y="322" width="300" height="250"/><text class="plan-zone-no" x="412" y="362">04</text><text class="plan-zone-title" x="412" y="418">Other</text><text class="plan-zone-title" x="412" y="453">ventures</text><text class="plan-zone-note" x="412" y="500">LEAVE SPACE FOR THE UNEXPECTED</text></g>
-        <text class="plan-hall-label" x="349" y="312">HALL</text>
-      </svg>
-      <a class="plan-room plan-business" href="#business" data-plan-room="business"><span class="sr-only">Business and systems — make the complicated useful.</span></a>
-      <a class="plan-room plan-products" href="#products" data-plan-room="products"><span class="sr-only">Products and tools — make something worth keeping.</span></a>
-      <a class="plan-room plan-publishing" href="#publishing" data-plan-room="publishing"><span class="sr-only">Media and publishing — make curiosity travel.</span></a>
-      <a class="plan-room plan-other" href="#other" data-plan-room="other"><span class="sr-only">Other ventures — leave space for the unexpected.</span></a>
-      <div class="plan-caption" aria-live="polite" data-plan-caption>Pick a room. The plan will show you where you are going.</div>
+    <div class="r10-room-theatre">
+      <div class="r10-plan-zone" data-plan-theatre>
+        <div class="r10-plan-heading"><span>Ground floor</span><span data-plan-caption>Business &amp; systems selected</span></div>
+        <div class="r10-plan-shell">
+          <svg class="r10-plan" viewBox="0 0 720 560" role="img" aria-labelledby="plan-title plan-desc">
+            <title id="plan-title">House of Carol room plan</title>
+            <desc id="plan-desc">Four public rooms arranged around a small central hall. Select any room to learn what belongs there.</desc>
+            <path class="r10-plan-outline" d="M64 70h592v420H64z"/>
+            <path class="r10-plan-wall" d="M360 70v420M64 280h592"/>
+            <path class="r10-plan-hall" d="M318 238h84v84h-84z"/>
+            <path class="r10-plan-doorway" d="M318 280h-42M402 280h42M360 238v-42M360 322v42"/>
+            <g class="r10-plan-room-art is-current" data-plan-art="business"><rect x="64" y="70" width="296" height="210"/><text x="92" y="105">01</text><text class="r10-plan-title" x="92" y="161">Business &amp;</text><text class="r10-plan-title" x="92" y="193">systems</text></g>
+            <g class="r10-plan-room-art" data-plan-art="products"><rect x="360" y="70" width="296" height="210"/><text x="388" y="105">02</text><text class="r10-plan-title" x="388" y="161">Products &amp;</text><text class="r10-plan-title" x="388" y="193">tools</text></g>
+            <g class="r10-plan-room-art" data-plan-art="publishing"><rect x="64" y="280" width="296" height="210"/><text x="92" y="315">03</text><text class="r10-plan-title" x="92" y="371">Media &amp;</text><text class="r10-plan-title" x="92" y="403">publishing</text></g>
+            <g class="r10-plan-room-art" data-plan-art="other"><rect x="360" y="280" width="296" height="210"/><text x="388" y="315">04</text><text class="r10-plan-title" x="388" y="371">Other</text><text class="r10-plan-title" x="388" y="403">ventures</text></g>
+            <text class="r10-hall-label" x="334" y="284">HALL</text>
+          </svg>
+          <a class="r10-plan-hit r10-hit-business is-current" href="#business" data-plan-room="business" aria-current="true"><span>Business &amp; systems</span></a>
+          <a class="r10-plan-hit r10-hit-products" href="#products" data-plan-room="products"><span>Products &amp; tools</span></a>
+          <a class="r10-plan-hit r10-hit-publishing" href="#publishing" data-plan-room="publishing"><span>Media &amp; publishing</span></a>
+          <a class="r10-plan-hit r10-hit-other" href="#other" data-plan-room="other"><span>Other ventures</span></a>
+        </div>
+        <nav class="r10-room-index" aria-label="Room index">
+          <a class="is-current" href="#business" data-room-index="business" aria-current="true"><span>01</span>Business</a>
+          <a href="#products" data-room-index="products"><span>02</span>Products</a>
+          <a href="#publishing" data-room-index="publishing"><span>03</span>Publishing</a>
+          <a href="#other" data-room-index="other"><span>04</span>Other</a>
+        </nav>
+      </div>
+      <div class="r10-room-display" aria-live="polite">
+        <article class="r10-room-panel is-current" id="business" data-room-panel="business">
+          <p class="r10-room-number">01 · Business &amp; systems</p>
+          <h2>Make the hard thing simpler.</h2>
+          <p>Processes, services and interventions belong here when they leave work clearer, lighter or less absurd than they found it.</p>
+          <div class="r10-room-status"><span aria-hidden="true"></span><strong>Vacant by design.</strong> The first public occupant will have earned the key.</div>
+        </article>
+        <article class="r10-room-panel" id="products" data-room-panel="products">
+          <p class="r10-room-number">02 · Products &amp; tools</p>
+          <h2>Useful beats impressive.</h2>
+          <p>A product earns shelf space by doing a real job: fewer steps, less friction, and a reason to keep it after the novelty wears off.</p>
+          <div class="r10-room-status"><span aria-hidden="true"></span><strong>Vacant by design.</strong> The first public occupant will have earned the key.</div>
+        </article>
+        <article class="r10-room-panel" id="publishing" data-room-panel="publishing">
+          <p class="r10-room-number">03 · Media &amp; publishing</p>
+          <h2>Make curiosity travel.</h2>
+          <p>A good story changes what you notice afterwards. History, explanation, culture and learning belong here when they make the familiar newly interesting.</p>
+          <div class="r10-room-status"><span aria-hidden="true"></span><strong>Vacant by design.</strong> The first public occupant will have earned the key.</div>
+        </article>
+        <article class="r10-room-panel" id="other" data-room-panel="other">
+          <p class="r10-room-number">04 · Other ventures</p>
+          <h2>Keep a room for the unexpected.</h2>
+          <p>Some useful things become less interesting the moment somebody forces them into a familiar category. This is where they can prove themselves first.</p>
+          <div class="r10-room-status"><span aria-hidden="true"></span><strong>Vacant by design.</strong> The first public occupant will have earned the key.</div>
+        </article>
+      </div>
     </div>
   </section>
-
-  <section class="room-chapters" aria-label="Public rooms">
-    <article class="room-chapter room-chapter-dark" id="business" data-room-chapter="business"><div class="shell chapter-grid"><div class="chapter-number">01</div><div class="chapter-copy"><p class="chapter-type">Business &amp; systems</p><h2>Make the complicated useful.</h2><p>This room is for practical work: services, systems and interventions that leave something clearer, lighter or more effective than they found it.</p></div><div class="chapter-state"><span class="state-light" aria-hidden="true"></span><span>Waiting for its first public occupant.</span></div></div></article>
-    <article class="room-chapter" id="products" data-room-chapter="products"><div class="shell chapter-grid"><div class="chapter-number">02</div><div class="chapter-copy"><p class="chapter-type">Products &amp; tools</p><h2>Make something worth keeping.</h2><p>A product gets a room only if it earns one: genuinely useful, simpler than the thing it replaces, and strong enough to survive contact with real people.</p></div><div class="chapter-state"><span class="state-light" aria-hidden="true"></span><span>Waiting for its first public occupant.</span></div></div></article>
-    <article class="room-chapter room-chapter-wine" id="publishing" data-room-chapter="publishing"><div class="shell chapter-grid"><div class="chapter-number">03</div><div class="chapter-copy"><p class="chapter-type">Media &amp; publishing</p><h2>Make curiosity travel.</h2><p>Stories, explanations, culture and learning belong here when they make somebody notice something they might otherwise have walked past.</p></div><div class="chapter-state"><span class="state-light" aria-hidden="true"></span><span>Waiting for its first public occupant.</span></div></div></article>
-    <article class="room-chapter" id="other" data-room-chapter="other"><div class="shell chapter-grid"><div class="chapter-number">04</div><div class="chapter-copy"><p class="chapter-type">Other ventures</p><h2>Leave space for the unexpected.</h2><p>Some of the most useful ideas become less interesting the moment somebody forces them into a familiar category. This room exists so we do not have to.</p></div><div class="chapter-state"><span class="state-light" aria-hidden="true"></span><span>Waiting for its first public occupant.</span></div></div></article>
-  </section>
-
-  <section class="front-desk" id="front-desk" aria-labelledby="desk-title">
-    <div class="shell desk-grid">
-      <div class="desk-copy"><p class="desk-kicker">Front desk</p><h2 id="desk-title">Leave a note.</h2><p>If something in the House is relevant to you, or you have a serious business enquiry, a short message is enough.</p><p class="desk-small">No account. No mailing list. No unnecessary questions.</p></div>
-      <form class="contact-form" action="https://formspree.io/f/mgvgrgvb" method="POST" accept-charset="UTF-8">
+  <section class="r10-frontdesk" id="front-desk" aria-labelledby="desk-title">
+    <div class="r10-frontdesk-inner">
+      <div class="r10-desk-copy"><p class="r10-eyebrow">Front desk</p><h2 id="desk-title">Leave a note.</h2><p>If something in the House interests you, or there is something useful we should know, write plainly. A short message is enough.</p><p class="r10-desk-note">No account. No mailing list. No unnecessary questions.</p></div>
+      <form class="r10-form" action="https://formspree.io/f/mgvgrgvb" method="POST" accept-charset="UTF-8">
         <input type="hidden" name="_subject" value="House of Carol website enquiry">
-        <div class="form-field"><label for="contact-name">Your name</label><input id="contact-name" name="name" type="text" autocomplete="name" required></div>
-        <div class="form-field"><label for="contact-email">Your email</label><input id="contact-email" name="email" type="email" autocomplete="email" inputmode="email" required></div>
-        <div class="form-field"><label for="contact-message">Your message</label><textarea id="contact-message" name="message" rows="6" required></textarea></div>
-        <div class="form-trap" aria-hidden="true"><label for="company-website">Leave empty</label><input id="company-website" name="_gotcha" type="text" tabindex="-1" autocomplete="off"></div>
-        <div class="form-actions"><button class="send" type="submit">Send it <span aria-hidden="true">→</span></button><p>We use what you send only to deal with your enquiry and any resulting relationship. <a href="privacy.html">Privacy information</a>.</p></div>
+        <div class="r10-field"><label for="contact-name">Your name</label><input id="contact-name" name="name" type="text" autocomplete="name" required></div>
+        <div class="r10-field"><label for="contact-email">Your email</label><input id="contact-email" name="email" type="email" autocomplete="email" inputmode="email" required></div>
+        <div class="r10-field r10-field-message"><label for="contact-message">Your message</label><textarea id="contact-message" name="message" rows="5" required></textarea></div>
+        <div class="r10-trap" aria-hidden="true"><label for="company-website">Leave empty</label><input id="company-website" name="_gotcha" type="text" tabindex="-1" autocomplete="off"></div>
+        <div class="r10-form-actions"><button type="submit">Send note <span aria-hidden="true">→</span></button><p>We use what you send only to deal with your enquiry and any resulting relationship. <a href="privacy.html">Privacy information</a>.</p></div>
       </form>
     </div>
   </section>
 </main>
-<footer class="quiet-footer"><div class="shell quiet-footer-grid"><div><strong>House of Carol</strong><span>Alan W Gallagher t/a House of Carol · Bristol, United Kingdom</span></div><nav aria-label="Supporting information"><a href="index.html">Outside</a><a href="https://www.alanwpgallagher.info/" rel="me noopener">Proprietor</a><a href="https://www.waylight-atlantic.co.uk/" rel="noopener">Waylight Atlantic</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav></div></footer>
+<footer class="r10-footer r10-footer-light"><div class="r10-footer-inner"><div><strong>House of Carol</strong><span>Alan W Gallagher t/a House of Carol · Bristol, United Kingdom</span></div><nav aria-label="Supporting information"><a href="index.html">Outside</a><a href="https://www.alanwpgallagher.info/" rel="me noopener">Proprietor</a><a href="https://www.waylight-atlantic.co.uk/" rel="noopener">Waylight Atlantic</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav></div></footer>
 </body>
 </html>

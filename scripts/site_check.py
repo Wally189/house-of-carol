@@ -3,11 +3,11 @@ from __future__ import annotations
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
-import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 HTML_FILES = [ROOT / name for name in ("index.html", "catalogue.html", "privacy.html", "terms.html", "404.html")]
 BANNED_PUBLIC_PHRASES = ("award-winning", "world-class", "ai-powered", "fortune 500")
+TEMP_REVIEW_FILES = (ROOT / "README-RUN10.tmp", ROOT / "RUN10-REVIEW.md")
 
 
 class PageParser(HTMLParser):
@@ -16,6 +16,7 @@ class PageParser(HTMLParser):
         self.ids: set[str] = set()
         self.hrefs: list[str] = []
         self.scripts: list[str] = []
+        self.styles: list[str] = []
         self.labels_for: set[str] = set()
         self.inputs: set[str] = set()
         self.title = False
@@ -46,11 +47,12 @@ class PageParser(HTMLParser):
             self.hrefs.append(attrs["href"])
         if tag == "script" and attrs.get("src"):
             self.scripts.append(attrs["src"])
+        if tag == "link" and attrs.get("rel") == "stylesheet" and attrs.get("href"):
+            self.styles.append(attrs["href"])
         if tag == "label" and attrs.get("for"):
             self.labels_for.add(attrs["for"])
         if tag in {"input", "textarea", "select"} and attrs.get("id"):
-            input_type = attrs.get("type", "")
-            if input_type != "hidden":
+            if attrs.get("type", "") != "hidden":
                 self.inputs.add(attrs["id"])
         if tag == "form":
             self.forms.append(attrs)
@@ -83,9 +85,12 @@ def local_target(base: Path, href: str) -> tuple[Path, str | None] | None:
             fail(f"{base.name}: external link is not https: {href}")
         return None
     file_part = parsed.path or base.name
-    target = (base.parent / file_part).resolve()
-    return target, parsed.fragment or None
+    return (base.parent / file_part).resolve(), parsed.fragment or None
 
+
+for temp_file in TEMP_REVIEW_FILES:
+    if temp_file.exists():
+        fail(f"temporary review artefact must not ship: {temp_file.name}")
 
 pages: dict[Path, PageParser] = {}
 for html_file in HTML_FILES:
@@ -106,10 +111,10 @@ for html_file in HTML_FILES:
     missing_labels = parser.inputs - parser.labels_for
     if missing_labels:
         fail(f"{html_file.name}: unlabelled controls: {sorted(missing_labels)}")
-    for script in parser.scripts:
-        target = (html_file.parent / script).resolve()
+    for asset in parser.scripts + parser.styles:
+        target = (html_file.parent / asset).resolve()
         if not target.exists():
-            fail(f"{html_file.name}: missing script: {script}")
+            fail(f"{html_file.name}: missing local asset: {asset}")
 
 for base, parser in pages.items():
     for href in parser.hrefs:
@@ -126,6 +131,15 @@ for base, parser in pages.items():
             if fragment not in target_parser.ids:
                 fail(f"{base.name}: broken anchor {href}")
 
+for name in ("index.html", "catalogue.html", "privacy.html", "terms.html", "404.html"):
+    parser = pages[(ROOT / name).resolve()]
+    if "assets/hoc-run10.css" not in parser.styles:
+        fail(f"{name}: Run 10 experience stylesheet not active")
+    if "assets/hoc-run10-polish.css" not in parser.styles:
+        fail(f"{name}: current polish layer not active")
+    if "assets/hoc-run09.css" in parser.styles:
+        fail(f"{name}: obsolete Run 09 stylesheet still active")
+
 catalogue = pages[(ROOT / "catalogue.html").resolve()]
 if not catalogue.forms:
     fail("catalogue.html: contact form missing")
@@ -139,4 +153,7 @@ robots = (ROOT / "robots.txt").read_text(encoding="utf-8")
 if "Disallow: /" not in robots:
     fail("robots.txt containment changed")
 
-print("PASS: static site integrity checks")
+if (ROOT / "assets" / "hoc-run09.css").exists():
+    fail("obsolete hoc-run09.css still present; maintain only the current experience layer")
+
+print("PASS: whole public House static integrity and active-design checks")
