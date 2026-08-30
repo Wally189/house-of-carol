@@ -4,7 +4,7 @@
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = window.matchMedia('(pointer: fine)');
-  const narrowScreen = window.matchMedia('(max-width: 700px)');
+  const compactScreen = window.matchMedia('(max-width: 1024px)');
 
   const roomCopy = {
     business: ['Business & systems', 'Make the hard thing simpler.'],
@@ -122,8 +122,8 @@
     if (updateUrl) history.replaceState(null, '', `#${key}`);
   };
 
-  const showSelectedRoomOnSmallScreen = () => {
-    if (!narrowScreen.matches || !roomDisplay) return;
+  const showSelectedRoomOnCompactScreen = () => {
+    if (!compactScreen.matches || !roomDisplay) return;
     roomDisplay.scrollIntoView({ behavior: reducedMotion.matches ? 'auto' : 'smooth', block: 'start' });
   };
 
@@ -133,7 +133,7 @@
       if (!validRooms.has(key)) return;
       event.preventDefault();
       setRoom(key, true);
-      showSelectedRoomOnSmallScreen();
+      showSelectedRoomOnCompactScreen();
     });
   });
 
