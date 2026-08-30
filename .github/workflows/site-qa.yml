@@ -47,6 +47,9 @@ jobs:
       - name: Browser interaction and screenshots
         run: node scripts/render_check.mjs
 
+      - name: Coarse-pointer wide-viewport regression
+        run: node scripts/run13_touch_check.mjs
+
       - name: Upload QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
