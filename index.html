@@ -3,92 +3,108 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#f2efe7">
+<meta name="theme-color" content="#090a0d">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; img-src 'self' data:; form-action https://formspree.io; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; form-action https://formspree.io; base-uri 'self'; object-src 'none'; upgrade-insecure-requests">
 <title>House of Carol</title>
 <meta name="description" content="House of Carol is an independent UK business and home for a growing collection of ventures.">
 <meta property="og:title" content="House of Carol">
-<meta property="og:description" content="A house for things that earn their place.">
+<meta property="og:description" content="A house for useful things.">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/hoc-mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/hoc-public.css">
+<script src="assets/hoc-experience.js" defer></script>
 </head>
 <body class="page-home">
 <a class="skip" href="#main">Skip to content</a>
-<header class="site-header">
-  <div class="shell masthead">
-    <a class="wordmark" href="index.html" aria-label="House of Carol home"><span class="mark" aria-hidden="true">H</span><span>House of Carol</span></a>
-    <nav class="nav-links" aria-label="Primary navigation">
-      <a href="https://www.alanwpgallagher.info/" rel="me noopener">Proprietor</a>
-      <a class="nav-enter" href="catalogue.html">Enter</a>
-    </nav>
-  </div>
+<header class="topline" aria-label="House navigation">
+  <a class="house-name" href="index.html" aria-label="House of Carol home"><span class="house-monogram" aria-hidden="true">H</span><span>House of Carol</span></a>
+  <nav class="utility-nav" aria-label="Primary navigation">
+    <a href="https://www.alanwpgallagher.info/" rel="me noopener">Proprietor</a>
+    <a href="catalogue.html">Rooms</a>
+  </nav>
 </header>
 <main id="main">
-  <section class="front shell" aria-labelledby="home-title">
-    <div class="front-copy">
-      <p class="folio">HOC / BRISTOL / 001</p>
-      <h1 id="home-title">House<br>of Carol.</h1>
-      <p class="front-lede">A house for things that earn their place.</p>
-      <a class="text-link" href="catalogue.html">Enter the house <span aria-hidden="true">↗</span></a>
+  <section class="arrival" aria-labelledby="arrival-title">
+    <div class="arrival-light" aria-hidden="true"></div>
+    <div class="arrival-copy">
+      <p class="arrival-kicker">Bristol · United Kingdom</p>
+      <h1 id="arrival-title">House<br>of Carol</h1>
+      <p class="arrival-story">Every useful thing starts somewhere. A question. A problem. An idea worth keeping.</p>
+      <p class="arrival-story arrival-story-secondary">The ones that earn their place get a room.</p>
+      <a class="threshold-cta" href="catalogue.html" data-enter-house>Come inside <span aria-hidden="true">→</span></a>
     </div>
 
-    <a class="elevation" href="catalogue.html" aria-label="Enter the House catalogue">
-      <svg viewBox="0 0 760 780" role="img" aria-labelledby="elevation-title elevation-desc">
-        <title id="elevation-title">House of Carol</title>
-        <desc id="elevation-desc">A simple architectural elevation of a house with four windows and an open door.</desc>
-        <g class="measure" aria-hidden="true">
-          <path d="M72 686H688"/>
-          <path d="M92 706V666M668 706V666"/>
-          <text x="333" y="730">HOUSE / 001</text>
-          <path d="M68 112V656"/>
-          <path d="M48 132H88M48 636H88"/>
-          <text x="30" y="420" transform="rotate(-90 30 420)">INDEPENDENT / BRISTOL</text>
-        </g>
-        <g class="building">
-          <path class="draw d1" d="M130 358L380 138L630 358"/>
-          <path class="draw d2" d="M172 324V648H588V324"/>
-          <path class="draw d3" d="M172 410H588"/>
-          <path class="draw d4" d="M380 138V82"/>
-          <path class="draw d5" d="M354 82H406"/>
-          <rect class="window draw d2" x="232" y="455" width="90" height="92"/>
-          <rect class="window draw d3" x="438" y="455" width="90" height="92"/>
-          <rect class="window draw d4" x="232" y="270" width="90" height="84"/>
-          <rect class="window draw d5" x="438" y="270" width="90" height="84"/>
-          <path class="door draw d1" d="M338 648V490H422V648"/>
-          <path class="step draw d4" d="M314 648H446M292 668H468"/>
-        </g>
-        <g class="labels" aria-hidden="true">
-          <text x="232" y="574">BUSINESS</text>
-          <text x="438" y="574">PRODUCTS</text>
-          <text x="232" y="381">PUBLISHING</text>
-          <text x="438" y="381">OTHER</text>
-          <text x="351" y="475">ENTER</text>
-        </g>
-      </svg>
-    </a>
+    <div class="house-stage" data-house-stage>
+      <div class="house-aura" aria-hidden="true"></div>
+      <div class="house-perspective" data-house-perspective>
+        <svg class="house-facade" viewBox="0 0 760 720" role="img" aria-labelledby="facade-title facade-desc">
+          <title id="facade-title">The House of Carol</title>
+          <desc id="facade-desc">A dark house at night with four lit windows and a front door. The windows link to the public rooms and the door enters the catalogue.</desc>
+          <defs>
+            <linearGradient id="wallShade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#1a1719"/>
+              <stop offset="1" stop-color="#0e0d10"/>
+            </linearGradient>
+            <linearGradient id="roofShade" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#211c20"/>
+              <stop offset="1" stop-color="#0b0b0d"/>
+            </linearGradient>
+            <radialGradient id="glassWarm" cx="50%" cy="40%" r="70%">
+              <stop offset="0" stop-color="#fff3c9"/>
+              <stop offset=".55" stop-color="#d9b777"/>
+              <stop offset="1" stop-color="#8d5b37"/>
+            </radialGradient>
+          </defs>
+          <ellipse class="house-shadow" cx="382" cy="655" rx="248" ry="34"/>
+          <path class="house-roof" d="M92 316L380 72L668 316L618 340L380 139L142 340Z"/>
+          <path class="house-wall" d="M142 316H618V630H142Z"/>
+          <path class="house-floor-line" d="M142 452H618"/>
+          <path class="chimney" d="M515 102V42H557V138"/>
+          <g class="facade-window room-publishing" data-facade-room="publishing">
+            <rect x="211" y="248" width="108" height="112" rx="2"/>
+            <path d="M265 248V360M211 304H319"/>
+          </g>
+          <g class="facade-window room-other" data-facade-room="other">
+            <rect x="441" y="248" width="108" height="112" rx="2"/>
+            <path d="M495 248V360M441 304H549"/>
+          </g>
+          <g class="facade-window room-business" data-facade-room="business">
+            <rect x="211" y="485" width="108" height="101" rx="2"/>
+            <path d="M265 485V586M211 535H319"/>
+          </g>
+          <g class="facade-window room-products" data-facade-room="products">
+            <rect x="441" y="485" width="108" height="101" rx="2"/>
+            <path d="M495 485V586M441 535H549"/>
+          </g>
+          <g class="front-door" data-door>
+            <rect class="door-frame" x="337" y="476" width="86" height="154" rx="2"/>
+            <rect class="door-leaf" x="346" y="485" width="68" height="145" rx="1"/>
+            <circle class="door-knob" cx="399" cy="558" r="4"/>
+          </g>
+          <path class="front-step" d="M319 630H441M298 649H462"/>
+          <path class="house-ground" d="M78 651C188 620 257 642 380 651C503 660 588 628 690 651"/>
+        </svg>
 
-    <div class="front-note" aria-hidden="true">
-      <span>Independent UK business</span>
-      <span>One house · many possible rooms</span>
+        <a class="house-hotspot hotspot-publishing" href="catalogue.html#publishing" data-room-hotspot="publishing"><span>Publishing</span></a>
+        <a class="house-hotspot hotspot-other" href="catalogue.html#other" data-room-hotspot="other"><span>Other</span></a>
+        <a class="house-hotspot hotspot-business" href="catalogue.html#business" data-room-hotspot="business"><span>Business</span></a>
+        <a class="house-hotspot hotspot-products" href="catalogue.html#products" data-room-hotspot="products"><span>Products</span></a>
+        <a class="house-hotspot hotspot-door" href="catalogue.html" data-enter-house aria-label="Open the front door and enter the House"><span>Enter</span></a>
+      </div>
+      <p class="house-whisper" aria-live="polite" data-house-whisper>Move closer. The House will tell you what is here.</p>
+    </div>
+
+    <div class="arrival-foot">
+      <span>Alan W Gallagher t/a House of Carol</span>
+      <nav aria-label="Supporting information">
+        <a href="https://www.waylight-atlantic.co.uk/" rel="noopener">Waylight Atlantic</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </nav>
     </div>
   </section>
 </main>
-<footer class="site-footer">
-  <div class="shell footer-grid">
-    <div class="footer-brand">
-      <strong>House of Carol</strong>
-      <p><a href="https://www.alanwpgallagher.info/" rel="me noopener">Alan W Gallagher</a> t/a House of Carol · Bristol, United Kingdom</p>
-    </div>
-    <nav class="footer-nav" aria-label="Supporting information">
-      <a href="catalogue.html">Catalogue</a>
-      <a href="https://www.waylight-atlantic.co.uk/" rel="noopener">Waylight Atlantic</a>
-      <a href="privacy.html">Privacy</a>
-      <a href="terms.html">Website terms</a>
-    </nav>
-  </div>
-</footer>
 </body>
 </html>
