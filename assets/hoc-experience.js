@@ -4,7 +4,6 @@
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = window.matchMedia('(pointer: fine)');
-
   const roomNames = {
     business: 'Business & systems',
     products: 'Products & tools',
@@ -12,9 +11,18 @@
     other: 'Other ventures'
   };
 
+  requestAnimationFrame(() => document.body.classList.add('page-ready'));
+
   const stage = document.querySelector('[data-house-stage]');
   const perspective = document.querySelector('[data-house-perspective]');
   const whisper = document.querySelector('[data-house-whisper]');
+  let ambientTimers = [];
+
+  const stopAmbient = () => {
+    ambientTimers.forEach(window.clearTimeout);
+    ambientTimers = [];
+    document.querySelectorAll('[data-facade-room]').forEach((room) => room.classList.remove('is-ambient'));
+  };
 
   if (stage && perspective) {
     const clearRoom = () => {
@@ -24,6 +32,7 @@
     };
 
     const showRoom = (roomKey) => {
+      stopAmbient();
       stage.classList.add('has-room-focus');
       document.querySelectorAll('[data-facade-room]').forEach((room) => {
         room.classList.toggle('is-active', room.dataset.facadeRoom === roomKey);
@@ -36,6 +45,14 @@
       ['mouseenter', 'focus'].forEach((eventName) => hotspot.addEventListener(eventName, () => showRoom(roomKey)));
       ['mouseleave', 'blur'].forEach((eventName) => hotspot.addEventListener(eventName, clearRoom));
     });
+
+    if (!reducedMotion.matches) {
+      const rooms = [...document.querySelectorAll('[data-facade-room]')];
+      rooms.forEach((room, index) => {
+        ambientTimers.push(window.setTimeout(() => room.classList.add('is-ambient'), 700 + index * 190));
+        ambientTimers.push(window.setTimeout(() => room.classList.remove('is-ambient'), 1900 + index * 190));
+      });
+    }
 
     if (!reducedMotion.matches && finePointer.matches) {
       const arrival = document.querySelector('.arrival');
@@ -55,14 +72,15 @@
     }
 
     document.querySelectorAll('[data-enter-house]').forEach((link) => {
-      link.addEventListener('mouseenter', () => stage.classList.add('is-door-open'));
-      link.addEventListener('focus', () => stage.classList.add('is-door-open'));
+      link.addEventListener('mouseenter', () => { stopAmbient(); stage.classList.add('is-door-open'); });
+      link.addEventListener('focus', () => { stopAmbient(); stage.classList.add('is-door-open'); });
       link.addEventListener('mouseleave', () => stage.classList.remove('is-door-open'));
       link.addEventListener('blur', () => stage.classList.remove('is-door-open'));
       link.addEventListener('click', (event) => {
         if (reducedMotion.matches || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button > 0) return;
         const destination = link.href;
         event.preventDefault();
+        stopAmbient();
         stage.classList.add('is-door-open');
         document.body.classList.add('is-entering');
         if (whisper) whisper.textContent = 'The door is open.';
@@ -85,6 +103,7 @@
 
     const setCurrent = (roomKey) => {
       planRooms.forEach((room) => room.classList.toggle('is-current', room.dataset.planRoom === roomKey));
+      document.querySelectorAll('[data-plan-art]').forEach((room) => room.classList.toggle('is-current', room.dataset.planArt === roomKey));
       if (caption && planCopy[roomKey]) caption.textContent = planCopy[roomKey];
     };
 
@@ -111,7 +130,7 @@
             if (roomKey) setCurrent(roomKey);
           }
         });
-      }, { threshold: 0.35 });
+      }, { threshold: 0.32 });
       chapters.forEach((chapter) => observer.observe(chapter));
     } else {
       chapters.forEach((chapter) => chapter.classList.add('is-visible'));
