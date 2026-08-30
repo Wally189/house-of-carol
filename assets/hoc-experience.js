@@ -4,6 +4,7 @@
 
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = window.matchMedia('(pointer: fine)');
+  const narrowScreen = window.matchMedia('(max-width: 700px)');
 
   const roomCopy = {
     business: ['Business & systems', 'Make the hard thing simpler.'],
@@ -99,6 +100,7 @@
   const panels = [...document.querySelectorAll('[data-room-panel]')];
   const planArts = [...document.querySelectorAll('[data-plan-art]')];
   const caption = document.querySelector('[data-plan-caption]');
+  const roomDisplay = document.querySelector('.r10-room-display');
   const validRooms = new Set(Object.keys(roomCopy));
 
   const setRoom = (key, updateUrl = false) => {
@@ -120,12 +122,18 @@
     if (updateUrl) history.replaceState(null, '', `#${key}`);
   };
 
+  const showSelectedRoomOnSmallScreen = () => {
+    if (!narrowScreen.matches || !roomDisplay) return;
+    roomDisplay.scrollIntoView({ behavior: reducedMotion.matches ? 'auto' : 'smooth', block: 'start' });
+  };
+
   [...planLinks, ...indexLinks].forEach((link) => {
     link.addEventListener('click', (event) => {
       const key = link.dataset.planRoom || link.dataset.roomIndex;
       if (!validRooms.has(key)) return;
       event.preventDefault();
       setRoom(key, true);
+      showSelectedRoomOnSmallScreen();
     });
   });
 
