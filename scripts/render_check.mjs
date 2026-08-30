@@ -18,25 +18,31 @@ async function assertWithinViewport(page, selectors, name) {
   if (failures.length) throw new Error(`${name}: content escapes viewport: ${failures.join('; ')}`);
 }
 
+async function assertNoHorizontalOverflow(page, name) {
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+  if (overflow) throw new Error(`${name}: horizontal overflow`);
+}
+
 async function exercise(viewport, name, deviceScaleFactor = 1) {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ viewport, deviceScaleFactor, reducedMotion: 'no-preference' });
   const page = await context.newPage();
 
   await page.goto(`${base}/index.html`, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(500);
-  const homeOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
-  if (homeOverflow) throw new Error(`${name}: horizontal overflow on homepage`);
+  await page.waitForTimeout(520);
+  await assertNoHorizontalOverflow(page, `${name} homepage`);
   await assertWithinViewport(page, ['.r10-header', '.r10-home-copy', '.r10-home-copy h1', '.r10-lede', '.r10-enter', '.r10-house-stage'], `${name} homepage`);
 
   const firstFold = await page.evaluate(() => {
     const house = document.querySelector('.r10-house')?.getBoundingClientRect();
     const cta = document.querySelector('.r10-enter')?.getBoundingClientRect();
-    return { viewport: window.innerHeight, houseTop: house?.top ?? 9999, houseBottom: house?.bottom ?? 9999, houseWidth: house?.width ?? 0, ctaTop: cta?.top ?? 9999 };
+    const lit = document.querySelectorAll('[data-facade-room].is-home-lit').length;
+    return { viewport: window.innerHeight, houseTop: house?.top ?? 9999, houseBottom: house?.bottom ?? 9999, houseWidth: house?.width ?? 0, ctaTop: cta?.top ?? 9999, lit };
   });
   if (firstFold.houseTop > firstFold.viewport * 0.94) throw new Error(`${name}: House does not meaningfully enter the first viewport`);
-  if (name === 'mobile' && firstFold.houseWidth < viewport.width * 0.78) throw new Error(`${name}: House is visually too small on mobile`);
+  if (name === 'mobile' && firstFold.houseWidth < viewport.width * 0.88) throw new Error(`${name}: House is visually too small on mobile`);
   if (firstFold.ctaTop > firstFold.viewport * 0.90) throw new Error(`${name}: entry action falls out of the first viewport`);
+  if (firstFold.lit < 2) throw new Error(`${name}: first impression lacks the intended lived-in House signal`);
   await page.screenshot({ path: `${out}/home-${name}.png`, fullPage: false });
 
   const businessHotspot = page.locator('[data-room-hotspot="business"]');
@@ -53,28 +59,58 @@ async function exercise(viewport, name, deviceScaleFactor = 1) {
   await page.screenshot({ path: `${out}/home-interaction-${name}.png`, fullPage: false });
 
   await page.goto(`${base}/catalogue.html`, { waitUntil: 'networkidle' });
-  await page.waitForTimeout(300);
-  const catalogueOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
-  if (catalogueOverflow) throw new Error(`${name}: horizontal overflow on catalogue`);
+  await page.waitForTimeout(320);
+  await assertNoHorizontalOverflow(page, `${name} catalogue`);
   await assertWithinViewport(page, ['.r10-rooms-intro', '.r10-rooms-intro h1', '.r10-room-theatre', '.r10-plan-zone', '.r10-room-display'], `${name} catalogue`);
+
+  if (name === 'mobile') {
+    const planPosition = await page.locator('.r10-plan-shell').evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return { top: rect.top, viewport: window.innerHeight };
+    });
+    if (planPosition.top > planPosition.viewport * 1.28) throw new Error(`mobile catalogue: visitor waits too long before reaching the interactive plan`);
+  }
   await page.screenshot({ path: `${out}/catalogue-${name}.png`, fullPage: false });
 
   await page.locator('[data-plan-room="publishing"]').click();
+  await page.waitForTimeout(420);
   const publishingActive = await page.locator('[data-plan-art="publishing"]').evaluate((el) => el.classList.contains('is-current'));
   const publishingVisible = await page.locator('[data-room-panel="publishing"]').evaluate((el) => el.classList.contains('is-current') && getComputedStyle(el).display !== 'none');
   const oldPanelHidden = await page.locator('[data-room-panel="business"]').evaluate((el) => getComputedStyle(el).display === 'none');
   const theme = await page.locator('body').getAttribute('data-room-theme');
   if (!publishingActive || !publishingVisible || !oldPanelHidden || theme !== 'publishing') throw new Error(`${name}: room theatre did not switch coherently`);
+  if (name === 'mobile') {
+    const roomPosition = await page.locator('.r10-room-display').evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      return { top: rect.top, bottom: rect.bottom, viewport: window.innerHeight };
+    });
+    if (roomPosition.top > 80 || roomPosition.bottom < 220) throw new Error(`mobile catalogue: selected room was not brought into a useful viewing position`);
+  }
   await page.screenshot({ path: `${out}/catalogue-publishing-${name}.png`, fullPage: false });
 
   await page.locator('[data-room-index="other"]').click();
+  await page.waitForTimeout(360);
   const otherVisible = await page.locator('[data-room-panel="other"]').evaluate((el) => el.classList.contains('is-current') && getComputedStyle(el).display !== 'none');
   if (!otherVisible) throw new Error(`${name}: room index did not switch the theatre`);
 
   await page.locator('#front-desk').scrollIntoViewIfNeeded();
-  await page.waitForTimeout(100);
+  await page.waitForTimeout(140);
   await assertWithinViewport(page, ['.r10-frontdesk-inner', '.r10-desk-copy', '.r10-form'], `${name} front desk`);
   await page.screenshot({ path: `${out}/front-desk-${name}.png`, fullPage: false });
+
+  for (const legal of ['privacy', 'terms']) {
+    await page.goto(`${base}/${legal}.html`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(180);
+    await assertNoHorizontalOverflow(page, `${name} ${legal}`);
+    await assertWithinViewport(page, ['.r10-header', '.r10-legal-main', '.r10-legal-main h1', '.r10-footer-inner'], `${name} ${legal}`);
+    await page.screenshot({ path: `${out}/${legal}-${name}.png`, fullPage: false });
+  }
+
+  await page.goto(`${base}/404.html`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(180);
+  await assertNoHorizontalOverflow(page, `${name} 404`);
+  await assertWithinViewport(page, ['.r10-header', '.r10-error-copy', '.r10-error h1', '.r10-error-actions'], `${name} 404`);
+  await page.screenshot({ path: `${out}/404-${name}.png`, fullPage: false });
 
   await browser.close();
 }
@@ -89,6 +125,11 @@ await reducedPage.goto(`${base}/index.html`, { waitUntil: 'networkidle' });
 await reducedPage.locator('[data-enter-house]').first().focus({ preventScroll: true });
 const transition = await reducedPage.locator('.r10-door-leaf').evaluate((el) => getComputedStyle(el).transitionDuration);
 if (transition !== '0s') throw new Error(`reduced-motion: expected no door transition, got ${transition}`);
+await reducedPage.goto(`${base}/catalogue.html`, { waitUntil: 'networkidle' });
+await reducedPage.locator('[data-room-index="publishing"]').click();
+await reducedPage.waitForTimeout(40);
+const scrollBehaviour = await reducedPage.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior);
+if (scrollBehaviour === 'smooth') throw new Error('reduced-motion: smooth scrolling remains active');
 await reducedBrowser.close();
 
-console.log('PASS: Run 10 browser interaction, first-fold, responsive, viewport-bounds and reduced-motion checks');
+console.log('PASS: Run 10 whole-House browser interaction, first-fold, responsive, viewport-bounds and reduced-motion checks');
