@@ -37,7 +37,34 @@
 
   <section class="contact shell" id="contact">
     <p class="kicker">Contact</p>
-    <p class="contact-line">[HOC PUBLIC EMAIL]</p>
+    <div class="contact-grid">
+      <div>
+        <h2>Start a conversation.</h2>
+        <p>Tell us what you are trying to build, fix, simplify or explore. We will only ask for the information needed to understand and respond to your enquiry.</p>
+      </div>
+      <form class="contact-form" action="https://formspree.io/f/__FORMSPREE_FORM_ID__" method="post">
+        <input type="hidden" name="_subject" value="House of Carol website enquiry">
+        <input type="hidden" name="_next" value="thank-you.html">
+        <div class="form-field">
+          <label for="name">Name</label>
+          <input id="name" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div class="form-field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="form-field">
+          <label for="message">How can House of Carol help?</label>
+          <textarea id="message" name="message" rows="7" required></textarea>
+        </div>
+        <div class="form-honeypot" aria-hidden="true">
+          <label for="company-website">Leave this field empty</label>
+          <input id="company-website" name="_gotcha" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <p class="form-note">We use your details to respond to this enquiry. See our <a href="privacy.html">privacy information</a>.</p>
+        <button class="button" type="submit">Send enquiry</button>
+      </form>
+    </div>
   </section>
 </main>
 <footer>
