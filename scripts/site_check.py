@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 ROOT = Path(__file__).resolve().parents[1]
 HTML_FILES = [ROOT / name for name in ("index.html", "catalogue.html", "privacy.html", "terms.html", "404.html")]
 BANNED_PUBLIC_PHRASES = ("award-winning", "world-class", "ai-powered", "fortune 500")
+TEMP_REVIEW_FILES = (ROOT / "README-RUN10.tmp", ROOT / "RUN10-REVIEW.md")
 
 
 class PageParser(HTMLParser):
@@ -87,6 +88,10 @@ def local_target(base: Path, href: str) -> tuple[Path, str | None] | None:
     return (base.parent / file_part).resolve(), parsed.fragment or None
 
 
+for temp_file in TEMP_REVIEW_FILES:
+    if temp_file.exists():
+        fail(f"temporary review artefact must not ship: {temp_file.name}")
+
 pages: dict[Path, PageParser] = {}
 for html_file in HTML_FILES:
     if not html_file.exists():
@@ -126,14 +131,16 @@ for base, parser in pages.items():
             if fragment not in target_parser.ids:
                 fail(f"{base.name}: broken anchor {href}")
 
-index = pages[(ROOT / "index.html").resolve()]
-catalogue = pages[(ROOT / "catalogue.html").resolve()]
-for name, parser in (("index.html", index), ("catalogue.html", catalogue)):
+for name in ("index.html", "catalogue.html", "privacy.html", "terms.html", "404.html"):
+    parser = pages[(ROOT / name).resolve()]
     if "assets/hoc-run10.css" not in parser.styles:
-        fail(f"{name}: Run 10 stylesheet not active")
+        fail(f"{name}: Run 10 experience stylesheet not active")
+    if "assets/hoc-run10-polish.css" not in parser.styles:
+        fail(f"{name}: current polish layer not active")
     if "assets/hoc-run09.css" in parser.styles:
         fail(f"{name}: obsolete Run 09 stylesheet still active")
 
+catalogue = pages[(ROOT / "catalogue.html").resolve()]
 if not catalogue.forms:
     fail("catalogue.html: contact form missing")
 form = catalogue.forms[0]
@@ -149,4 +156,4 @@ if "Disallow: /" not in robots:
 if (ROOT / "assets" / "hoc-run09.css").exists():
     fail("obsolete hoc-run09.css still present; maintain only the current experience layer")
 
-print("PASS: static site integrity and active-design checks")
+print("PASS: whole public House static integrity and active-design checks")
