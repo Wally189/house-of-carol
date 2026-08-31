@@ -4,7 +4,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
-BUILD = "deep-human-house-20260831a"
+BUILD = "customer-ready-20260831b"
 HTML_NAMES = ("index.html", "catalogue.html", "privacy.html", "terms.html", "404.html")
 HTML_FILES = [ROOT / name for name in HTML_NAMES]
 EXPECTED_STYLE = f"assets/hoc-house-2.css?v={BUILD}"
@@ -13,7 +13,8 @@ BANNED_PUBLIC_PHRASES = (
     "52-hive", "52 hive", "engine architecture", "maturity score", "acquisition gate",
     "world-class", "game-changing", "industry-leading", "cutting-edge", "transformational",
     "cross-functional synergies", "future-ready architecture", "the threshold", "grand house",
-    "ai-powered", "waylight atlantic", "alanwpgallagher.info", "£5"
+    "ai-powered", "waylight atlantic", "alanwpgallagher.info", "£5",
+    "data clean-up and structure", "research for a decision"
 )
 BANNED_AI_SLUDGE = ("delve into", "vibrant tapestry", "seamless journey", "unlock the power", "ever-evolving landscape")
 
@@ -54,7 +55,7 @@ def parse(path):
     except AssertionError as exc: fail(f"{path.name}: {exc}")
     lowered=text.lower()
     for phrase in (*BANNED_PUBLIC_PHRASES,*BANNED_AI_SLUDGE):
-        if phrase.lower() in lowered: fail(f"{path.name}: banned inward/hype/sludge phrase present: {phrase}")
+        if phrase.lower() in lowered: fail(f"{path.name}: banned inward/hype/sludge/stale-service phrase present: {phrase}")
     return parser
 
 required=[*HTML_FILES, STYLE, ROOT/"assets"/"hoc-mark.svg", ROOT/"robots.txt"]
@@ -100,8 +101,11 @@ idx=pages[(ROOT/"index.html").resolve()]
 for rid in ("work","method","contact"):
     if rid not in idx.ids: fail(f"index missing #{rid}")
 index_text=(ROOT/"index.html").read_text(encoding="utf-8").lower()
-for required_text in ("useful work, done properly", "website release checks", "data clean-up and structure", "workflow fixes", "research for a decision", "07933 657446"):
-    if required_text not in index_text: fail(f"index missing buyer-useful content: {required_text}")
+for required_text in ("make the awkward part work", "workflow implementation", "website release assurance", "two useful jobs", "controlled preview"):
+    if required_text not in index_text: fail(f"index missing current customer-ready content: {required_text}")
+cat_text=(ROOT/"catalogue.html").read_text(encoding="utf-8").lower()
+for required_text in ("workflow implementation", "website release assurance", "up to 10 agreed public pages/templates"):
+    if required_text not in cat_text: fail(f"catalogue missing current offer content: {required_text}")
 if 'class="card' in index_text or ' class="card' in index_text: fail("generic card component introduced")
 css=STYLE.read_text(encoding="utf-8")
 if "http://" in css or "https://" in css or "@import" in css: fail("CSS external/nested dependency")
@@ -109,4 +113,4 @@ for token in ("--paper:","--wine:","prefers-reduced-motion","@media(max-width:82
     if token not in css: fail(f"CSS missing {token}")
 robots=(ROOT/"robots.txt").read_text(encoding="utf-8")
 if "Disallow: /" not in robots: fail("robots containment")
-print("PASS: Human House static integrity, containment, buyer-first content, no-form control and local design checks")
+print("PASS: customer-ready static integrity, locked offer content, containment, no-form control and local design checks")
