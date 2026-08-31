@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - ce2-grand-house-ux-seo
   pull_request:
 
 permissions:
@@ -21,12 +20,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Static public integrity, SEO architecture and release checks
+      - name: Static integrity, containment and human-voice release checks
         run: python scripts/site_check.py
-      - name: Interaction JavaScript syntax
-        run: |
-          node --check assets/hoc-experience.js
-          node --check assets/hoc-diagnostics.js
       - name: Install Playwright
         run: |
           npm install --no-save playwright@1.55.0
@@ -36,13 +31,13 @@ jobs:
           python -m http.server 8000 --bind 127.0.0.1 > /tmp/hoc-http.log 2>&1 &
           echo $! > /tmp/hoc-http.pid
           sleep 2
-      - name: Browser, interaction, accessibility and responsive regression
+      - name: Browser, accessibility, responsive and enlarged-text regression
         run: node scripts/render_check.mjs
       - name: Upload QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hoc-grand-house-qa-${{ github.sha }}
+          name: hoc-human-house-qa-${{ github.sha }}
           path: qa-artifacts/
           if-no-files-found: warn
           retention-days: 7
