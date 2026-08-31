@@ -7,7 +7,13 @@ await fs.mkdir('qa-artifacts',{recursive:true});
 
 async function assertNoHorizontalOverflow(page,label){
   const g=await page.evaluate(()=>({client:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,bodyClient:document.body.clientWidth,bodyScroll:document.body.scrollWidth}));
-  if(g.scroll>g.client+1||g.bodyScroll>g.bodyClient+1) throw new Error(`${label}: horizontal overflow ${JSON.stringify(g)}`);
+  if(g.scroll>g.client+1||g.bodyScroll>g.bodyClient+1){
+    const offenders=await page.evaluate(()=>{
+      const w=document.documentElement.clientWidth;
+      return [...document.querySelectorAll('body *')].map(el=>{const r=el.getBoundingClientRect();return{tag:el.tagName,cls:el.className||'',id:el.id||'',left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width),text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,80)}}).filter(x=>x.right>w+1||x.left<-1).slice(0,12);
+    });
+    throw new Error(`${label}: horizontal overflow ${JSON.stringify(g)} offenders=${JSON.stringify(offenders)}`);
+  }
 }
 async function assertBuild(page,label){const b=await page.locator('meta[name="hoc-build"]').getAttribute('content');if(b!==BUILD)throw new Error(`${label}: wrong build ${b}`);}
 async function assertFocus(page,label){
