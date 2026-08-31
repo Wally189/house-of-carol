@@ -9,6 +9,9 @@ HTML_NAMES = ("index.html", "catalogue.html", "privacy.html", "terms.html", "404
 HTML_FILES = [ROOT / name for name in HTML_NAMES]
 EXPECTED_STYLE = f"assets/hoc-grand-house.css?v={BUILD}"
 EXPECTED_SCRIPTS = [f"assets/hoc-experience.js?v={BUILD}", f"assets/hoc-diagnostics.js?v={BUILD}"]
+STYLE_ENTRY = ROOT / "assets" / "hoc-grand-house.css"
+STYLE_BASE = ROOT / "assets" / "hoc-grand-house-base.css"
+EXPECTED_BASE_IMPORT = f'@import url("hoc-grand-house-base.css?v={BUILD}");'
 BANNED_PUBLIC_PHRASES = ("£5", "external cleared revenue", "52-hive", "52 hive", "engine architecture", "maturity score", "acquisition gate", "award-winning", "world-class", "fortune 500", "ai-powered", "waylight atlantic", "alanwpgallagher.info", "Bristol · United Kingdom", "building, owning and operating")
 OBSOLETE_NAME_PARTS = ("qa-run", "run10", "run13", "trigger")
 
@@ -57,7 +60,7 @@ for path in ROOT.rglob("*"):
         rel=path.relative_to(ROOT).as_posix().lower()
         if any(part in rel for part in OBSOLETE_NAME_PARTS): fail(f"obsolete/review-specific file shipped: {rel}")
 
-required=[*HTML_FILES, ROOT/"assets"/"hoc-grand-house.css", ROOT/"assets"/"hoc-experience.js", ROOT/"assets"/"hoc-diagnostics.js", ROOT/"assets"/"hoc-mark.svg", ROOT/"robots.txt"]
+required=[*HTML_FILES, STYLE_ENTRY, STYLE_BASE, ROOT/"assets"/"hoc-experience.js", ROOT/"assets"/"hoc-diagnostics.js", ROOT/"assets"/"hoc-mark.svg", ROOT/"robots.txt"]
 for item in required:
     if not item.exists(): fail(f"missing {item.relative_to(ROOT)}")
 
@@ -108,8 +111,11 @@ text=(ROOT/"index.html").read_text(encoding="utf-8")
 for token in ("house-field","motion-control","chapter-rail","field-explorer","role=\"tablist\""):
     if token not in text: fail(f"index missing interactive structure {token}")
 if 'class="card' in text or ' class="card' in text: fail("generic card component introduced")
-css=(ROOT/"assets"/"hoc-grand-house.css").read_text(encoding="utf-8")
-if "http://" in css or "https://" in css or "@import" in css: fail("CSS external dependency")
+entry_css=STYLE_ENTRY.read_text(encoding="utf-8")
+base_css=STYLE_BASE.read_text(encoding="utf-8")
+if entry_css.count("@import")!=1 or not entry_css.lstrip().startswith(EXPECTED_BASE_IMPORT): fail("CSS entry must import exactly the versioned local Grand House base")
+if "http://" in entry_css or "https://" in entry_css or "http://" in base_css or "https://" in base_css or "@import" in base_css: fail("CSS external or nested dependency")
+css=base_css+"\n"+entry_css
 for token in ("--gold:","--burgundy:",".house-field",".field-explorer","prefers-reduced-motion","@media (max-width:560px)"):
     if token not in css: fail(f"CSS missing {token}")
 js=(ROOT/"assets"/"hoc-experience.js").read_text(encoding="utf-8")
@@ -118,4 +124,4 @@ for token in ("prefers-reduced-motion","IntersectionObserver","requestAnimationF
 if "fetch(" in js or "localStorage" in js or "sessionStorage" in js or "document.cookie" in js: fail("experience introduced network/storage")
 robots=(ROOT/"robots.txt").read_text(encoding="utf-8")
 if "Disallow: /" not in robots: fail("robots containment")
-print("PASS: Grand House static integrity, containment, SEO-ready semantics and interaction architecture checks")
+print("PASS: Grand House static integrity, contained local CSS layering, SEO-ready semantics and interaction architecture checks")
