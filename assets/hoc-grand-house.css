@@ -10,7 +10,8 @@
   .wordmark{flex:1 1 auto;min-width:0;max-width:calc(100% - 3rem);white-space:normal;overflow-wrap:anywhere}
   .site-nav{width:100%;align-items:flex-start}
   .site-nav a,.hero-meta span,.chapter-mark strong,.footer-grid span,.footer-grid a,.kicker,.text-link,.motion-control,.standard-lines strong,.standard-lines span,.field-number,.ledger-number,.ledger-note,.field label,.form-actions p{white-space:normal;overflow-wrap:anywhere;word-break:normal}
-  /* Decorative typography must not expand with the user's text zoom and create
-     document overflow. Content typography still follows the enlarged root size. */
-  .hero-monogram{right:0;font-size:70vw}
+  /* Decorative typography must not create enlarged-text document overflow.
+     The background monogram is aria-hidden, so its paint is bounded to the
+     viewport while all actual content continues to honour the user's zoom. */
+  .hero-monogram{left:0;right:0;width:auto;max-width:100%;overflow:hidden;font-size:70vw}
 }
