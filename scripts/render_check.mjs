@@ -1,65 +1,40 @@
 import { chromium } from 'playwright';
 import fs from 'node:fs/promises';
 
-const BUILD = 'run14-silhouette-20260831a';
+const BUILD = 'ce2-run15-20260831a';
 const BASE = 'http://127.0.0.1:8000';
 const browser = await chromium.launch({ headless: true });
 await fs.mkdir('qa-artifacts', { recursive: true });
 
 async function assertNoHorizontalOverflow(page, label) {
   const geometry = await page.evaluate(() => {
-    const root = document.documentElement;
-    const body = document.body;
-    const clientWidth = root.clientWidth;
-    const describe = (el) => {
-      const rect = el.getBoundingClientRect();
-      const style = getComputedStyle(el);
-      return {
-        tag: el.tagName.toLowerCase(),
-        id: el.id || '',
-        cls: typeof el.className === 'string' ? el.className : '',
-        text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 90),
-        left: Math.round(rect.left * 10) / 10,
-        right: Math.round(rect.right * 10) / 10,
-        width: Math.round(rect.width * 10) / 10,
-        scrollWidth: el.scrollWidth,
-        clientWidth: el.clientWidth,
-        offsetWidth: el.offsetWidth,
-        overflowX: style.overflowX,
-        position: style.position,
-        transform: style.transform,
-        minWidth: style.minWidth,
-        maxWidth: style.maxWidth,
-        widthStyle: style.width
-      };
-    };
-    const all = [...document.querySelectorAll('body *')].map(describe);
-    const offenders = all
-      .filter((item) => item.width > 0 && (item.right > clientWidth + 1 || item.left < -1 || item.scrollWidth > item.clientWidth + 1))
-      .sort((a, b) => Math.max(b.right - clientWidth, b.scrollWidth - b.clientWidth) - Math.max(a.right - clientWidth, a.scrollWidth - a.clientWidth))
-      .slice(0, 20);
-    const positioned = all
-      .filter((item) => item.position === 'fixed' || item.position === 'absolute' || item.transform !== 'none')
-      .slice(0, 20);
+    const client = document.documentElement.clientWidth;
+    const offenders = [...document.querySelectorAll('body *')]
+      .map(el => {
+        const rect = el.getBoundingClientRect();
+        return {
+          tag: el.tagName,
+          id: el.id || '',
+          cls: typeof el.className === 'string' ? el.className : '',
+          left: Math.round(rect.left),
+          right: Math.round(rect.right),
+          width: Math.round(rect.width),
+          text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80)
+        };
+      })
+      .filter(x => x.right > client + 1 || x.left < -1)
+      .sort((a, b) => Math.max(b.right - client, -b.left) - Math.max(a.right - client, -a.left))
+      .slice(0, 12);
     return {
-      windowInnerWidth: window.innerWidth,
-      visualViewportWidth: window.visualViewport?.width ?? null,
-      devicePixelRatio: window.devicePixelRatio,
-      rootClientWidth: root.clientWidth,
-      rootScrollWidth: root.scrollWidth,
-      rootOffsetWidth: root.offsetWidth,
-      rootRect: describe(root),
-      bodyClientWidth: body.clientWidth,
-      bodyScrollWidth: body.scrollWidth,
-      bodyOffsetWidth: body.offsetWidth,
-      bodyRect: describe(body),
-      scrollingElement: document.scrollingElement?.tagName || null,
-      offenders,
-      positioned
+      client,
+      scroll: document.documentElement.scrollWidth,
+      bodyClient: document.body.clientWidth,
+      bodyScroll: document.body.scrollWidth,
+      offenders
     };
   });
-  if (geometry.rootScrollWidth > geometry.rootClientWidth + 1) {
-    throw new Error(`${label}: horizontal overflow ${geometry.rootScrollWidth} > ${geometry.rootClientWidth}; geometry=${JSON.stringify(geometry)}`);
+  if (geometry.scroll > geometry.client + 1 || geometry.bodyScroll > geometry.bodyClient + 1) {
+    throw new Error(`${label}: horizontal overflow ${JSON.stringify(geometry)}`);
   }
 }
 
@@ -75,6 +50,7 @@ async function assertFocus(page, label) {
     const style = getComputedStyle(el);
     const rect = el.getBoundingClientRect();
     return {
+      tag: el?.tagName || '',
       text: el?.textContent?.trim() || '',
       outlineStyle: style.outlineStyle,
       outlineWidth: parseFloat(style.outlineWidth || '0'),
@@ -84,6 +60,34 @@ async function assertFocus(page, label) {
   if (!focus.visible || focus.outlineStyle === 'none' || focus.outlineWidth < 2) {
     throw new Error(`${label}: first keyboard focus is not strongly visible: ${JSON.stringify(focus)}`);
   }
+}
+
+async function assertFlagship(page, name) {
+  const result = await page.evaluate(() => {
+    const hero = document.querySelector('.hero-stage');
+    const h1 = document.querySelector('.hero-word');
+    const ticker = document.querySelector('.ticker');
+    const principles = document.querySelectorAll('.principle');
+    if (!hero || !h1 || !ticker) return { missing: true };
+    const heroStyle = getComputedStyle(hero);
+    const h1Style = getComputedStyle(h1);
+    const heroRect = hero.getBoundingClientRect();
+    return {
+      missing: false,
+      heroHeight: heroRect.height,
+      heroBackground: heroStyle.backgroundImage,
+      h1Size: parseFloat(h1Style.fontSize),
+      h1LineHeight: parseFloat(h1Style.lineHeight),
+      tickerHeight: ticker.getBoundingClientRect().height,
+      principles: principles.length,
+      oldSilhouette: Boolean(document.querySelector('.hero-silhouette'))
+    };
+  });
+  if (result.missing) throw new Error(`${name}: flagship hero/ticker missing`);
+  if (result.heroHeight < 520) throw new Error(`${name}: flagship hero too shallow ${JSON.stringify(result)}`);
+  if (!result.heroBackground || result.heroBackground === 'none') throw new Error(`${name}: flagship hero treatment missing`);
+  if (result.tickerHeight < 20 || result.principles !== 4) throw new Error(`${name}: House narrative structure incomplete ${JSON.stringify(result)}`);
+  if (result.oldSilhouette) throw new Error(`${name}: rejected silhouette layer returned`);
 }
 
 async function exercise(viewport, name, options = {}) {
@@ -99,14 +103,7 @@ async function exercise(viewport, name, options = {}) {
   await assertBuild(page, `${name} home`);
   await assertNoHorizontalOverflow(page, `${name} home`);
   await page.locator('h1').waitFor({ state: 'visible' });
-  const silhouette = await page.locator('.hero-silhouette').evaluate(el => {
-    const rect = el.getBoundingClientRect();
-    const style = getComputedStyle(el);
-    return { width: rect.width, height: rect.height, opacity: parseFloat(style.opacity) };
-  });
-  if (silhouette.width < 120 || silhouette.height < 100 || silhouette.opacity < 0.025 || silhouette.opacity > 0.09) {
-    throw new Error(`${name}: silhouette is missing, dominant or effectively invisible: ${JSON.stringify(silhouette)}`);
-  }
+  await assertFlagship(page, name);
   if (await page.locator('#hoc-diagnostic-panel').count()) throw new Error(`${name}: diagnostics visible without opt-in query`);
   await page.screenshot({ path: `qa-artifacts/${name}-home.png`, fullPage: true });
   await assertFocus(page, `${name} home`);
@@ -123,10 +120,16 @@ async function exercise(viewport, name, options = {}) {
     await assertNoHorizontalOverflow(page, `${name} ${title}`);
   }
 
+  await page.goto(`${BASE}/catalogue.html`, { waitUntil: 'networkidle' });
+  const rows = await page.locator('.ledger-row').count();
+  if (rows !== 4) throw new Error(`${name}: portfolio ledger expected 4 fields, got ${rows}`);
+  await page.screenshot({ path: `qa-artifacts/${name}-portfolio.png`, fullPage: true });
+
   await page.goto(`${BASE}/index.html`, { waitUntil: 'networkidle' });
   await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
   await assertNoHorizontalOverflow(page, `${name} 200% text`);
   if (!await page.locator('#contact').isVisible()) throw new Error(`${name}: contact section lost at 200% text size`);
+  if (!await page.locator('#house').isVisible()) throw new Error(`${name}: House story lost at 200% text size`);
 
   await page.goto(`${BASE}/index.html?hocdiag=1`, { waitUntil: 'networkidle' });
   const diagnostic = page.locator('#hoc-diagnostic-panel');
@@ -149,4 +152,4 @@ await exercise({ width: 800, height: 1280 }, 'wide-mobile', { hasTouch: true, is
 await exercise({ width: 1200, height: 900 }, 'wide-touch', { hasTouch: true, isMobile: true, deviceScaleFactor: 1 });
 
 await browser.close();
-console.log('PASS: Run 14 desktop/mobile/320-reflow/wide-touch render, focus, text enlargement, diagnostics and no-tracking checks');
+console.log('PASS: Run 15 flagship render, responsive, focus, text enlargement, diagnostics and no-tracking checks');

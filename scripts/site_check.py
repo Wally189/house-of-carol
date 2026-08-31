@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
-BUILD = "run14-silhouette-20260831a"
+BUILD = "ce2-run15-20260831a"
 HTML_NAMES = ("index.html", "catalogue.html", "privacy.html", "terms.html", "404.html")
 HTML_FILES = [ROOT / name for name in HTML_NAMES]
 EXPECTED_STYLE = f"assets/hoc-public.css?v={BUILD}"
@@ -22,8 +22,12 @@ BANNED_PUBLIC_PHRASES = (
     "world-class",
     "fortune 500",
     "ai-powered",
-    "vacant by design",
-    "four rooms",
+    "AI Release QA",
+    "Document-to-Decision",
+    "Hard-to-Find Parts",
+    "Niche Tender Intelligence",
+    "Product Data Quality & Catalogue Enrichment",
+    "Website Quality Watch",
 )
 OBSOLETE_NAME_PARTS = ("qa-run", "run10", "run13", "trigger")
 
@@ -113,7 +117,6 @@ required_files = [
     *HTML_FILES,
     ROOT / "assets" / "hoc-public.css",
     ROOT / "assets" / "hoc-mark.svg",
-    ROOT / "assets" / "hoc-silhouette.svg",
     ROOT / "assets" / "hoc-diagnostics.js",
     ROOT / "robots.txt",
 ]
@@ -175,7 +178,8 @@ for base, parser in pages.items():
             if fragment not in target_parser.ids:
                 fail(f"{base.name}: broken anchor {href}")
 
-index = pages[(ROOT / "index.html").resolve()]
+index_path = (ROOT / "index.html").resolve()
+index = pages[index_path]
 if len(index.forms) != 1:
     fail(f"index.html: expected one contact form, got {len(index.forms)}")
 form = index.forms[0]
@@ -187,14 +191,27 @@ for name in ("catalogue.html", "privacy.html", "terms.html", "404.html"):
     if pages[(ROOT / name).resolve()].forms:
         fail(f"{name}: unexpected form present")
 
+for required_id in ("house", "portfolio", "contact"):
+    if required_id not in index.ids:
+        fail(f"index.html: missing core House destination #{required_id}")
+
 index_text = (ROOT / "index.html").read_text(encoding="utf-8")
-if "assets/hoc-silhouette.svg" not in index_text:
-    fail("index.html: agreed silhouette asset is not referenced")
-if "aria-hidden=\"true\"" not in index_text:
-    fail("index.html: decorative silhouette is not explicitly hidden from assistive technology")
+if "hero-stage" not in index_text or "principle-list" not in index_text or "portfolio-callout" not in index_text:
+    fail("index.html: flagship House narrative structure missing")
+if "hoc-silhouette.svg" in index_text or "hero-silhouette" in index_text:
+    fail("index.html: rejected Run 14 silhouette direction has returned")
+if "class=\"card" in index_text or " class=\"card" in index_text:
+    fail("index.html: generic card component introduced into flagship narrative")
+
+css = (ROOT / "assets" / "hoc-public.css").read_text(encoding="utf-8")
+if "http://" in css or "https://" in css or "@import" in css:
+    fail("hoc-public.css: external/imported design dependency introduced")
+for token in ("--gold:", "--burgundy:", ".hero-stage", ".ledger-row", "prefers-reduced-motion"):
+    if token not in css:
+        fail(f"hoc-public.css: expected flagship/accessibility token missing: {token}")
 
 robots = (ROOT / "robots.txt").read_text(encoding="utf-8")
 if "Disallow: /" not in robots:
     fail("robots.txt containment changed")
 
-print("PASS: Run 14 public House static integrity, containment and agreed-design checks")
+print("PASS: Run 15 House static integrity, containment, public-truth and flagship-structure checks")
