@@ -1,0 +1,19 @@
+@import url("hoc-grand-house-base.css?v=ce2-grand-house-20260831a");
+
+/* Sheila / UX-01 + DEI-01 reflow hardening.
+   This layer exists to absorb cross-platform font-metric differences without
+   hiding overflow or weakening the 200% text acceptance criterion. */
+.field-panel h3{overflow-wrap:anywhere;hyphens:auto}
+.field-tabs button{overflow-wrap:anywhere}
+@media (max-width:560px){
+  .masthead,.brand-lockup,.site-nav,.site-nav a,.hero-meta,.hero-meta span,.hero-copy,.hero-actions,.hero-actions a,.chapter-mark,.chapter-mark strong,.field-tabs,.field-tabs button,.field-panels,.field-panel,.field-panel h3,.footer-grid,.footer-grid nav,.footer-grid a,.kicker,.text-link,.motion-control,.standard-lines strong,.standard-lines span,.field-number,.ledger-number,.ledger-note,.field label,.form-actions p{min-width:0;max-width:100%}
+  .brand-lockup{width:100%}
+  .brand-glyph{flex:0 0 2.1rem}
+  .wordmark{flex:1 1 auto;min-width:0;max-width:calc(100% - 3rem);white-space:normal;overflow-wrap:anywhere}
+  .site-nav{width:100%;align-items:flex-start}
+  .site-nav a,.hero-meta span,.chapter-mark strong,.footer-grid span,.footer-grid a,.kicker,.text-link,.motion-control,.standard-lines strong,.standard-lines span,.field-number,.ledger-number,.ledger-note,.field label,.form-actions p{white-space:normal;overflow-wrap:anywhere;word-break:normal}
+  /* Decorative typography must not create enlarged-text document overflow.
+     The background monogram is aria-hidden, so its paint is bounded to the
+     viewport while all actual content continues to honour the user's zoom. */
+  .hero-monogram{left:0;right:0;width:auto;max-width:100%;overflow:hidden;font-size:70vw}
+}
