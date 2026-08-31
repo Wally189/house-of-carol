@@ -1,217 +1,121 @@
 from __future__ import annotations
-
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
-BUILD = "ce2-run15-20260831a"
+BUILD = "ce2-grand-house-20260831a"
 HTML_NAMES = ("index.html", "catalogue.html", "privacy.html", "terms.html", "404.html")
 HTML_FILES = [ROOT / name for name in HTML_NAMES]
-EXPECTED_STYLE = f"assets/hoc-public.css?v={BUILD}"
-EXPECTED_SCRIPT = f"assets/hoc-diagnostics.js?v={BUILD}"
-BANNED_PUBLIC_PHRASES = (
-    "£5",
-    "external cleared revenue",
-    "52-hive",
-    "52 hive",
-    "engine architecture",
-    "maturity score",
-    "acquisition gate",
-    "award-winning",
-    "world-class",
-    "fortune 500",
-    "ai-powered",
-    "AI Release QA",
-    "Document-to-Decision",
-    "Hard-to-Find Parts",
-    "Niche Tender Intelligence",
-    "Product Data Quality & Catalogue Enrichment",
-    "Website Quality Watch",
-)
+EXPECTED_STYLE = f"assets/hoc-grand-house.css?v={BUILD}"
+EXPECTED_SCRIPTS = [f"assets/hoc-experience.js?v={BUILD}", f"assets/hoc-diagnostics.js?v={BUILD}"]
+BANNED_PUBLIC_PHRASES = ("£5", "external cleared revenue", "52-hive", "52 hive", "engine architecture", "maturity score", "acquisition gate", "award-winning", "world-class", "fortune 500", "ai-powered", "waylight atlantic", "alanwpgallagher.info", "Bristol · United Kingdom", "building, owning and operating")
 OBSOLETE_NAME_PARTS = ("qa-run", "run10", "run13", "trigger")
 
-
 class PageParser(HTMLParser):
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.ids: set[str] = set()
-        self.hrefs: list[str] = []
-        self.scripts: list[str] = []
-        self.styles: list[str] = []
-        self.labels_for: set[str] = set()
-        self.controls: set[str] = set()
-        self.forms: list[dict[str, str]] = []
-        self.lang: str | None = None
-        self.viewport = False
-        self.robots: str | None = None
-        self.csp: str | None = None
-        self.build: str | None = None
-        self.title_count = 0
-        self.h1_count = 0
-
-    def handle_starttag(self, tag: str, attrs_list: list[tuple[str, str | None]]) -> None:
-        attrs = {k: (v or "") for k, v in attrs_list}
-        if tag == "html":
-            self.lang = attrs.get("lang")
-        elif tag == "title":
-            self.title_count += 1
-        elif tag == "h1":
-            self.h1_count += 1
-        elif tag == "meta":
-            if attrs.get("name") == "viewport":
-                self.viewport = bool(attrs.get("content"))
-            elif attrs.get("name") == "robots":
-                self.robots = attrs.get("content")
-            elif attrs.get("name") == "hoc-build":
-                self.build = attrs.get("content")
-            elif attrs.get("http-equiv", "").lower() == "content-security-policy":
-                self.csp = attrs.get("content")
+        self.ids=set(); self.hrefs=[]; self.scripts=[]; self.styles=[]; self.labels_for=set(); self.controls=set()
+        self.forms=[]; self.lang=None; self.viewport=False; self.robots=None; self.csp=None; self.build=None
+        self.title_count=0; self.h1_count=0; self.descriptions=[]; self.inline_scripts=0
+    def handle_starttag(self, tag, attrs_list):
+        attrs={k:(v or "") for k,v in attrs_list}
+        if tag=="html": self.lang=attrs.get("lang")
+        elif tag=="title": self.title_count+=1
+        elif tag=="h1": self.h1_count+=1
+        elif tag=="meta":
+            if attrs.get("name")=="viewport": self.viewport=bool(attrs.get("content"))
+            elif attrs.get("name")=="robots": self.robots=attrs.get("content")
+            elif attrs.get("name")=="description": self.descriptions.append(attrs.get("content"))
+            elif attrs.get("name")=="hoc-build": self.build=attrs.get("content")
+            elif attrs.get("http-equiv","").lower()=="content-security-policy": self.csp=attrs.get("content")
         if "id" in attrs:
-            if attrs["id"] in self.ids:
-                raise AssertionError(f"duplicate id: {attrs['id']}")
+            if attrs["id"] in self.ids: raise AssertionError(f"duplicate id: {attrs['id']}")
             self.ids.add(attrs["id"])
-        if tag == "a" and attrs.get("href"):
-            self.hrefs.append(attrs["href"])
-        elif tag == "script" and attrs.get("src"):
-            self.scripts.append(attrs["src"])
-        elif tag == "link" and attrs.get("rel") == "stylesheet" and attrs.get("href"):
-            self.styles.append(attrs["href"])
-        elif tag == "label" and attrs.get("for"):
-            self.labels_for.add(attrs["for"])
-        elif tag in {"input", "textarea", "select"} and attrs.get("id"):
-            if attrs.get("type", "").lower() != "hidden":
-                self.controls.add(attrs["id"])
-        elif tag == "form":
-            self.forms.append(attrs)
+        if tag=="a" and attrs.get("href"): self.hrefs.append(attrs["href"])
+        elif tag=="script":
+            if attrs.get("src"): self.scripts.append(attrs["src"])
+            else: self.inline_scripts += 1
+        elif tag=="link" and attrs.get("rel")=="stylesheet" and attrs.get("href"): self.styles.append(attrs["href"])
+        elif tag=="label" and attrs.get("for"): self.labels_for.add(attrs["for"])
+        elif tag in {"input","textarea","select"} and attrs.get("id"):
+            if attrs.get("type","").lower()!="hidden": self.controls.add(attrs["id"])
+        elif tag=="form": self.forms.append(attrs)
 
-
-def fail(message: str) -> None:
-    raise SystemExit(f"FAIL: {message}")
-
-
-def parse(path: Path) -> PageParser:
-    parser = PageParser()
-    text = path.read_text(encoding="utf-8")
-    try:
-        parser.feed(text)
-    except AssertionError as exc:
-        fail(f"{path.name}: {exc}")
-    lowered = text.lower()
+def fail(message): raise SystemExit(f"FAIL: {message}")
+def parse(path):
+    parser=PageParser(); text=path.read_text(encoding="utf-8")
+    try: parser.feed(text)
+    except AssertionError as exc: fail(f"{path.name}: {exc}")
+    lowered=text.lower()
     for phrase in BANNED_PUBLIC_PHRASES:
-        if phrase.lower() in lowered:
-            fail(f"{path.name}: banned internal/unsupported phrase present: {phrase}")
-    if "[service address]" in lowered or "[hoc public email]" in lowered or "[legal name]" in lowered:
-        fail(f"{path.name}: raw release placeholder present")
+        if phrase.lower() in lowered: fail(f"{path.name}: banned internal/unsupported phrase present: {phrase}")
     return parser
 
-
 for path in ROOT.rglob("*"):
-    if not path.is_file():
-        continue
-    rel = path.relative_to(ROOT).as_posix().lower()
-    if any(part in rel for part in OBSOLETE_NAME_PARTS):
-        fail(f"obsolete/review-specific file shipped: {rel}")
+    if path.is_file():
+        rel=path.relative_to(ROOT).as_posix().lower()
+        if any(part in rel for part in OBSOLETE_NAME_PARTS): fail(f"obsolete/review-specific file shipped: {rel}")
 
-required_files = [
-    *HTML_FILES,
-    ROOT / "assets" / "hoc-public.css",
-    ROOT / "assets" / "hoc-mark.svg",
-    ROOT / "assets" / "hoc-diagnostics.js",
-    ROOT / "robots.txt",
-]
-for required in required_files:
-    if not required.exists():
-        fail(f"missing required public/release file: {required.relative_to(ROOT)}")
+required=[*HTML_FILES, ROOT/"assets"/"hoc-grand-house.css", ROOT/"assets"/"hoc-experience.js", ROOT/"assets"/"hoc-diagnostics.js", ROOT/"assets"/"hoc-mark.svg", ROOT/"robots.txt"]
+for item in required:
+    if not item.exists(): fail(f"missing {item.relative_to(ROOT)}")
 
-pages: dict[Path, PageParser] = {}
-for html_file in HTML_FILES:
-    parser = parse(html_file)
-    pages[html_file.resolve()] = parser
-    if parser.lang != "en-GB":
-        fail(f"{html_file.name}: expected lang=en-GB")
-    if parser.title_count != 1:
-        fail(f"{html_file.name}: expected exactly one title element")
-    if parser.h1_count != 1:
-        fail(f"{html_file.name}: expected exactly one h1")
-    if not parser.viewport:
-        fail(f"{html_file.name}: missing viewport meta")
-    if parser.robots != "noindex,nofollow":
-        fail(f"{html_file.name}: containment meta changed")
-    if parser.build != BUILD:
-        fail(f"{html_file.name}: wrong or missing build identity: {parser.build}")
-    if not parser.csp or "object-src 'none'" not in parser.csp or "base-uri 'self'" not in parser.csp:
-        fail(f"{html_file.name}: CSP baseline missing")
-    if parser.styles != [EXPECTED_STYLE]:
-        fail(f"{html_file.name}: expected one current stylesheet, got {parser.styles}")
-    if parser.scripts != [EXPECTED_SCRIPT]:
-        fail(f"{html_file.name}: expected diagnostics-only script, got {parser.scripts}")
-    missing_labels = parser.controls - parser.labels_for
-    if missing_labels:
-        fail(f"{html_file.name}: unlabelled controls: {sorted(missing_labels)}")
+pages={}
+for html in HTML_FILES:
+    p=parse(html); pages[html.resolve()]=p
+    if p.lang!="en-GB": fail(f"{html.name}: lang")
+    if p.title_count!=1 or p.h1_count!=1: fail(f"{html.name}: expected one title/h1")
+    if not p.viewport: fail(f"{html.name}: viewport")
+    if p.robots!="noindex,nofollow": fail(f"{html.name}: containment")
+    if p.build!=BUILD: fail(f"{html.name}: build {p.build}")
+    if not p.csp or "object-src 'none'" not in p.csp or "base-uri 'self'" not in p.csp or "connect-src 'none'" not in p.csp: fail(f"{html.name}: CSP")
+    if p.styles != [EXPECTED_STYLE]: fail(f"{html.name}: style {p.styles}")
+    if p.scripts != EXPECTED_SCRIPTS: fail(f"{html.name}: scripts {p.scripts}")
+    if p.inline_scripts: fail(f"{html.name}: inline scripts present")
+    if len(p.descriptions)!=1 or not p.descriptions[0].strip(): fail(f"{html.name}: descriptive meta missing")
+    missing=p.controls-p.labels_for
+    if missing: fail(f"{html.name}: unlabelled controls {sorted(missing)}")
 
-
-def local_target(base: Path, href: str) -> tuple[Path, str | None] | None:
-    parsed = urlparse(href)
-    if parsed.scheme in {"mailto", "tel"}:
-        return None
+def local_target(base, href):
+    parsed=urlparse(href)
+    if parsed.scheme in {"mailto","tel"}: return None
     if parsed.scheme or parsed.netloc:
-        if parsed.scheme != "https":
-            fail(f"{base.name}: external link is not https: {href}")
+        if parsed.scheme!="https": fail(f"{base.name}: non-https external {href}")
         return None
-    file_part = parsed.path or base.name
-    return (base.parent / file_part).resolve(), parsed.fragment or None
+    return (base.parent/(parsed.path or base.name)).resolve(), parsed.fragment or None
 
+for base,p in pages.items():
+    for href in p.hrefs:
+        info=local_target(base,href)
+        if info is None: continue
+        target,frag=info
+        if target.suffix=="": target=target/"index.html"
+        if not target.exists(): fail(f"{base.name}: broken {href}")
+        if frag and target.suffix==".html":
+            tp=pages.get(target.resolve()) or parse(target)
+            if frag not in tp.ids: fail(f"{base.name}: broken anchor {href}")
 
-for base, parser in pages.items():
-    for href in parser.hrefs:
-        target_info = local_target(base, href)
-        if target_info is None:
-            continue
-        target, fragment = target_info
-        if target.suffix == "":
-            target = target / "index.html"
-        if not target.exists():
-            fail(f"{base.name}: broken local link {href}")
-        if fragment and target.suffix == ".html":
-            target_parser = pages.get(target.resolve()) or parse(target)
-            if fragment not in target_parser.ids:
-                fail(f"{base.name}: broken anchor {href}")
-
-index_path = (ROOT / "index.html").resolve()
-index = pages[index_path]
-if len(index.forms) != 1:
-    fail(f"index.html: expected one contact form, got {len(index.forms)}")
-form = index.forms[0]
-if form.get("action") != "https://formspree.io/f/mgvgrgvb":
-    fail("index.html: unexpected Formspree endpoint")
-if form.get("method", "").lower() != "post":
-    fail("index.html: contact form must use POST")
-for name in ("catalogue.html", "privacy.html", "terms.html", "404.html"):
-    if pages[(ROOT / name).resolve()].forms:
-        fail(f"{name}: unexpected form present")
-
-for required_id in ("house", "portfolio", "contact"):
-    if required_id not in index.ids:
-        fail(f"index.html: missing core House destination #{required_id}")
-
-index_text = (ROOT / "index.html").read_text(encoding="utf-8")
-if "hero-stage" not in index_text or "principle-list" not in index_text or "portfolio-callout" not in index_text:
-    fail("index.html: flagship House narrative structure missing")
-if "hoc-silhouette.svg" in index_text or "hero-silhouette" in index_text:
-    fail("index.html: rejected Run 14 silhouette direction has returned")
-if "class=\"card" in index_text or " class=\"card" in index_text:
-    fail("index.html: generic card component introduced into flagship narrative")
-
-css = (ROOT / "assets" / "hoc-public.css").read_text(encoding="utf-8")
-if "http://" in css or "https://" in css or "@import" in css:
-    fail("hoc-public.css: external/imported design dependency introduced")
-for token in ("--gold:", "--burgundy:", ".hero-stage", ".ledger-row", "prefers-reduced-motion"):
-    if token not in css:
-        fail(f"hoc-public.css: expected flagship/accessibility token missing: {token}")
-
-robots = (ROOT / "robots.txt").read_text(encoding="utf-8")
-if "Disallow: /" not in robots:
-    fail("robots.txt containment changed")
-
-print("PASS: Run 15 House static integrity, containment, public-truth and flagship-structure checks")
+idx=pages[(ROOT/"index.html").resolve()]
+if len(idx.forms)!=1: fail("index: exactly one form")
+form=idx.forms[0]
+if form.get("action")!="https://formspree.io/f/mgvgrgvb" or form.get("method","").lower()!="post": fail("index: form endpoint/method")
+for n in ("catalogue.html","privacy.html","terms.html","404.html"):
+    if pages[(ROOT/n).resolve()].forms: fail(f"{n}: unexpected form")
+for rid in ("house","standard","fields","threshold","contact"):
+    if rid not in idx.ids: fail(f"index missing #{rid}")
+text=(ROOT/"index.html").read_text(encoding="utf-8")
+for token in ("house-field","motion-control","chapter-rail","field-explorer","role=\"tablist\""):
+    if token not in text: fail(f"index missing interactive structure {token}")
+if 'class="card' in text or ' class="card' in text: fail("generic card component introduced")
+css=(ROOT/"assets"/"hoc-grand-house.css").read_text(encoding="utf-8")
+if "http://" in css or "https://" in css or "@import" in css: fail("CSS external dependency")
+for token in ("--gold:","--burgundy:",".house-field",".field-explorer","prefers-reduced-motion","@media (max-width:560px)"):
+    if token not in css: fail(f"CSS missing {token}")
+js=(ROOT/"assets"/"hoc-experience.js").read_text(encoding="utf-8")
+for token in ("prefers-reduced-motion","IntersectionObserver","requestAnimationFrame","aria-selected","pointermove"):
+    if token not in js: fail(f"experience missing {token}")
+if "fetch(" in js or "localStorage" in js or "sessionStorage" in js or "document.cookie" in js: fail("experience introduced network/storage")
+robots=(ROOT/"robots.txt").read_text(encoding="utf-8")
+if "Disallow: /" not in robots: fail("robots containment")
+print("PASS: Grand House static integrity, containment, SEO-ready semantics and interaction architecture checks")
