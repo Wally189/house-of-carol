@@ -1,46 +1,56 @@
 import { chromium } from 'playwright';
 import fs from 'node:fs/promises';
-const BUILD = 'ce2-grand-house-20260831a';
+const BUILD = 'deep-human-house-20260831a';
 const BASE = 'http://127.0.0.1:8000';
-const browser = await chromium.launch({ headless: true });
-await fs.mkdir('qa-artifacts', { recursive: true });
-async function assertNoHorizontalOverflow(page, label) {
-  const geometry = await page.evaluate(() => {
-    const client = document.documentElement.clientWidth;
-    const offenders = [...document.querySelectorAll('body *')]
-      .map(el => {
-        const rect = el.getBoundingClientRect();
-        const style = getComputedStyle(el);
-        return {tag:el.tagName,id:el.id||'',cls:typeof el.className==='string'?el.className:'',left:Math.round(rect.left*10)/10,right:Math.round(rect.right*10)/10,width:Math.round(rect.width*10)/10,overflowX:style.overflowX,position:style.position,text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,90)};
-      })
-      .filter(x => x.right > client + 1 || x.left < -1)
-      .sort((a,b) => Math.max(b.right-client,-b.left)-Math.max(a.right-client,-a.left))
-      .slice(0,20);
-    return {client,scroll:document.documentElement.scrollWidth,bodyClient:document.body.clientWidth,bodyScroll:document.body.scrollWidth,offenders};
-  });
-  if (geometry.scroll > geometry.client + 1 || geometry.bodyScroll > geometry.bodyClient + 1) {
-    const isolation = await page.evaluate(() => {
-      const measure = () => document.documentElement.scrollWidth;
-      const results = {};
-      const selectors = ['header','main','footer','.ticker','.hero-stage','.standard-stage','.fields-stage','.threshold-stage','.contact','.reading-progress','.hero-glow','.hero-monogram','.standard-word','.threshold-arch','#house-field','.chapter-rail'];
-      for (const selector of selectors) {
-        const nodes = [...document.querySelectorAll(selector)];
-        const old = nodes.map(node => node.getAttribute('style'));
-        nodes.forEach(node => node.style.setProperty('display','none','important'));
-        results[`hide:${selector}`] = measure();
-        nodes.forEach((node,index) => old[index] === null ? node.removeAttribute('style') : node.setAttribute('style',old[index]));
-      }
-      const pseudo = document.createElement('style'); pseudo.textContent='*::before,*::after{display:none!important}'; document.head.append(pseudo); results['no-pseudo']=measure(); pseudo.remove();
-      const motion = document.createElement('style'); motion.textContent='*{animation:none!important;transform:none!important}'; document.head.append(motion); results['no-animation-transform']=measure(); motion.remove();
-      return results;
-    });
-    throw new Error(`${label}: horizontal overflow ${JSON.stringify({...geometry,isolation})}`);
-  }
+const browser = await chromium.launch({headless:true});
+await fs.mkdir('qa-artifacts',{recursive:true});
+
+async function assertNoHorizontalOverflow(page,label){
+  const g=await page.evaluate(()=>({client:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,bodyClient:document.body.clientWidth,bodyScroll:document.body.scrollWidth}));
+  if(g.scroll>g.client+1||g.bodyScroll>g.bodyClient+1) throw new Error(`${label}: horizontal overflow ${JSON.stringify(g)}`);
 }
-async function assertBuild(page,label){ const build=await page.locator('meta[name="hoc-build"]').getAttribute('content'); if(build!==BUILD) throw new Error(`${label}: wrong build marker ${build}`); }
-async function assertFocus(page,label){ await page.keyboard.press('Tab'); const focus=await page.evaluate(()=>{const el=document.activeElement;const style=getComputedStyle(el);const rect=el.getBoundingClientRect();return{tag:el?.tagName||'',outlineStyle:style.outlineStyle,outlineWidth:parseFloat(style.outlineWidth||'0'),visible:rect.width>0&&rect.height>0}}); if(!focus.visible||focus.outlineStyle==='none'||focus.outlineWidth<2) throw new Error(`${label}: first keyboard focus is not strongly visible: ${JSON.stringify(focus)}`); }
-async function assertExperience(page,name){ for(const selector of ['#house-field','.motion-control','.chapter-rail','[data-field-explorer]','#contact']) if(!await page.locator(selector).count()) throw new Error(`${name}: missing ${selector}`); const canvas=await page.locator('#house-field').evaluate(el=>({width:el.width,height:el.height})); if(canvas.width<1||canvas.height<1) throw new Error(`${name}: House field canvas not initialised`); await page.locator('#tab-products').click(); if(await page.locator('#tab-products').getAttribute('aria-selected')!=='true') throw new Error(`${name}: field tabs do not change state`); if(!await page.locator('#panel-products').isVisible()) throw new Error(`${name}: selected field panel not visible`); await page.locator('.motion-control').click(); if(await page.locator('.motion-control').getAttribute('aria-pressed')!=='true') throw new Error(`${name}: motion control did not pause`); }
-async function exercise(viewport,name,options={}){ const context=await browser.newContext({viewport,...options}); const page=await context.newPage(); const externalRequests=[]; page.on('request',request=>{const url=new URL(request.url());if(url.hostname!=='127.0.0.1') externalRequests.push(request.url());}); await page.goto(`${BASE}/index.html`,{waitUntil:'networkidle'}); await assertBuild(page,`${name} home`); await page.locator('h1').waitFor({state:'visible'}); await assertNoHorizontalOverflow(page,`${name} home`); await assertExperience(page,name); await assertFocus(page,`${name} home`); await page.screenshot({path:`qa-artifacts/${name}-home.png`,fullPage:true}); for(const [path,title] of [['catalogue.html','fields'],['privacy.html','privacy'],['terms.html','terms'],['404.html','404']]){ await page.goto(`${BASE}/${path}`,{waitUntil:'networkidle'}); await assertBuild(page,`${name} ${title}`); await page.locator('h1').waitFor({state:'visible'}); await assertNoHorizontalOverflow(page,`${name} ${title}`); } await page.goto(`${BASE}/index.html`,{waitUntil:'networkidle'}); await page.evaluate(()=>{document.documentElement.style.fontSize='200%';}); await assertNoHorizontalOverflow(page,`${name} 200% text`); if(!await page.locator('#contact').isVisible()||!await page.locator('#house').isVisible()) throw new Error(`${name}: core content lost at 200% text`); await page.goto(`${BASE}/index.html?hocdiag=1`,{waitUntil:'networkidle'}); const diagnostic=page.locator('#hoc-diagnostic-panel'); await diagnostic.waitFor({state:'visible'}); const diagText=await diagnostic.textContent(); if(!diagText?.includes(BUILD)||!diagText.includes('CSS viewport')||!diagText.includes('Pointer coarse')||!diagText.includes('Reduced motion')) throw new Error(`${name}: diagnostic mode incomplete`); if(externalRequests.length) throw new Error(`${name}: unexpected external requests: ${[...new Set(externalRequests)].join(', ')}`); await context.close(); }
-await exercise({width:1440,height:900},'desktop'); await exercise({width:390,height:844},'mobile'); await exercise({width:320,height:900},'reflow-320'); await exercise({width:800,height:1280},'wide-mobile',{hasTouch:true,isMobile:true,deviceScaleFactor:2}); await exercise({width:1200,height:900},'wide-touch',{hasTouch:true,isMobile:true,deviceScaleFactor:1});
-const reducedContext=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'}); const reducedPage=await reducedContext.newPage(); await reducedPage.goto(`${BASE}/index.html`,{waitUntil:'networkidle'}); if(await reducedPage.evaluate(()=>document.documentElement.dataset.motion)!=='reduced') throw new Error('reduced-motion preference not honoured by interaction system'); if(await reducedPage.locator('.motion-control').getAttribute('aria-pressed')!=='true') throw new Error('motion control does not reflect reduced-motion state'); await reducedContext.close();
-const noJsContext=await browser.newContext({viewport:{width:390,height:844},javaScriptEnabled:false}); const noJsPage=await noJsContext.newPage(); await noJsPage.goto(`${BASE}/index.html`,{waitUntil:'load'}); await assertNoHorizontalOverflow(noJsPage,'no-JS mobile'); if(!await noJsPage.locator('#house').isVisible()) throw new Error('no-JS: House story missing'); if(await noJsPage.locator('.field-panel').count()!==4) throw new Error('no-JS: field content missing'); for(let i=0;i<4;i+=1) if(!await noJsPage.locator('.field-panel').nth(i).isVisible()) throw new Error(`no-JS: field panel ${i} hidden`); await noJsContext.close(); await browser.close(); console.log('PASS: Grand House render, interaction, responsive, text enlargement, reduced-motion, no-JS and diagnostics checks');
+async function assertBuild(page,label){const b=await page.locator('meta[name="hoc-build"]').getAttribute('content');if(b!==BUILD)throw new Error(`${label}: wrong build ${b}`);}
+async function assertFocus(page,label){
+  await page.keyboard.press('Tab');
+  const f=await page.evaluate(()=>{const el=document.activeElement;const s=getComputedStyle(el);const r=el.getBoundingClientRect();return{tag:el?.tagName||'',outline:s.outlineStyle,width:parseFloat(s.outlineWidth||'0'),visible:r.width>0&&r.height>0}});
+  if(!f.visible||f.outline==='none'||f.width<2) throw new Error(`${label}: weak first focus ${JSON.stringify(f)}`);
+}
+async function exercise(viewport,name){
+  const context=await browser.newContext({viewport});
+  const page=await context.newPage();
+  const external=[];
+  page.on('request',r=>{const u=new URL(r.url());if(u.hostname!=='127.0.0.1')external.push(r.url());});
+  for(const [path,label] of [['index.html','home'],['catalogue.html','services'],['privacy.html','privacy'],['terms.html','terms'],['404.html','404']]){
+    await page.goto(`${BASE}/${path}`,{waitUntil:'networkidle'});
+    await assertBuild(page,`${name} ${label}`);
+    await page.locator('h1').waitFor({state:'visible'});
+    await assertNoHorizontalOverflow(page,`${name} ${label}`);
+    if(path==='index.html'){
+      for(const s of ['#work','#method','#contact']) if(!await page.locator(s).isVisible()) throw new Error(`${name}: missing ${s}`);
+      const body=(await page.locator('body').innerText()).toLowerCase();
+      for(const phrase of ['useful work, done properly','website release checks','data clean-up and structure','workflow fixes','research for a decision']) if(!body.includes(phrase)) throw new Error(`${name}: missing ${phrase}`);
+      await assertFocus(page,`${name} home`);
+      await page.screenshot({path:`qa-artifacts/${name}-home.png`,fullPage:true});
+    }
+  }
+  await page.goto(`${BASE}/index.html`,{waitUntil:'networkidle'});
+  await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});
+  await assertNoHorizontalOverflow(page,`${name} 200% text`);
+  if(!await page.locator('#work').isVisible()||!await page.locator('#contact').isVisible()) throw new Error(`${name}: core content lost at 200% text`);
+  if(external.length) throw new Error(`${name}: unexpected external requests ${[...new Set(external)].join(', ')}`);
+  await context.close();
+}
+
+await exercise({width:1440,height:900},'desktop');
+await exercise({width:390,height:844},'mobile');
+await exercise({width:320,height:900},'reflow-320');
+await exercise({width:800,height:1280},'tablet');
+
+const noJsContext=await browser.newContext({viewport:{width:390,height:844},javaScriptEnabled:false});
+const noJs=await noJsContext.newPage();
+await noJs.goto(`${BASE}/index.html`,{waitUntil:'load'});
+await assertNoHorizontalOverflow(noJs,'no-JS mobile');
+if(!await noJs.locator('#work').isVisible()||!await noJs.locator('#contact').isVisible()) throw new Error('no-JS: core customer content missing');
+await noJsContext.close();
+await browser.close();
+console.log('PASS: Human House responsive, keyboard, enlarged-text, no-JS and customer-content checks');
