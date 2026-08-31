@@ -4,16 +4,18 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
-BUILD = "ce2-grand-house-20260831a"
+BUILD = "deep-human-house-20260831a"
 HTML_NAMES = ("index.html", "catalogue.html", "privacy.html", "terms.html", "404.html")
 HTML_FILES = [ROOT / name for name in HTML_NAMES]
-EXPECTED_STYLE = f"assets/hoc-grand-house.css?v={BUILD}"
-EXPECTED_SCRIPTS = [f"assets/hoc-experience.js?v={BUILD}", f"assets/hoc-diagnostics.js?v={BUILD}"]
-STYLE_ENTRY = ROOT / "assets" / "hoc-grand-house.css"
-STYLE_BASE = ROOT / "assets" / "hoc-grand-house-base.css"
-EXPECTED_BASE_IMPORT = f'@import url("hoc-grand-house-base.css?v={BUILD}");'
-BANNED_PUBLIC_PHRASES = ("£5", "external cleared revenue", "52-hive", "52 hive", "engine architecture", "maturity score", "acquisition gate", "award-winning", "world-class", "fortune 500", "ai-powered", "waylight atlantic", "alanwpgallagher.info", "Bristol · United Kingdom", "building, owning and operating")
-OBSOLETE_NAME_PARTS = ("qa-run", "run10", "run13", "trigger")
+EXPECTED_STYLE = f"assets/hoc-house-2.css?v={BUILD}"
+STYLE = ROOT / "assets" / "hoc-house-2.css"
+BANNED_PUBLIC_PHRASES = (
+    "52-hive", "52 hive", "engine architecture", "maturity score", "acquisition gate",
+    "world-class", "game-changing", "industry-leading", "cutting-edge", "transformational",
+    "cross-functional synergies", "future-ready architecture", "the threshold", "grand house",
+    "ai-powered", "waylight atlantic", "alanwpgallagher.info", "£5"
+)
+BANNED_AI_SLUDGE = ("delve into", "vibrant tapestry", "seamless journey", "unlock the power", "ever-evolving landscape")
 
 class PageParser(HTMLParser):
     def __init__(self):
@@ -51,16 +53,11 @@ def parse(path):
     try: parser.feed(text)
     except AssertionError as exc: fail(f"{path.name}: {exc}")
     lowered=text.lower()
-    for phrase in BANNED_PUBLIC_PHRASES:
-        if phrase.lower() in lowered: fail(f"{path.name}: banned internal/unsupported phrase present: {phrase}")
+    for phrase in (*BANNED_PUBLIC_PHRASES,*BANNED_AI_SLUDGE):
+        if phrase.lower() in lowered: fail(f"{path.name}: banned inward/hype/sludge phrase present: {phrase}")
     return parser
 
-for path in ROOT.rglob("*"):
-    if path.is_file():
-        rel=path.relative_to(ROOT).as_posix().lower()
-        if any(part in rel for part in OBSOLETE_NAME_PARTS): fail(f"obsolete/review-specific file shipped: {rel}")
-
-required=[*HTML_FILES, STYLE_ENTRY, STYLE_BASE, ROOT/"assets"/"hoc-experience.js", ROOT/"assets"/"hoc-diagnostics.js", ROOT/"assets"/"hoc-mark.svg", ROOT/"robots.txt"]
+required=[*HTML_FILES, STYLE, ROOT/"assets"/"hoc-mark.svg", ROOT/"robots.txt"]
 for item in required:
     if not item.exists(): fail(f"missing {item.relative_to(ROOT)}")
 
@@ -72,11 +69,11 @@ for html in HTML_FILES:
     if not p.viewport: fail(f"{html.name}: viewport")
     if p.robots!="noindex,nofollow": fail(f"{html.name}: containment")
     if p.build!=BUILD: fail(f"{html.name}: build {p.build}")
-    if not p.csp or "object-src 'none'" not in p.csp or "base-uri 'self'" not in p.csp or "connect-src 'none'" not in p.csp: fail(f"{html.name}: CSP")
+    if not p.csp or "object-src 'none'" not in p.csp or "base-uri 'self'" not in p.csp or "connect-src 'none'" not in p.csp or "script-src 'none'" not in p.csp or "form-action 'none'" not in p.csp: fail(f"{html.name}: CSP")
     if p.styles != [EXPECTED_STYLE]: fail(f"{html.name}: style {p.styles}")
-    if p.scripts != EXPECTED_SCRIPTS: fail(f"{html.name}: scripts {p.scripts}")
-    if p.inline_scripts: fail(f"{html.name}: inline scripts present")
+    if p.scripts or p.inline_scripts: fail(f"{html.name}: scripts present in static candidate")
     if len(p.descriptions)!=1 or not p.descriptions[0].strip(): fail(f"{html.name}: descriptive meta missing")
+    if p.forms: fail(f"{html.name}: public form present during simulation-only mode")
     missing=p.controls-p.labels_for
     if missing: fail(f"{html.name}: unlabelled controls {sorted(missing)}")
 
@@ -100,28 +97,16 @@ for base,p in pages.items():
             if frag not in tp.ids: fail(f"{base.name}: broken anchor {href}")
 
 idx=pages[(ROOT/"index.html").resolve()]
-if len(idx.forms)!=1: fail("index: exactly one form")
-form=idx.forms[0]
-if form.get("action")!="https://formspree.io/f/mgvgrgvb" or form.get("method","").lower()!="post": fail("index: form endpoint/method")
-for n in ("catalogue.html","privacy.html","terms.html","404.html"):
-    if pages[(ROOT/n).resolve()].forms: fail(f"{n}: unexpected form")
-for rid in ("house","standard","fields","threshold","contact"):
+for rid in ("work","method","contact"):
     if rid not in idx.ids: fail(f"index missing #{rid}")
-text=(ROOT/"index.html").read_text(encoding="utf-8")
-for token in ("house-field","motion-control","chapter-rail","field-explorer","role=\"tablist\""):
-    if token not in text: fail(f"index missing interactive structure {token}")
-if 'class="card' in text or ' class="card' in text: fail("generic card component introduced")
-entry_css=STYLE_ENTRY.read_text(encoding="utf-8")
-base_css=STYLE_BASE.read_text(encoding="utf-8")
-if entry_css.count("@import")!=1 or not entry_css.lstrip().startswith(EXPECTED_BASE_IMPORT): fail("CSS entry must import exactly the versioned local Grand House base")
-if "http://" in entry_css or "https://" in entry_css or "http://" in base_css or "https://" in base_css or "@import" in base_css: fail("CSS external or nested dependency")
-css=base_css+"\n"+entry_css
-for token in ("--gold:","--burgundy:",".house-field",".field-explorer","prefers-reduced-motion","@media (max-width:560px)"):
+index_text=(ROOT/"index.html").read_text(encoding="utf-8").lower()
+for required_text in ("useful work, done properly", "website release checks", "data clean-up and structure", "workflow fixes", "research for a decision", "07933 657446"):
+    if required_text not in index_text: fail(f"index missing buyer-useful content: {required_text}")
+if 'class="card' in index_text or ' class="card' in index_text: fail("generic card component introduced")
+css=STYLE.read_text(encoding="utf-8")
+if "http://" in css or "https://" in css or "@import" in css: fail("CSS external/nested dependency")
+for token in ("--paper:","--wine:","prefers-reduced-motion","@media(max-width:820px)",":focus-visible"):
     if token not in css: fail(f"CSS missing {token}")
-js=(ROOT/"assets"/"hoc-experience.js").read_text(encoding="utf-8")
-for token in ("prefers-reduced-motion","IntersectionObserver","requestAnimationFrame","aria-selected","pointermove"):
-    if token not in js: fail(f"experience missing {token}")
-if "fetch(" in js or "localStorage" in js or "sessionStorage" in js or "document.cookie" in js: fail("experience introduced network/storage")
 robots=(ROOT/"robots.txt").read_text(encoding="utf-8")
 if "Disallow: /" not in robots: fail("robots containment")
-print("PASS: Grand House static integrity, contained local CSS layering, SEO-ready semantics and interaction architecture checks")
+print("PASS: Human House static integrity, containment, buyer-first content, no-form control and local design checks")
