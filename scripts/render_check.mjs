@@ -9,37 +9,57 @@ await fs.mkdir('qa-artifacts', { recursive: true });
 async function assertNoHorizontalOverflow(page, label) {
   const geometry = await page.evaluate(() => {
     const root = document.documentElement;
+    const body = document.body;
     const clientWidth = root.clientWidth;
-    const offenders = [...document.querySelectorAll('body *')]
-      .map((el) => {
-        const rect = el.getBoundingClientRect();
-        const style = getComputedStyle(el);
-        return {
-          tag: el.tagName.toLowerCase(),
-          id: el.id || '',
-          cls: typeof el.className === 'string' ? el.className : '',
-          text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 90),
-          left: Math.round(rect.left * 10) / 10,
-          right: Math.round(rect.right * 10) / 10,
-          width: Math.round(rect.width * 10) / 10,
-          scrollWidth: el.scrollWidth,
-          clientWidth: el.clientWidth,
-          overflowX: style.overflowX,
-          position: style.position
-        };
-      })
-      .filter((item) => item.width > 0 && item.right > clientWidth + 1 && item.overflowX !== 'hidden' && item.overflowX !== 'clip')
-      .sort((a, b) => b.right - a.right)
-      .slice(0, 12);
+    const describe = (el) => {
+      const rect = el.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      return {
+        tag: el.tagName.toLowerCase(),
+        id: el.id || '',
+        cls: typeof el.className === 'string' ? el.className : '',
+        text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 90),
+        left: Math.round(rect.left * 10) / 10,
+        right: Math.round(rect.right * 10) / 10,
+        width: Math.round(rect.width * 10) / 10,
+        scrollWidth: el.scrollWidth,
+        clientWidth: el.clientWidth,
+        offsetWidth: el.offsetWidth,
+        overflowX: style.overflowX,
+        position: style.position,
+        transform: style.transform,
+        minWidth: style.minWidth,
+        maxWidth: style.maxWidth,
+        widthStyle: style.width
+      };
+    };
+    const all = [...document.querySelectorAll('body *')].map(describe);
+    const offenders = all
+      .filter((item) => item.width > 0 && (item.right > clientWidth + 1 || item.left < -1 || item.scrollWidth > item.clientWidth + 1))
+      .sort((a, b) => Math.max(b.right - clientWidth, b.scrollWidth - b.clientWidth) - Math.max(a.right - clientWidth, a.scrollWidth - a.clientWidth))
+      .slice(0, 20);
+    const positioned = all
+      .filter((item) => item.position === 'fixed' || item.position === 'absolute' || item.transform !== 'none')
+      .slice(0, 20);
     return {
-      scrollWidth: root.scrollWidth,
-      clientWidth,
-      bodyScrollWidth: document.body.scrollWidth,
-      offenders
+      windowInnerWidth: window.innerWidth,
+      visualViewportWidth: window.visualViewport?.width ?? null,
+      devicePixelRatio: window.devicePixelRatio,
+      rootClientWidth: root.clientWidth,
+      rootScrollWidth: root.scrollWidth,
+      rootOffsetWidth: root.offsetWidth,
+      rootRect: describe(root),
+      bodyClientWidth: body.clientWidth,
+      bodyScrollWidth: body.scrollWidth,
+      bodyOffsetWidth: body.offsetWidth,
+      bodyRect: describe(body),
+      scrollingElement: document.scrollingElement?.tagName || null,
+      offenders,
+      positioned
     };
   });
-  if (geometry.scrollWidth > geometry.clientWidth + 1) {
-    throw new Error(`${label}: horizontal overflow ${geometry.scrollWidth} > ${geometry.clientWidth}; offenders=${JSON.stringify(geometry.offenders)}`);
+  if (geometry.rootScrollWidth > geometry.rootClientWidth + 1) {
+    throw new Error(`${label}: horizontal overflow ${geometry.rootScrollWidth} > ${geometry.rootClientWidth}; geometry=${JSON.stringify(geometry)}`);
   }
 }
 
