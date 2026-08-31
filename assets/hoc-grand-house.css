@@ -10,4 +10,8 @@
   .wordmark{flex:1 1 auto;min-width:0;max-width:calc(100% - 3rem);white-space:normal;overflow-wrap:anywhere}
   .site-nav{width:100%;align-items:flex-start}
   .site-nav a,.hero-meta span,.chapter-mark strong,.footer-grid span,.footer-grid a,.kicker,.text-link,.motion-control,.standard-lines strong,.standard-lines span,.field-number,.ledger-number,.ledger-note,.field label,.form-actions p{white-space:normal;overflow-wrap:anywhere;word-break:normal}
+  /* The desktop monogram intentionally bleeds 2vw beyond the right edge.
+     On compact/enlarged-text layouts that decorative bleed can become document
+     overflow under different browser font metrics, so contain it at the edge. */
+  .hero-monogram{right:0}
 }
