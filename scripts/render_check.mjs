@@ -11,24 +11,31 @@ async function assertNoHorizontalOverflow(page, label) {
       .map(el => {
         const rect = el.getBoundingClientRect();
         const style = getComputedStyle(el);
-        return {
-          tag: el.tagName,
-          id: el.id || '',
-          cls: typeof el.className === 'string' ? el.className : '',
-          left: Math.round(rect.left * 10) / 10,
-          right: Math.round(rect.right * 10) / 10,
-          width: Math.round(rect.width * 10) / 10,
-          overflowX: style.overflowX,
-          position: style.position,
-          text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 90)
-        };
+        return {tag:el.tagName,id:el.id||'',cls:typeof el.className==='string'?el.className:'',left:Math.round(rect.left*10)/10,right:Math.round(rect.right*10)/10,width:Math.round(rect.width*10)/10,overflowX:style.overflowX,position:style.position,text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,90)};
       })
       .filter(x => x.right > client + 1 || x.left < -1)
       .sort((a,b) => Math.max(b.right-client,-b.left)-Math.max(a.right-client,-a.left))
       .slice(0,20);
     return {client,scroll:document.documentElement.scrollWidth,bodyClient:document.body.clientWidth,bodyScroll:document.body.scrollWidth,offenders};
   });
-  if (geometry.scroll > geometry.client + 1 || geometry.bodyScroll > geometry.bodyClient + 1) throw new Error(`${label}: horizontal overflow ${JSON.stringify(geometry)}`);
+  if (geometry.scroll > geometry.client + 1 || geometry.bodyScroll > geometry.bodyClient + 1) {
+    const isolation = await page.evaluate(() => {
+      const measure = () => document.documentElement.scrollWidth;
+      const results = {};
+      const selectors = ['header','main','footer','.ticker','.hero-stage','.standard-stage','.fields-stage','.threshold-stage','.contact','.reading-progress','.hero-glow','.hero-monogram','.standard-word','.threshold-arch','#house-field','.chapter-rail'];
+      for (const selector of selectors) {
+        const nodes = [...document.querySelectorAll(selector)];
+        const old = nodes.map(node => node.getAttribute('style'));
+        nodes.forEach(node => node.style.setProperty('display','none','important'));
+        results[`hide:${selector}`] = measure();
+        nodes.forEach((node,index) => old[index] === null ? node.removeAttribute('style') : node.setAttribute('style',old[index]));
+      }
+      const pseudo = document.createElement('style'); pseudo.textContent='*::before,*::after{display:none!important}'; document.head.append(pseudo); results['no-pseudo']=measure(); pseudo.remove();
+      const motion = document.createElement('style'); motion.textContent='*{animation:none!important;transform:none!important}'; document.head.append(motion); results['no-animation-transform']=measure(); motion.remove();
+      return results;
+    });
+    throw new Error(`${label}: horizontal overflow ${JSON.stringify({...geometry,isolation})}`);
+  }
 }
 async function assertBuild(page,label){ const build=await page.locator('meta[name="hoc-build"]').getAttribute('content'); if(build!==BUILD) throw new Error(`${label}: wrong build marker ${build}`); }
 async function assertFocus(page,label){ await page.keyboard.press('Tab'); const focus=await page.evaluate(()=>{const el=document.activeElement;const style=getComputedStyle(el);const rect=el.getBoundingClientRect();return{tag:el?.tagName||'',outlineStyle:style.outlineStyle,outlineWidth:parseFloat(style.outlineWidth||'0'),visible:rect.width>0&&rect.height>0}}); if(!focus.visible||focus.outlineStyle==='none'||focus.outlineWidth<2) throw new Error(`${label}: first keyboard focus is not strongly visible: ${JSON.stringify(focus)}`); }
