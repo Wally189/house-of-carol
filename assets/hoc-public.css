@@ -10,6 +10,9 @@
 .contact-form > *,
 .footer-grid > *{min-width:0}
 
+/* The keyboard skip link is fixed and translated above the viewport until focused. Keep its intrinsic box inside the viewport at large text sizes so it cannot create hidden horizontal scrolling. */
+.skip{left:.5rem;max-width:calc(100vw - 1rem);overflow-wrap:anywhere}
+
 @media(max-width:760px){
   .statement-grid,.contact,.contact-form{grid-template-columns:minmax(0,1fr)}
   .hero-copy{width:100%}
