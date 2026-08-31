@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - hoc-run14-agreed-silhouette-reset
+      - ce2-run15-flagship-recovery
   pull_request:
 
 permissions:
@@ -47,7 +47,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hoc-run14-qa-${{ github.sha }}
+          name: hoc-run15-qa-${{ github.sha }}
           path: qa-artifacts/
           if-no-files-found: warn
           retention-days: 7
