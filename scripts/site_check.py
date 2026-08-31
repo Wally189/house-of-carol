@@ -107,7 +107,7 @@ for forbidden in ('customer 000','330-function','52 departments','our ai team'):
 if 'class="card' in index_text or ' class="card' in index_text: fail('generic card component introduced')
 
 css=STYLE.read_text(encoding='utf-8').lower()
-for token in ('--navy:#081d2d','--claret:#7a1e2e','prefers-reduced-motion',':focus-visible'):
+for token in ('--carol:#081d2d','--claret:#7a1e2e','prefers-reduced-motion',':focus'):
     if token not in css: fail(f'CSS missing current brand/accessibility token: {token}')
 robots=ROBOTS.read_text(encoding='utf-8')
 if 'Disallow: /' not in robots: fail('robots containment missing')
