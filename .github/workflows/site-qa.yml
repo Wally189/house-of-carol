@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - hoc-experience-run09
+      - hoc-run14-agreed-silhouette-reset
   pull_request:
 
 permissions:
@@ -23,11 +23,11 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Static integrity checks
+      - name: Static public integrity and release checks
         run: python scripts/site_check.py
 
-      - name: JavaScript syntax
-        run: node --check assets/hoc-experience.js
+      - name: Diagnostics JavaScript syntax
+        run: node --check assets/hoc-diagnostics.js
 
       - name: Install Playwright
         run: |
@@ -40,14 +40,14 @@ jobs:
           echo $! > /tmp/hoc-http.pid
           sleep 2
 
-      - name: Browser interaction and screenshots
+      - name: Browser, accessibility and responsive regression
         run: node scripts/render_check.mjs
 
       - name: Upload QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hoc-site-qa-${{ github.sha }}
+          name: hoc-run14-qa-${{ github.sha }}
           path: qa-artifacts/
           if-no-files-found: warn
           retention-days: 7
