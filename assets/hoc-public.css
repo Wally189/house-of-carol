@@ -1,7 +1,22 @@
 @import url("hoc-core.css?v=run14-silhouette-20260831a");
 
-/* Small accessibility hardening layer: allow the compact header to reflow cleanly when text is enlarged. */
+/* Accessibility hardening: automatic minimum sizes on flex/grid children must not force the page wider than the viewport when text is enlarged. */
+.hero-copy,
+.hero-actions,
+.hero-actions > *,
+.statement-grid > *,
+.contact > *,
+.contact-form,
+.contact-form > *,
+.footer-grid > *{min-width:0}
+
+@media(max-width:760px){
+  .statement-grid,.contact,.contact-form{grid-template-columns:minmax(0,1fr)}
+  .hero-copy{width:100%}
+}
+
 @media(max-width:520px){
   .masthead{align-items:flex-start;flex-wrap:wrap;padding-block:.7rem}
-  .site-nav{width:100%;justify-content:flex-start;flex-wrap:wrap}
+  .site-nav{width:100%;min-width:0;justify-content:flex-start;flex-wrap:wrap}
+  .site-nav a,.footer-grid a{overflow-wrap:anywhere}
 }
