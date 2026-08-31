@@ -61,8 +61,8 @@ async function exercise(viewport, name, options = {}) {
     throw new Error(`${name}: silhouette is missing, dominant or effectively invisible: ${JSON.stringify(silhouette)}`);
   }
   if (await page.locator('#hoc-diagnostic-panel').count()) throw new Error(`${name}: diagnostics visible without opt-in query`);
-  await assertFocus(page, `${name} home`);
   await page.screenshot({ path: `qa-artifacts/${name}-home.png`, fullPage: true });
+  await assertFocus(page, `${name} home`);
 
   for (const [path, title] of [
     ['catalogue.html', 'portfolio'],
@@ -79,8 +79,7 @@ async function exercise(viewport, name, options = {}) {
   await page.goto(`${BASE}/index.html`, { waitUntil: 'networkidle' });
   await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
   await assertNoHorizontalOverflow(page, `${name} 200% text`);
-  const formVisible = await page.locator('#contact').isVisible();
-  if (!formVisible) throw new Error(`${name}: contact section lost at 200% text size`);
+  if (!await page.locator('#contact').isVisible()) throw new Error(`${name}: contact section lost at 200% text size`);
 
   await page.goto(`${BASE}/index.html?hocdiag=1`, { waitUntil: 'networkidle' });
   const diagnostic = page.locator('#hoc-diagnostic-panel');
@@ -98,8 +97,9 @@ async function exercise(viewport, name, options = {}) {
 
 await exercise({ width: 1440, height: 900 }, 'desktop');
 await exercise({ width: 390, height: 844 }, 'mobile');
+await exercise({ width: 320, height: 900 }, 'reflow-320');
 await exercise({ width: 800, height: 1280 }, 'wide-mobile', { hasTouch: true, isMobile: true, deviceScaleFactor: 2 });
 await exercise({ width: 1200, height: 900 }, 'wide-touch', { hasTouch: true, isMobile: true, deviceScaleFactor: 1 });
 
 await browser.close();
-console.log('PASS: Run 14 desktop/mobile/wide-touch render, focus, reflow, diagnostics and no-tracking checks');
+console.log('PASS: Run 14 desktop/mobile/320-reflow/wide-touch render, focus, text enlargement, diagnostics and no-tracking checks');
