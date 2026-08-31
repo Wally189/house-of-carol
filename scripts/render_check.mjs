@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 import fs from 'node:fs/promises';
-const BUILD = 'deep-human-house-20260831a';
+const BUILD = 'customer-ready-20260831b';
 const BASE = 'http://127.0.0.1:8000';
 const browser = await chromium.launch({headless:true});
 await fs.mkdir('qa-artifacts',{recursive:true});
@@ -28,7 +28,8 @@ async function exercise(viewport,name){
     if(path==='index.html'){
       for(const s of ['#work','#method','#contact']) if(!await page.locator(s).isVisible()) throw new Error(`${name}: missing ${s}`);
       const body=(await page.locator('body').innerText()).toLowerCase();
-      for(const phrase of ['useful work, done properly','website release checks','data clean-up and structure','workflow fixes','research for a decision']) if(!body.includes(phrase)) throw new Error(`${name}: missing ${phrase}`);
+      for(const phrase of ['make the awkward part work','workflow implementation','website release assurance','two useful jobs']) if(!body.includes(phrase)) throw new Error(`${name}: missing ${phrase}`);
+      for(const stale of ['data clean-up and structure','research for a decision','grand house','future-ready architecture']) if(body.includes(stale)) throw new Error(`${name}: stale public proposition present: ${stale}`);
       await assertFocus(page,`${name} home`);
       await page.screenshot({path:`qa-artifacts/${name}-home.png`,fullPage:true});
     }
@@ -53,4 +54,4 @@ await assertNoHorizontalOverflow(noJs,'no-JS mobile');
 if(!await noJs.locator('#work').isVisible()||!await noJs.locator('#contact').isVisible()) throw new Error('no-JS: core customer content missing');
 await noJsContext.close();
 await browser.close();
-console.log('PASS: Human House responsive, keyboard, enlarged-text, no-JS and customer-content checks');
+console.log('PASS: customer-ready responsive, keyboard, enlarged-text, no-JS and locked-service checks');
