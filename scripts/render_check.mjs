@@ -7,12 +7,32 @@ const browser = await chromium.launch({ headless: true });
 await fs.mkdir('qa-artifacts', { recursive: true });
 
 async function assertNoHorizontalOverflow(page, label) {
-  const geometry = await page.evaluate(() => ({
-    client: document.documentElement.clientWidth,
-    scroll: document.documentElement.scrollWidth,
-    bodyClient: document.body.clientWidth,
-    bodyScroll: document.body.scrollWidth
-  }));
+  const geometry = await page.evaluate(() => {
+    const client = document.documentElement.clientWidth;
+    const offenders = [...document.querySelectorAll('body *')]
+      .map(el => {
+        const rect = el.getBoundingClientRect();
+        return {
+          tag: el.tagName,
+          id: el.id || '',
+          cls: typeof el.className === 'string' ? el.className : '',
+          left: Math.round(rect.left),
+          right: Math.round(rect.right),
+          width: Math.round(rect.width),
+          text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80)
+        };
+      })
+      .filter(x => x.right > client + 1 || x.left < -1)
+      .sort((a, b) => Math.max(b.right - client, -b.left) - Math.max(a.right - client, -a.left))
+      .slice(0, 12);
+    return {
+      client,
+      scroll: document.documentElement.scrollWidth,
+      bodyClient: document.body.clientWidth,
+      bodyScroll: document.body.scrollWidth,
+      offenders
+    };
+  });
   if (geometry.scroll > geometry.client + 1 || geometry.bodyScroll > geometry.bodyClient + 1) {
     throw new Error(`${label}: horizontal overflow ${JSON.stringify(geometry)}`);
   }
