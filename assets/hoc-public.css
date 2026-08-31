@@ -10,8 +10,16 @@
 .contact-form > *,
 .footer-grid > *{min-width:0}
 
-/* The keyboard skip link is fixed and translated above the viewport until focused. Keep its intrinsic box inside the viewport at large text sizes so it cannot create hidden horizontal scrolling. */
-.skip{left:.5rem;max-width:calc(100vw - 1rem);overflow-wrap:anywhere}
+/* Long display words can become wider than a 320px reflow viewport at 200% text. Preserve the enlarged text and let it wrap only when the available line genuinely cannot contain it. */
+.hero h1,
+.statement h2,
+.contact-copy h2,
+.page-hero h1,
+.legal h1,
+.error-page h1{overflow-wrap:anywhere;hyphens:auto}
+
+/* The keyboard skip link is fixed and translated above the viewport until focused. Keep its intrinsic box inside the viewport at large text sizes. */
+.skip{left:.5rem;max-width:calc(100% - 1rem);overflow-wrap:anywhere}
 
 @media(max-width:760px){
   .statement-grid,.contact,.contact-form{grid-template-columns:minmax(0,1fr)}
