@@ -4,7 +4,32 @@ const BUILD = 'ce2-grand-house-20260831a';
 const BASE = 'http://127.0.0.1:8000';
 const browser = await chromium.launch({ headless: true });
 await fs.mkdir('qa-artifacts', { recursive: true });
-async function assertNoHorizontalOverflow(page, label) { const geometry = await page.evaluate(() => ({client:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,bodyClient:document.body.clientWidth,bodyScroll:document.body.scrollWidth})); if (geometry.scroll > geometry.client + 1 || geometry.bodyScroll > geometry.bodyClient + 1) throw new Error(`${label}: horizontal overflow ${JSON.stringify(geometry)}`); }
+async function assertNoHorizontalOverflow(page, label) {
+  const geometry = await page.evaluate(() => {
+    const client = document.documentElement.clientWidth;
+    const offenders = [...document.querySelectorAll('body *')]
+      .map(el => {
+        const rect = el.getBoundingClientRect();
+        const style = getComputedStyle(el);
+        return {
+          tag: el.tagName,
+          id: el.id || '',
+          cls: typeof el.className === 'string' ? el.className : '',
+          left: Math.round(rect.left * 10) / 10,
+          right: Math.round(rect.right * 10) / 10,
+          width: Math.round(rect.width * 10) / 10,
+          overflowX: style.overflowX,
+          position: style.position,
+          text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 90)
+        };
+      })
+      .filter(x => x.right > client + 1 || x.left < -1)
+      .sort((a,b) => Math.max(b.right-client,-b.left)-Math.max(a.right-client,-a.left))
+      .slice(0,20);
+    return {client,scroll:document.documentElement.scrollWidth,bodyClient:document.body.clientWidth,bodyScroll:document.body.scrollWidth,offenders};
+  });
+  if (geometry.scroll > geometry.client + 1 || geometry.bodyScroll > geometry.bodyClient + 1) throw new Error(`${label}: horizontal overflow ${JSON.stringify(geometry)}`);
+}
 async function assertBuild(page,label){ const build=await page.locator('meta[name="hoc-build"]').getAttribute('content'); if(build!==BUILD) throw new Error(`${label}: wrong build marker ${build}`); }
 async function assertFocus(page,label){ await page.keyboard.press('Tab'); const focus=await page.evaluate(()=>{const el=document.activeElement;const style=getComputedStyle(el);const rect=el.getBoundingClientRect();return{tag:el?.tagName||'',outlineStyle:style.outlineStyle,outlineWidth:parseFloat(style.outlineWidth||'0'),visible:rect.width>0&&rect.height>0}}); if(!focus.visible||focus.outlineStyle==='none'||focus.outlineWidth<2) throw new Error(`${label}: first keyboard focus is not strongly visible: ${JSON.stringify(focus)}`); }
 async function assertExperience(page,name){ for(const selector of ['#house-field','.motion-control','.chapter-rail','[data-field-explorer]','#contact']) if(!await page.locator(selector).count()) throw new Error(`${name}: missing ${selector}`); const canvas=await page.locator('#house-field').evaluate(el=>({width:el.width,height:el.height})); if(canvas.width<1||canvas.height<1) throw new Error(`${name}: House field canvas not initialised`); await page.locator('#tab-products').click(); if(await page.locator('#tab-products').getAttribute('aria-selected')!=='true') throw new Error(`${name}: field tabs do not change state`); if(!await page.locator('#panel-products').isVisible()) throw new Error(`${name}: selected field panel not visible`); await page.locator('.motion-control').click(); if(await page.locator('.motion-control').getAttribute('aria-pressed')!=='true') throw new Error(`${name}: motion control did not pause`); }
