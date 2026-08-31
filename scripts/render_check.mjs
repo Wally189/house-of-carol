@@ -7,12 +7,39 @@ const browser = await chromium.launch({ headless: true });
 await fs.mkdir('qa-artifacts', { recursive: true });
 
 async function assertNoHorizontalOverflow(page, label) {
-  const geometry = await page.evaluate(() => ({
-    scrollWidth: document.documentElement.scrollWidth,
-    clientWidth: document.documentElement.clientWidth
-  }));
+  const geometry = await page.evaluate(() => {
+    const root = document.documentElement;
+    const clientWidth = root.clientWidth;
+    const offenders = [...document.querySelectorAll('body *')]
+      .map((el) => {
+        const rect = el.getBoundingClientRect();
+        const style = getComputedStyle(el);
+        return {
+          tag: el.tagName.toLowerCase(),
+          id: el.id || '',
+          cls: typeof el.className === 'string' ? el.className : '',
+          text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 90),
+          left: Math.round(rect.left * 10) / 10,
+          right: Math.round(rect.right * 10) / 10,
+          width: Math.round(rect.width * 10) / 10,
+          scrollWidth: el.scrollWidth,
+          clientWidth: el.clientWidth,
+          overflowX: style.overflowX,
+          position: style.position
+        };
+      })
+      .filter((item) => item.width > 0 && item.right > clientWidth + 1 && item.overflowX !== 'hidden' && item.overflowX !== 'clip')
+      .sort((a, b) => b.right - a.right)
+      .slice(0, 12);
+    return {
+      scrollWidth: root.scrollWidth,
+      clientWidth,
+      bodyScrollWidth: document.body.scrollWidth,
+      offenders
+    };
+  });
   if (geometry.scrollWidth > geometry.clientWidth + 1) {
-    throw new Error(`${label}: horizontal overflow ${geometry.scrollWidth} > ${geometry.clientWidth}`);
+    throw new Error(`${label}: horizontal overflow ${geometry.scrollWidth} > ${geometry.clientWidth}; offenders=${JSON.stringify(geometry.offenders)}`);
   }
 }
 
