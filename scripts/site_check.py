@@ -35,15 +35,18 @@ for page in HTML:
   if not (ROOT/(u.path or page.name)).resolve().exists(): fail(f'{page.name}: broken link {href}')
 home=HTML[0].read_text(encoding='utf-8').lower(); p=Parser(); p.feed(home)
 if len(p.forms)!=1 or p.forms[0].get('action')!='https://formspree.io/f/mgvgrgvb' or p.forms[0].get('method','').lower()!='post': fail('home: approved contact route')
-for x in ('we build useful businesses.','what we build','how we work','our businesses and ventures','alan w gallagher trading as house of carol','116 knole lane','alanwgallagher1@gmail.com','enquiries@houseofcarol.com','07933 657446'):
+for x in ('we build useful businesses.','what we build','how we work','our businesses and ventures','alan w gallagher trading as house of carol','116 knole lane','alanwgallagher1@gmail.com','07933 657446'):
  if x not in home: fail(f'home missing {x}')
+if 'enquiries@houseofcarol.com' in home: fail('home: unverified domain email remains')
 for x in ('ai-powered','industry-leading','world-class','52 departments','customer 000'):
  if x in home: fail(f'unsupported/internal claim {x}')
 privacy=' '.join(HTML[1].read_text(encoding='utf-8').lower().split())
-for x in ('data controller','legitimate interests','formspree','united states','standard contractual clauses','information commissioner','cookies and analytics'):
+for x in ('data controller','legitimate interests','formspree','united states','standard contractual clauses','information commissioner','cookies and analytics','alanwgallagher1@gmail.com'):
  if x not in privacy: fail(f'privacy missing {x}')
+if 'enquiries@houseofcarol.com' in privacy: fail('privacy: unverified domain email remains')
 terms=' '.join(HTML[2].read_text(encoding='utf-8').lower().split())
-for x in ('no automatic offer','intellectual property','nothing in these terms excludes','law of england and wales'):
+for x in ('no automatic offer','intellectual property','nothing in these terms excludes','law of england and wales','alanwgallagher1@gmail.com'):
  if x not in terms: fail(f'terms missing {x}')
+if 'enquiries@houseofcarol.com' in terms: fail('terms: unverified domain email remains')
 if 'Disallow: /' not in (ROOT/'robots.txt').read_text(encoding='utf-8'): fail('robots containment')
-print('PASS: preserved content/brand, contact, identity, privacy, terms, accessibility and containment baseline')
+print('PASS: preserved content/brand, verified contact identity, privacy, terms, accessibility and containment baseline')
