@@ -1,51 +1,59 @@
 import { chromium } from 'playwright';
 import fs from 'node:fs/promises';
+
 const BASE='http://127.0.0.1:8000';
 const browser=await chromium.launch({headless:true});
 await fs.mkdir('qa-artifacts',{recursive:true});
 
-async function assertNoHorizontalOverflow(page,label){
+async function assertNoOverflow(page,label){
   const g=await page.evaluate(()=>({client:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth,bodyClient:document.body.clientWidth,bodyScroll:document.body.scrollWidth}));
   if(g.scroll>g.client+1||g.bodyScroll>g.bodyClient+1) throw new Error(`${label}: horizontal overflow ${JSON.stringify(g)}`);
 }
-async function assertFocus(page,label){
-  await page.keyboard.press('Tab');
-  const f=await page.evaluate(()=>{const el=document.activeElement;const s=getComputedStyle(el);const r=el.getBoundingClientRect();return{tag:el?.tagName||'',outline:s.outlineStyle,width:parseFloat(s.outlineWidth||'0'),visible:r.width>0&&r.height>0}});
-  if(!f.visible||f.outline==='none'||f.width<1) throw new Error(`${label}: weak first focus ${JSON.stringify(f)}`);
+
+async function assertContent(page,label){
+  const body=(await page.locator('body').innerText()).toLowerCase();
+  const required=['we build useful businesses.','what we build','how we work','our businesses and ventures','bristol, united kingdom'];
+  for(const phrase of required) if(!body.includes(phrase)) throw new Error(`${label}: missing ${phrase}`);
+  const forbidden=['grand house','fields','threshold','workflow implementation','website release assurance','coming soon','current ventures','ai-powered','contact us'];
+  for(const phrase of forbidden) if(body.includes(phrase)) throw new Error(`${label}: stale/forbidden material ${phrase}`);
+  const counts=await page.evaluate(()=>({sections:document.querySelectorAll('main > section').length,navs:document.querySelectorAll('nav').length,forms:document.querySelectorAll('form').length,scripts:document.querySelectorAll('script').length,links:[...document.querySelectorAll('a')].map(a=>a.getAttribute('href'))}));
+  if(counts.sections!==4) throw new Error(`${label}: expected four public sections, got ${counts.sections}`);
+  if(counts.navs||counts.forms||counts.scripts) throw new Error(`${label}: unauthorised navigation/form/script present ${JSON.stringify(counts)}`);
+  const nonTechnical=counts.links.filter(h=>h && h!=='#main' && h!=='index.html');
+  if(nonTechnical.length) throw new Error(`${label}: unexpected link(s) ${nonTechnical.join(', ')}`);
 }
-async function exercise(viewport,name){
+
+async function run(viewport,name){
   const context=await browser.newContext({viewport});
   const page=await context.newPage();
   const external=[];
   page.on('request',r=>{const u=new URL(r.url());if(u.hostname!=='127.0.0.1')external.push(r.url());});
-  for(const [path,label] of [['index.html','home'],['ventures.html','ventures'],['about.html','about'],['how-we-work.html','how we work'],['contact.html','contact'],['privacy.html','privacy'],['terms.html','terms'],['404.html','404']]){
-    await page.goto(`${BASE}/${path}`,{waitUntil:'networkidle'});
-    await page.locator('h1').waitFor({state:'visible'});
-    await assertNoHorizontalOverflow(page,`${name} ${label}`);
-    if(path==='index.html'){
-      const body=(await page.locator('body').innerText()).toLowerCase();
-      for(const phrase of ['independent british venture business','intelligence','judgement','impact']) if(!body.includes(phrase)) throw new Error(`${name}: missing parent-brand signal ${phrase}`);
-      if(await page.locator('a[href="ventures.html"]').count()===0) throw new Error(`${name}: ventures route missing`);
-      for(const stale of ['workflow implementation','website release assurance','grand house','future-ready architecture','customer 000','engine architecture']) if(body.includes(stale)) throw new Error(`${name}: inward/stale/service-catalogue proposition present: ${stale}`);
-      await assertFocus(page,`${name} home`);
-      await page.screenshot({path:`qa-artifacts/${name}-home.png`,fullPage:true});
-    }
-  }
   await page.goto(`${BASE}/index.html`,{waitUntil:'networkidle'});
+  await page.locator('h1').waitFor({state:'visible'});
+  await assertContent(page,name);
+  await assertNoOverflow(page,name);
+  await page.keyboard.press('Tab');
+  const firstFocus=await page.evaluate(()=>{const el=document.activeElement;const s=getComputedStyle(el);return{tag:el?.tagName||'',outline:s.outlineStyle,width:parseFloat(s.outlineWidth||'0')}});
+  if(firstFocus.tag!=='A'||firstFocus.outline==='none'||firstFocus.width<1) throw new Error(`${name}: skip-link focus not visible ${JSON.stringify(firstFocus)}`);
+  await page.screenshot({path:`qa-artifacts/${name}-home.png`,fullPage:true});
   await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});
-  await assertNoHorizontalOverflow(page,`${name} 200% text`);
+  await assertNoOverflow(page,`${name} 200% text`);
   if(external.length) throw new Error(`${name}: unexpected external requests ${[...new Set(external)].join(', ')}`);
   await context.close();
 }
-await exercise({width:1440,height:900},'desktop');
-await exercise({width:390,height:844},'mobile');
-await exercise({width:320,height:900},'reflow-320');
-await exercise({width:800,height:1280},'tablet');
+
+await run({width:1440,height:900},'desktop');
+await run({width:800,height:1280},'tablet');
+await run({width:390,height:844},'mobile');
+await run({width:320,height:900},'reflow-320');
+
 const noJsContext=await browser.newContext({viewport:{width:390,height:844},javaScriptEnabled:false});
 const noJs=await noJsContext.newPage();
 await noJs.goto(`${BASE}/index.html`,{waitUntil:'load'});
 await noJs.locator('h1').waitFor({state:'visible'});
-await assertNoHorizontalOverflow(noJs,'no-JS mobile');
+await assertContent(noJs,'no-JS mobile');
+await assertNoOverflow(noJs,'no-JS mobile');
 await noJsContext.close();
+
 await browser.close();
-console.log('PASS: corporate House routes, responsive layouts, keyboard focus, enlarged-text and no-JS checks');
+console.log('PASS: restrained parent-company site across desktop/tablet/mobile/reflow, exact content envelope, no-JS and keyboard focus');
