@@ -1,0 +1,48 @@
+/* Owner-evidence mobile correction — 2026-09-01. This file deliberately overrides the shared build without reopening the brand system. */
+body{overflow-wrap:normal}
+h1,h2,h3,.brand,.hero-note strong,.duo-panel strong{overflow-wrap:normal;word-break:normal;hyphens:none}
+p,.lede,.rule-row p,.process-step p,.service-fact,.contact-line,.notice{overflow-wrap:break-word;word-break:normal}
+
+@media (max-width:900px), (hover:none) and (pointer:coarse){
+  .nav-wide{display:none!important}
+  .mobile-menu{display:block!important}
+  .header-inner{gap:.75rem;min-height:68px}
+  .brand{min-width:0;max-width:72%;font-size:.95rem;line-height:1.05}
+  .brand-mark{width:30px;height:30px}
+  .mobile-panel{top:4.1rem;max-height:calc(100vh - 5rem);overflow:auto}
+
+  .hero{min-height:auto}
+  .hero:before{inset:56% 0 0 0;clip-path:polygon(0 12%,100% 0,100% 100%,0 100%)}
+  .hero:after{width:260px;height:260px;right:-6rem;top:auto;bottom:3rem}
+  .hero-grid,.salon-grid,.curiosity-grid,.split,.service-intro,.contact-stage,.footer-grid{grid-template-columns:minmax(0,1fr)!important;gap:2.5rem!important}
+  .hero-grid{padding:4rem 0 4.5rem!important}
+  .hero-note{max-width:none;width:100%;align-self:auto;padding:1.6rem}
+  .hero-note:before{display:none}
+  .duo{grid-template-columns:minmax(0,1fr)!important}
+  .cabinet-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .section{padding:4.5rem 0}
+  .page-hero{padding:5rem 0 4rem}
+  .curiosity-image{min-height:420px}
+  h1{font-size:clamp(3rem,14vw,4.8rem);max-width:12ch}
+  h2{font-size:clamp(2.45rem,11vw,4rem);max-width:14ch}
+  .rule-row,.process-step{grid-template-columns:52px minmax(0,1fr)}
+}
+
+@media (max-width:560px), (hover:none) and (pointer:coarse) and (max-device-width:560px){
+  .shell{width:min(calc(100% - 1.5rem),var(--max))}
+  .brand{max-width:78%;font-size:.88rem}
+  .brand-mark{width:27px;height:27px}
+  .cabinet-grid,.proof-strip,.feature-band{grid-template-columns:minmax(0,1fr)!important}
+  .duo-panel{min-height:390px;padding:2rem 1.25rem}
+  .footer-bottom{flex-direction:column;gap:.4rem}
+  .brand-triad{gap:.65rem}
+  .brand-triad span:not(:last-child):after{display:none}
+}
+
+@media (max-width:400px), (hover:none) and (pointer:coarse) and (max-device-width:400px){
+  .brand-mark{display:none}
+  .brand{max-width:76%;font-size:.82rem}
+  h1{font-size:clamp(2.8rem,15vw,3.8rem)}
+  h2{font-size:clamp(2.3rem,12vw,3.4rem)}
+  .button{width:100%}
+}
