@@ -88,13 +88,13 @@ for base,p in pages.items():
             if tp is None: tp,_=parse(target)
             if frag not in tp.ids: fail(f'{base.name}: broken anchor {href}')
 index=(ROOT/'index.html').resolve(); index_text=texts[index].lower()
-for required in ('house of carol','intelligence','judgement','impact','workflow implementation','website release assurance','controlled preview'):
-    if required not in index_text: fail(f'index missing current brand/commercial truth: {required}')
-for forbidden in ('customer 000','330-function','52 departments','our ai team'):
-    if forbidden in index_text: fail(f'index leaks internal machinery: {forbidden}')
+for required in ('house of carol','independent british venture business','intelligence','judgement','impact','ventures.html','controlled preview'):
+    if required not in index_text: fail(f'index missing current corporate truth: {required}')
+for forbidden in ('workflow implementation','website release assurance','customer 000','330-function','52 departments','our ai team'):
+    if forbidden in index_text: fail(f'index leaks service catalogue/internal machinery: {forbidden}')
 if 'class="card' in index_text or ' class="card' in index_text: fail('generic card component introduced')
 css=STYLE.read_text(encoding='utf-8').lower()+MOBILE_STYLE.read_text(encoding='utf-8').lower()
 for token in ('--carol:#081d2d','--claret:#7a1e2e','prefers-reduced-motion',':focus'):
     if token not in css: fail(f'CSS missing current brand/accessibility token: {token}')
 if 'Disallow: /' not in ROBOTS.read_text(encoding='utf-8'): fail('robots containment missing')
-print(f'PASS: {len(HTML_FILES)} pages — current House truth, controlled-preview containment, approved styles, static integrity, local links and anti-sludge checks')
+print(f'PASS: {len(HTML_FILES)} pages — corporate House truth, controlled-preview containment, approved styles, static integrity, local links and anti-sludge checks')
