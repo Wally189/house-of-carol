@@ -35,7 +35,7 @@ for page in HTML:
   if not (ROOT/(u.path or page.name)).resolve().exists(): fail(f'{page.name}: broken link {href}')
 home=HTML[0].read_text(encoding='utf-8').lower(); p=Parser(); p.feed(home)
 if len(p.forms)!=1 or p.forms[0].get('action')!='https://formspree.io/f/mgvgrgvb' or p.forms[0].get('method','').lower()!='post': fail('home: approved contact route')
-for x in ('we build useful businesses.','what we build','how we work','our businesses and ventures','alan w gallagher trading as house of carol','116 knole lane','alanwgallagher1@gmail.com','07933 657446'):
+for x in ('we build useful businesses.','what we build','how we work','our businesses and ventures','alan w gallagher trading as house of carol','116 knole lane','alanwgallagher1@gmail.com','enquiries@houseofcarol.com','07933 657446'):
  if x not in home: fail(f'home missing {x}')
 for x in ('ai-powered','industry-leading','world-class','52 departments','customer 000'):
  if x in home: fail(f'unsupported/internal claim {x}')
