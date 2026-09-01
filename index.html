@@ -6,9 +6,10 @@
   <meta name="theme-color" content="#081d2d">
   <meta name="robots" content="noindex,nofollow">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action https://formspree.io; base-uri 'self'; object-src 'none'">
   <link rel="icon" href="assets/hoc-mark.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/hoc-rebuild.css">
+  <link rel="stylesheet" href="assets/hoc-contact.css">
   <title>House of Carol</title>
   <meta name="description" content="House of Carol builds useful businesses.">
 </head>
@@ -77,12 +78,34 @@
         <div class="venture-placeholder" aria-hidden="true"></div>
       </div>
     </section>
+
+    <section class="section contact" id="contact" aria-labelledby="contact-title">
+      <div class="shell content-grid">
+        <div>
+          <h2 id="contact-title">Contact</h2>
+          <div class="contact-details">
+            <p><strong>Alan W Gallagher trading as House of Carol</strong></p>
+            <address>116 Knole Lane<br>Bristol<br>BS10 6RY<br>United Kingdom</address>
+            <p><a href="mailto:alanwgallagher1@gmail.com">alanwgallagher1@gmail.com</a><br><a href="tel:+447933657446">07933 657446</a></p>
+          </div>
+        </div>
+        <form class="contact-form" action="https://formspree.io/f/mgvgrgvb" method="post" accept-charset="UTF-8">
+          <input type="hidden" name="_subject" value="House of Carol website enquiry">
+          <div class="field"><label for="name">Name</label><input id="name" name="name" type="text" autocomplete="name" required></div>
+          <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" required></div>
+          <div class="field"><label for="message">Message</label><textarea id="message" name="message" rows="7" required></textarea></div>
+          <button type="submit">Send enquiry</button>
+          <p class="form-note">We use these details only to handle your enquiry. Read our <a href="privacy.html">privacy notice</a>.</p>
+        </form>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
     <div class="shell">
       <div class="footer-brand">House of Carol</div>
-      <p>Bristol, United Kingdom</p>
+      <p>Alan W Gallagher trading as House of Carol · Bristol, United Kingdom</p>
+      <nav class="footer-links" aria-label="Legal and contact information"><a href="#contact">Contact</a><a href="privacy.html">Privacy</a><a href="terms.html">Website terms</a></nav>
     </div>
   </footer>
 </body>
