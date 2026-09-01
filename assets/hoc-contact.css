@@ -1,0 +1,16 @@
+.contact{background:var(--paper)}
+.contact-details{margin-top:1.5rem}
+.contact-details address{font-style:normal;margin:1rem 0}
+.contact-form{display:grid;gap:1.2rem;max-width:680px}
+.field{display:grid;gap:.45rem}
+.field label{font-weight:750;color:var(--carol)}
+.field input,.field textarea{width:100%;border:1px solid rgba(8,29,45,.45);border-radius:0;background:var(--white);color:var(--ink);font:inherit;padding:.8rem}
+.field textarea{resize:vertical}
+.contact-form button{justify-self:start;border:2px solid var(--claret);background:var(--claret);color:var(--white);font:700 .95rem/1 var(--sans);padding:.9rem 1.25rem;cursor:pointer}
+.contact-form button:hover{background:var(--carol);border-color:var(--carol)}
+.form-note{margin:0;color:var(--muted);font-size:.92rem}
+.footer-links{display:flex;flex-wrap:wrap;gap:1.2rem;margin-top:1.2rem}
+.legal-page{max-width:820px;padding-top:clamp(4rem,8vw,7rem);padding-bottom:clamp(5rem,9vw,8rem)}
+.legal-page h1,.legal-page h2{font-family:var(--serif);font-weight:400;color:var(--carol);letter-spacing:-.025em}
+.legal-page h1{font-size:clamp(2.8rem,7vw,5.5rem);line-height:.98;margin:.4rem 0 2rem}
+.legal-page h2{font-size:clamp(1.5rem,3vw,2.1rem);margin:2.2rem 0 .5rem}
