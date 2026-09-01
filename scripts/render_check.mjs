@@ -18,17 +18,15 @@ async function exercise(viewport,name){
   const page=await context.newPage();
   const external=[];
   page.on('request',r=>{const u=new URL(r.url());if(u.hostname!=='127.0.0.1')external.push(r.url());});
-  for(const [path,label] of [['index.html','home'],['services.html','current work'],['workflow-implementation.html','workflow'],['website-release-assurance.html','release assurance'],['about.html','about'],['how-we-work.html','approach'],['contact.html','contact'],['privacy.html','privacy'],['terms.html','terms'],['404.html','404']]){
+  for(const [path,label] of [['index.html','home'],['ventures.html','ventures'],['about.html','about'],['how-we-work.html','how we work'],['contact.html','contact'],['privacy.html','privacy'],['terms.html','terms'],['404.html','404']]){
     await page.goto(`${BASE}/${path}`,{waitUntil:'networkidle'});
     await page.locator('h1').waitFor({state:'visible'});
     await assertNoHorizontalOverflow(page,`${name} ${label}`);
     if(path==='index.html'){
       const body=(await page.locator('body').innerText()).toLowerCase();
-      for(const phrase of ['intelligence','judgement','impact']) if(!body.includes(phrase)) throw new Error(`${name}: missing parent-brand signal ${phrase}`);
-      for(const href of ['workflow-implementation.html','website-release-assurance.html']){
-        if(await page.locator(`a[href="${href}"]`).count()===0) throw new Error(`${name}: current service route missing ${href}`);
-      }
-      for(const stale of ['grand house','future-ready architecture','customer 000','engine architecture']) if(body.includes(stale)) throw new Error(`${name}: inward/stale proposition present: ${stale}`);
+      for(const phrase of ['independent british venture business','intelligence','judgement','impact']) if(!body.includes(phrase)) throw new Error(`${name}: missing parent-brand signal ${phrase}`);
+      if(await page.locator('a[href="ventures.html"]').count()===0) throw new Error(`${name}: ventures route missing`);
+      for(const stale of ['workflow implementation','website release assurance','grand house','future-ready architecture','customer 000','engine architecture']) if(body.includes(stale)) throw new Error(`${name}: inward/stale/service-catalogue proposition present: ${stale}`);
       await assertFocus(page,`${name} home`);
       await page.screenshot({path:`qa-artifacts/${name}-home.png`,fullPage:true});
     }
@@ -50,4 +48,4 @@ await noJs.locator('h1').waitFor({state:'visible'});
 await assertNoHorizontalOverflow(noJs,'no-JS mobile');
 await noJsContext.close();
 await browser.close();
-console.log('PASS: current House routes, responsive layouts, keyboard focus, enlarged-text and no-JS checks');
+console.log('PASS: corporate House routes, responsive layouts, keyboard focus, enlarged-text and no-JS checks');
