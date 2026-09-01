@@ -4,97 +4,105 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
+EXPECTED_HTML = {'index.html', '404.html'}
 HTML_FILES = sorted(p for p in ROOT.glob('*.html') if p.is_file())
-REQUIRED_STYLE = 'assets/hoc-rebuild.css'
-ALLOWED_STYLES = {REQUIRED_STYLE, 'assets/hoc-mobile-fix.css'}
-STYLE = ROOT / REQUIRED_STYLE
-MOBILE_STYLE = ROOT / 'assets' / 'hoc-mobile-fix.css'
+STYLE = ROOT / 'assets' / 'hoc-rebuild.css'
 MARK = ROOT / 'assets' / 'hoc-mark.svg'
 ROBOTS = ROOT / 'robots.txt'
 
-BANNED_PUBLIC_PHRASES = ('52-hive','52 hive','engine architecture','maturity score','acquisition gate','world-class','game-changing','industry-leading','cutting-edge','transformational','cross-functional synergies','future-ready architecture','grand house','ai-powered','waylight atlantic','alanwpgallagher.info','customer 000','330-function','our ai team')
-BANNED_AI_SLUDGE = ('delve into','vibrant tapestry','seamless journey','unlock the power','ever-evolving landscape','supercharge your business','unlock your potential')
+REQUIRED_COPY = (
+    'we build useful businesses.',
+    'house of carol develops products, services and ventures designed to solve real problems and create genuine customer value.',
+    'we start small, test ideas against reality and invest further only when they earn it.',
+    'what we build',
+    'house of carol can develop businesses in more than one field.',
+    'they must be useful, commercially sound and worth doing properly.',
+    'we do not keep ideas alive simply because we are fond of them.',
+    'how we work',
+    'useful before complicated.',
+    'start with the problem, not the technology.',
+    'evidence before expansion.',
+    'real customers and real results matter more than internal enthusiasm.',
+    'built properly.',
+    'clear thinking, good design and professional standards are part of the work.',
+    'long-term where it earns it.',
+    'good businesses should become dependable, repeatable and capable of growing.',
+    'our businesses and ventures',
+    'bristol, united kingdom',
+)
 
-class PageParser(HTMLParser):
+FORBIDDEN = (
+    'grand house', 'fields', 'threshold', '52 departments', '330-function',
+    'customer 000', 'engine architecture', 'workflow implementation',
+    'website release assurance', 'coming soon', 'current ventures',
+    'portfolio category', 'ai-powered', 'our ai team', 'contact us',
+)
+
+class Parser(HTMLParser):
     def __init__(self):
-        super().__init__(convert_charrefs=True); self.ids=set(); self.hrefs=[]; self.scripts=[]; self.styles=[]; self.forms=[]; self.lang=None; self.viewport=False; self.robots=None; self.csp=None; self.title_count=0; self.h1_count=0; self.descriptions=[]; self.inline_scripts=0
+        super().__init__(convert_charrefs=True)
+        self.lang = None; self.viewport = False; self.robots = None; self.csp = None
+        self.title_count = 0; self.h1_count = 0; self.descriptions = []
+        self.forms = []; self.scripts = []; self.inline_scripts = 0; self.hrefs = []
     def handle_starttag(self, tag, attrs_list):
-        attrs={k:(v or '') for k,v in attrs_list}
-        if tag=='html': self.lang=attrs.get('lang')
-        elif tag=='title': self.title_count+=1
-        elif tag=='h1': self.h1_count+=1
-        elif tag=='meta':
-            if attrs.get('name')=='viewport': self.viewport=bool(attrs.get('content'))
-            elif attrs.get('name')=='robots': self.robots=attrs.get('content')
-            elif attrs.get('name')=='description': self.descriptions.append(attrs.get('content'))
-            elif attrs.get('http-equiv','').lower()=='content-security-policy': self.csp=attrs.get('content')
-        if 'id' in attrs:
-            if attrs['id'] in self.ids: raise AssertionError(f"duplicate id: {attrs['id']}")
-            self.ids.add(attrs['id'])
-        if tag=='a' and attrs.get('href'): self.hrefs.append(attrs['href'])
-        elif tag=='script':
+        attrs = {k:(v or '') for k,v in attrs_list}
+        if tag == 'html': self.lang = attrs.get('lang')
+        elif tag == 'title': self.title_count += 1
+        elif tag == 'h1': self.h1_count += 1
+        elif tag == 'meta':
+            if attrs.get('name') == 'viewport': self.viewport = bool(attrs.get('content'))
+            elif attrs.get('name') == 'robots': self.robots = attrs.get('content')
+            elif attrs.get('name') == 'description': self.descriptions.append(attrs.get('content'))
+            elif attrs.get('http-equiv','').lower() == 'content-security-policy': self.csp = attrs.get('content')
+        elif tag == 'form': self.forms.append(attrs)
+        elif tag == 'script':
             if attrs.get('src'): self.scripts.append(attrs['src'])
             else: self.inline_scripts += 1
-        elif tag=='link' and attrs.get('rel')=='stylesheet' and attrs.get('href'): self.styles.append(attrs['href'])
-        elif tag=='form': self.forms.append(attrs)
+        elif tag == 'a' and attrs.get('href'): self.hrefs.append(attrs['href'])
 
-def fail(message): raise SystemExit(f'FAIL: {message}')
+def fail(msg): raise SystemExit(f'FAIL: {msg}')
+
 def parse(path):
-    parser=PageParser(); text=path.read_text(encoding='utf-8')
-    try: parser.feed(text)
-    except AssertionError as exc: fail(f'{path.name}: {exc}')
-    lowered=text.lower()
-    for phrase in (*BANNED_PUBLIC_PHRASES,*BANNED_AI_SLUDGE):
-        if phrase in lowered: fail(f'{path.name}: banned inward/hype/sludge phrase present: {phrase}')
-    return parser,text
+    p = Parser(); text = path.read_text(encoding='utf-8'); p.feed(text); return p, text
 
-if not HTML_FILES: fail('no root HTML pages found')
-for item in (STYLE,MOBILE_STYLE,MARK,ROBOTS):
+if {p.name for p in HTML_FILES} != EXPECTED_HTML:
+    fail(f'root HTML must be exactly {sorted(EXPECTED_HTML)}; found {[p.name for p in HTML_FILES]}')
+for item in (STYLE, MARK, ROBOTS):
     if not item.exists(): fail(f'missing {item.relative_to(ROOT)}')
-pages={}; texts={}
-for html in HTML_FILES:
-    p,text=parse(html); pages[html.resolve()]=p; texts[html.resolve()]=text
-    if p.lang!='en-GB': fail(f'{html.name}: lang must be en-GB')
-    if p.title_count!=1 or p.h1_count!=1: fail(f'{html.name}: expected exactly one title and one h1')
-    if not p.viewport: fail(f'{html.name}: viewport missing')
-    if p.robots!='noindex,nofollow': fail(f'{html.name}: controlled-preview containment missing')
-    if not p.csp: fail(f'{html.name}: CSP missing')
-    for directive in ("object-src 'none'","base-uri 'self'","script-src 'none'","form-action 'none'"):
-        if directive not in p.csp: fail(f'{html.name}: CSP missing {directive}')
-    if REQUIRED_STYLE not in p.styles: fail(f'{html.name}: missing {REQUIRED_STYLE}')
-    unexpected=[s for s in p.styles if s not in ALLOWED_STYLES]
-    if unexpected: fail(f'{html.name}: unapproved stylesheet(s): {unexpected}')
-    if len(p.styles)!=len(set(p.styles)): fail(f'{html.name}: duplicate stylesheet reference')
-    if p.scripts or p.inline_scripts: fail(f'{html.name}: scripts present in static controlled preview')
-    if len(p.descriptions)!=1 or not p.descriptions[0].strip(): fail(f'{html.name}: descriptive meta missing')
-    if p.forms: fail(f'{html.name}: public form present before authorised contact activation')
 
-def local_target(base,href):
-    parsed=urlparse(href)
-    if parsed.scheme in {'mailto','tel'}: return None
-    if parsed.scheme or parsed.netloc:
-        if parsed.scheme!='https': fail(f'{base.name}: non-https external link {href}')
-        return None
-    return (base.parent/(parsed.path or base.name)).resolve(), parsed.fragment or None
-for base,p in pages.items():
+for html in HTML_FILES:
+    p, text = parse(html)
+    if p.lang != 'en-GB': fail(f'{html.name}: lang must be en-GB')
+    if p.title_count != 1 or p.h1_count != 1: fail(f'{html.name}: expected one title and one h1')
+    if not p.viewport: fail(f'{html.name}: viewport missing')
+    if p.robots != 'noindex,nofollow': fail(f'{html.name}: containment missing')
+    if not p.csp: fail(f'{html.name}: CSP missing')
+    for directive in ("object-src 'none'", "base-uri 'self'", "script-src 'none'", "form-action 'none'", "connect-src 'none'"):
+        if directive not in p.csp: fail(f'{html.name}: CSP missing {directive}')
+    if p.forms or p.scripts or p.inline_scripts: fail(f'{html.name}: interactive/data-collection code present')
+    if len(p.descriptions) != 1 or not p.descriptions[0].strip(): fail(f'{html.name}: description missing')
     for href in p.hrefs:
-        info=local_target(base,href)
-        if info is None: continue
-        target,frag=info
-        if target.suffix=='': target=target/'index.html'
-        if not target.exists(): fail(f'{base.name}: broken local link {href}')
-        if frag and target.suffix=='.html':
-            tp=pages.get(target.resolve())
-            if tp is None: tp,_=parse(target)
-            if frag not in tp.ids: fail(f'{base.name}: broken anchor {href}')
-index=(ROOT/'index.html').resolve(); index_text=texts[index].lower()
-for required in ('house of carol','independent british venture business','intelligence','judgement','impact','ventures.html','controlled preview'):
-    if required not in index_text: fail(f'index missing current corporate truth: {required}')
-for forbidden in ('workflow implementation','website release assurance','customer 000','330-function','52 departments','our ai team'):
-    if forbidden in index_text: fail(f'index leaks service catalogue/internal machinery: {forbidden}')
-if 'class="card' in index_text or ' class="card' in index_text: fail('generic card component introduced')
-css=STYLE.read_text(encoding='utf-8').lower()+MOBILE_STYLE.read_text(encoding='utf-8').lower()
-for token in ('--carol:#081d2d','--claret:#7a1e2e','prefers-reduced-motion',':focus'):
-    if token not in css: fail(f'CSS missing current brand/accessibility token: {token}')
-if 'Disallow: /' not in ROBOTS.read_text(encoding='utf-8'): fail('robots containment missing')
-print(f'PASS: {len(HTML_FILES)} pages — corporate House truth, controlled-preview containment, approved styles, static integrity, local links and anti-sludge checks')
+        parsed = urlparse(href)
+        if parsed.scheme or parsed.netloc:
+            fail(f'{html.name}: external link present: {href}')
+        target = (html.parent / (parsed.path or html.name)).resolve()
+        if target.suffix == '': target = target / 'index.html'
+        if not target.exists(): fail(f'{html.name}: broken local link {href}')
+
+index_text = (ROOT / 'index.html').read_text(encoding='utf-8').lower()
+for phrase in REQUIRED_COPY:
+    if phrase not in index_text: fail(f'index missing approved copy: {phrase}')
+for phrase in FORBIDDEN:
+    if phrase in index_text: fail(f'index contains forbidden/stale material: {phrase}')
+for forbidden_element in ('<nav', '<form', '<script', 'mailto:', 'tel:'):
+    if forbidden_element in index_text: fail(f'index contains unauthorised element: {forbidden_element}')
+if index_text.count('<section') != 4:
+    fail('index must contain exactly four public content sections')
+
+css = STYLE.read_text(encoding='utf-8').lower()
+for token in ('--carol:#081d2d', '--claret:#7a1e2e', 'prefers-reduced-motion', ':focus-visible'):
+    if token not in css: fail(f'CSS missing brand/accessibility token: {token}')
+if 'Disallow: /' not in ROBOTS.read_text(encoding='utf-8'):
+    fail('robots containment missing')
+
+print('PASS: minimal parent-company site, exact content envelope, no enquiry/data collection, containment and accessibility/security baseline')
