@@ -20,8 +20,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Static integrity, containment and human-voice release checks
+      - name: Production-site static integrity and containment checks
         run: python scripts/site_check.py
+      - name: QA storefront containment and brand checks
+        run: python scripts/qa_site_check.py
       - name: Install Playwright
         run: |
           npm install --no-save playwright@1.55.0
@@ -31,13 +33,15 @@ jobs:
           python -m http.server 8000 --bind 127.0.0.1 > /tmp/hoc-http.log 2>&1 &
           echo $! > /tmp/hoc-http.pid
           sleep 2
-      - name: Browser, accessibility, responsive and enlarged-text regression
+      - name: Production browser, accessibility, responsive and enlarged-text regression
         run: node scripts/render_check.mjs
+      - name: QA storefront responsive and enlarged-text regression
+        run: node scripts/qa_render_check.mjs
       - name: Upload QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hoc-human-house-qa-${{ github.sha }}
+          name: hoc-site-qa-${{ github.sha }}
           path: qa-artifacts/
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 14
