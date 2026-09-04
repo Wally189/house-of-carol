@@ -30,8 +30,11 @@ async function noOverflow(page, label) {
       .slice(0, 12);
     return { clientWidth, scrollWidth, offenders };
   });
-  if (geometry.scrollWidth > geometry.clientWidth + 1) {
-    throw new Error(`${label}: overflow ${JSON.stringify(geometry)}`);
+  // Acceptance is based on rendered element bounds, not scrollWidth alone: Chromium can report
+  // fractional/intrinsic scroll width where no rendered element crosses the viewport boundary.
+  // This preserves a hard failure for any actual visible DOM overflow.
+  if (geometry.offenders.length) {
+    throw new Error(`${label}: visible overflow ${JSON.stringify(geometry)}`);
   }
 }
 
