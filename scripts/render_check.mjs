@@ -15,16 +15,20 @@ async function noOverflow(page, label) {
   }
 }
 
+async function visibleText(page) {
+  return (await page.locator('body').innerText()).toLowerCase();
+}
+
 async function checkCurrentHome(page, name) {
   await page.goto(`${BASE}/index.html`, { waitUntil: 'networkidle' });
   await page.locator('h1').waitFor();
-  const body = await page.locator('body').innerText();
+  const body = await visibleText(page);
   for (const text of [
-    'A useful place for difficult business work.',
-    'What can the House help with?',
-    'Products & services',
-    'Bring us a problem',
-    'Contact',
+    'a useful place for difficult business work.',
+    'what can the house help with?',
+    'products & services',
+    'bring us a problem',
+    'contact',
   ]) {
     if (!body.includes(text)) throw new Error(`${name}: missing ${text}`);
   }
@@ -41,14 +45,14 @@ async function checkCurrentHome(page, name) {
 async function checkTenderReview(page, name) {
   await page.goto(`${BASE}/tender-review.html`, { waitUntil: 'networkidle' });
   await page.locator('h1').waitFor();
-  const body = await page.locator('body').innerText();
+  const body = await visibleText(page);
   for (const text of [
-    'A fresh pair of eyes before an important submission goes in.',
-    'Fit first. Files later.',
-    'Read what was asked',
-    'Test what is claimed',
-    'Find what was missed',
-    'Prioritise what matters',
+    'a fresh pair of eyes before an important submission goes in.',
+    'fit first. files later.',
+    'read what was asked',
+    'test what is claimed',
+    'find what was missed',
+    'prioritise what matters',
   ]) {
     if (!body.includes(text)) throw new Error(`${name} tender-review: missing ${text}`);
   }
