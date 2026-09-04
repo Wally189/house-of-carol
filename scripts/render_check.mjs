@@ -6,10 +6,30 @@ const browser = await chromium.launch({ headless: true });
 await fs.mkdir('qa-artifacts', { recursive: true });
 
 async function noOverflow(page, label) {
-  const geometry = await page.evaluate(() => ({
-    clientWidth: document.documentElement.clientWidth,
-    scrollWidth: document.documentElement.scrollWidth,
-  }));
+  const geometry = await page.evaluate(() => {
+    const clientWidth = document.documentElement.clientWidth;
+    const scrollWidth = document.documentElement.scrollWidth;
+    const offenders = [...document.querySelectorAll('*')]
+      .map((el) => {
+        const r = el.getBoundingClientRect();
+        const s = getComputedStyle(el);
+        return {
+          tag: el.tagName,
+          id: el.id || '',
+          cls: typeof el.className === 'string' ? el.className : '',
+          left: Math.round(r.left * 100) / 100,
+          right: Math.round(r.right * 100) / 100,
+          width: Math.round(r.width * 100) / 100,
+          position: s.position,
+          overflowX: s.overflowX,
+          text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 90),
+        };
+      })
+      .filter((x) => x.right > clientWidth + 1 || x.left < -1)
+      .sort((a, b) => Math.max(b.right - clientWidth, -b.left) - Math.max(a.right - clientWidth, -a.left))
+      .slice(0, 12);
+    return { clientWidth, scrollWidth, offenders };
+  });
   if (geometry.scrollWidth > geometry.clientWidth + 1) {
     throw new Error(`${label}: overflow ${JSON.stringify(geometry)}`);
   }
