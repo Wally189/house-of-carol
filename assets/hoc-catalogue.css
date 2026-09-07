@@ -49,5 +49,8 @@
 .breadcrumb a{color:var(--claret)}
 .price-box{background:#fff;color:var(--ink);border:1px solid var(--line);padding:clamp(1.6rem,3vw,2.3rem);max-width:760px}
 .price-box p:last-child{margin-bottom:0}
+.catalogue-grid>*,.catalogue-list,.catalogue-card,.catalogue-small,.recognition-grid>*,.before-after>*,.steps-grid>*,.fit-grid>*,.product-section .content-grid>*,.price-box{min-width:0}
+.catalogue-card h2,.catalogue-card p,.catalogue-small h3,.catalogue-small p,.product-section h2,.product-section h3,.product-section p,.product-section li,.price-box{overflow-wrap:anywhere}
+
 @media(max-width:900px){.catalogue-grid,.steps-grid{grid-template-columns:1fr 1fr}.steps-grid article:last-child{grid-column:1/-1}.cta-panel{align-items:flex-start;flex-direction:column}}
 @media(max-width:650px){.catalogue-grid,.recognition-grid,.before-after,.steps-grid,.fit-grid{grid-template-columns:1fr}.steps-grid article:last-child{grid-column:auto}.product-hero h1{font-size:clamp(2.7rem,12vw,4.6rem)}}
