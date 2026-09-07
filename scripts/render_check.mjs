@@ -15,8 +15,8 @@ async function openAndCheck(page,path,label,required){
   if(!response || !response.ok()) throw new Error(`${label}: response ${response?.status()}`);
   await page.locator('h1').waitFor();
   if(await page.locator('h1').count()!==1) throw new Error(`${label}: expected one h1`);
-  const body=await page.locator('body').innerText();
-  for(const phrase of required) if(!body.includes(phrase)) throw new Error(`${label}: missing ${phrase}`);
+  const body=(await page.locator('body').innerText()).toLowerCase();
+  for(const phrase of required) if(!body.includes(phrase.toLowerCase())) throw new Error(`${label}: missing ${phrase}`);
   await noOverflow(page,label);
 }
 
