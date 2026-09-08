@@ -3,7 +3,7 @@
 .catalogue-hero h1,.product-hero h1,.product-section h2,.product-section h3,.catalogue-grid h2,.catalogue-card h2{font-family:var(--serif);font-weight:400;letter-spacing:-.035em;color:var(--carol)}
 .catalogue-hero h1{font-size:clamp(3.4rem,7vw,6.5rem);line-height:.96;margin:.2rem 0 1.5rem;max-width:11ch;overflow-wrap:anywhere;hyphens:auto}
 .catalogue-hero .lede{max-width:760px}
-.catalogue-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.2rem;margin-top:3rem}
+.catalogue-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.2rem;margin-top:3rem}
 .catalogue-card{background:#fff;border:1px solid var(--line);padding:clamp(1.8rem,4vw,3rem)}
 .catalogue-card.primary{background:var(--carol);color:#fff}
 .catalogue-card.primary h2,.catalogue-card.primary .eyebrow{color:#fff}
