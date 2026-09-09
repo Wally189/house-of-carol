@@ -86,7 +86,7 @@ for area,plist in area_products.items():
     for product in plist:
         if ap.hrefs.count(product)!=1: fail(area+': expected one link to '+product)
         pp=parsers[product]
-        if area not in pp.hrefs: fail(product+': service area route missing')
+        if not any(href == area or href.startswith(area+'#') for href in pp.hrefs): fail(product+': service area route missing')
         if 'catalogue.html' not in pp.hrefs or 'index.html' not in pp.hrefs: fail(product+': hierarchy route missing')
 
 contact=parsers['contact.html']
