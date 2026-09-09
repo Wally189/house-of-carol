@@ -132,7 +132,9 @@ for _area,_plist in area_products.items():
 
 # INTERACTION CONTRACT: catalogue cards and service rows
 _catalogue=(ROOT/'catalogue.html').read_text(encoding='utf-8')
-if _catalogue.count('class="area-card-link"') != 7:\n    fail('catalogue whole-card link count')\nif _catalogue.count('class="area-cue"') != 7:
+if _catalogue.count('class="area-card-link"') != 7:
+    fail('catalogue whole-card link count')
+if _catalogue.count('class="area-cue"') != 7:
     fail('catalogue area cue count')
 if 'class="text-link"' in _catalogue and 'View ' in _catalogue:
     fail('duplicate area navigation link remains')
@@ -140,7 +142,9 @@ if 'class="text-link"' in _catalogue and 'View ' in _catalogue:
 for _area in AREA_PAGES:
     _txt=(ROOT/_area).read_text(encoding='utf-8')
     _service_count=len(re.findall(r'<article class="service-entry"', _txt))
-    if _txt.count('class="service-card-link"') != _service_count:\n        fail(_area+': whole-row link count mismatch')\n    if _txt.count('class="service-cue"') != _service_count:
+    if _txt.count('class="service-card-link"') != _service_count:
+        fail(_area+': whole-row link count mismatch')
+    if _txt.count('class="service-cue"') != _service_count:
         fail(_area+': service cue count mismatch')
 
 print('PASS: 7-area catalogue -> 7 area catalogues -> 52 service pages; hierarchy, pricing separation, metadata, containment, navigation, links, contact and legal checks pass')
