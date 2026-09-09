@@ -133,3 +133,21 @@
   .area-catalogue .service-card-link{display:block;padding:21px 0 23px}
   .service-cue{margin-top:16px}
 }
+
+
+/* Touch focus cleanup */
+@media (hover:none) and (pointer:coarse){
+  .area-card-link,
+  .service-card-link{
+    -webkit-tap-highlight-color:rgba(8,29,45,.08);
+  }
+  .area-card-link:focus-visible,
+  .service-card-link:focus-visible{
+    outline:none;
+    box-shadow:none;
+  }
+  .area-card-link:active,
+  .service-card-link:active{
+    background:var(--pale);
+  }
+}
