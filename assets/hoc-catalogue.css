@@ -57,13 +57,13 @@
   .area-entry{padding-left:56px;padding-right:56px}
 }
 
-body:has(.area-catalogue) .catalogue-hero{
+.area-catalogue-page .catalogue-hero{
   background:var(--pale);
 }
-body:has(.area-catalogue) .area-catalogue{
+.area-catalogue-page .area-catalogue{
   background:#fff;
 }
-body:has(.area-catalogue) .area-catalogue .service-entry{
+.area-catalogue-page .area-catalogue .service-entry{
   background:#fff;
 }
 
