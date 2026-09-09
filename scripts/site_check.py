@@ -51,7 +51,7 @@ area_products={}
 for area in AREA_PAGES:
     text=(ROOT/area).read_text(encoding='utf-8')
     if re.search(r'£\s?\d', text): fail(area+': area catalogue contains a displayed price')
-    found=re.findall(r'<article class="service-entry" data-offer-id="(HOC-\d{3})">\s*<h3><a href="([^"]+\.html)">', text, flags=re.S)
+    found=re.findall(r'<article class="service-entry"(?: id="hoc-\d{3}")? data-offer-id="(HOC-\d{3})">\s*<h3><a href="([^"]+\.html)">', text, flags=re.S)
     if not found: fail(area+': no service entries')
     area_products[area]=[x[1] for x in found]
     entries.extend(found)
