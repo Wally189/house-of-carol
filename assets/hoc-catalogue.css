@@ -71,3 +71,60 @@
   .area-directory{margin-left:-24px;margin-right:-24px}
   .area-entry{padding-left:24px;padding-right:24px}
 }
+
+
+/* Clickable catalogue cards and service rows */
+.area-entry,.service-entry{position:relative}
+.area-entry .area-link::after,
+.service-entry h3 a::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+}
+.area-entry .area-link,
+.service-entry h3 a{
+  position:relative;
+  z-index:2;
+}
+.area-cue,.service-cue{
+  display:inline-block;
+  margin-top:12px;
+  font-weight:800;
+  color:var(--carol-blue);
+  border-bottom:2px solid var(--carol-blue);
+  line-height:1.35;
+  pointer-events:none;
+}
+.area-entry,
+.area-catalogue .service-entry{
+  transition:background-color .15s ease, box-shadow .15s ease;
+}
+.area-entry:hover,
+.area-entry:focus-within,
+.area-catalogue .service-entry:hover,
+.area-catalogue .service-entry:focus-within{
+  background:var(--pale);
+}
+.area-entry:focus-within,
+.area-catalogue .service-entry:focus-within{
+  box-shadow:inset 4px 0 0 var(--claret);
+}
+.area-entry .area-link:focus-visible,
+.service-entry h3 a:focus-visible{
+  outline:4px solid var(--claret);
+  outline-offset:4px;
+}
+@media(min-width:861px){
+  .area-catalogue .service-entry{
+    grid-template-rows:auto 1fr auto;
+  }
+  .area-catalogue .service-cue{
+    grid-column:2;
+    grid-row:3;
+    justify-self:start;
+  }
+}
+@media(max-width:860px){
+  .service-cue{margin-top:16px}
+}
