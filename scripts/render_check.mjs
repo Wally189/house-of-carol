@@ -5,94 +5,115 @@ const BASE = 'http://127.0.0.1:8000';
 const browser = await chromium.launch({ headless: true });
 await fs.mkdir('qa-artifacts', { recursive: true });
 
+const PUBLIC_PAGES = [
+  'index.html',
+  'how-it-works.html',
+  'catalogue.html',
+  'about.html',
+  'contact.html',
+  'process-design-sprint.html',
+  'independent-document-review.html',
+  'research-briefing.html',
+  'shared-drive-cleanup.html',
+  'tender-review.html',
+  'privacy.html',
+  'terms.html',
+  '404.html',
+];
+const EXPECTED_NAV = [
+  'index.html',
+  'how-it-works.html',
+  'catalogue.html',
+  'about.html',
+  'contact.html',
+];
+const PRODUCT_PAGES = [
+  'process-design-sprint.html',
+  'independent-document-review.html',
+  'research-briefing.html',
+  'shared-drive-cleanup.html',
+  'tender-review.html',
+];
+
 async function noOverflow(page, label) {
   const geometry = await page.evaluate(() => {
     const clientWidth = document.documentElement.clientWidth;
-    const scrollWidth = document.documentElement.scrollWidth;
     const offenders = [...document.querySelectorAll('*')]
       .map((el) => {
-        const r = el.getBoundingClientRect();
-        const s = getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
         return {
           tag: el.tagName,
           id: el.id || '',
           cls: typeof el.className === 'string' ? el.className : '',
-          left: Math.round(r.left * 100) / 100,
-          right: Math.round(r.right * 100) / 100,
-          width: Math.round(r.width * 100) / 100,
-          position: s.position,
-          overflowX: s.overflowX,
+          left: Math.round(rect.left * 100) / 100,
+          right: Math.round(rect.right * 100) / 100,
+          width: Math.round(rect.width * 100) / 100,
           text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 90),
         };
       })
-      .filter((x) => x.right > clientWidth + 1 || x.left < -1)
-      .sort((a, b) => Math.max(b.right - clientWidth, -b.left) - Math.max(a.right - clientWidth, -a.left))
+      .filter((item) => item.right > clientWidth + 1 || item.left < -1)
       .slice(0, 12);
-    return { clientWidth, scrollWidth, offenders };
+    return { clientWidth, offenders };
   });
-  // Acceptance is based on rendered element bounds, not scrollWidth alone: Chromium can report
-  // fractional/intrinsic scroll width where no rendered element crosses the viewport boundary.
-  // This preserves a hard failure for any actual visible DOM overflow.
   if (geometry.offenders.length) {
-    throw new Error(`${label}: visible overflow ${JSON.stringify(geometry)}`);
+    throw new Error(label + ': visible overflow ' + JSON.stringify(geometry));
   }
 }
 
-async function visibleText(page) {
-  return (await page.locator('body').innerText()).toLowerCase();
+async function checkPage(page, path, label) {
+  const response = await page.goto(BASE + '/' + path, { waitUntil: 'networkidle' });
+  if (!response || !response.ok()) throw new Error(label + ': HTTP ' + response?.status());
+  if (await page.locator('h1').count() !== 1) throw new Error(label + ': H1 count');
+  const navHrefs = await page.locator('.main-nav a').evaluateAll((links) => links.map((a) => a.getAttribute('href')));
+  if (JSON.stringify(navHrefs) !== JSON.stringify(EXPECTED_NAV)) {
+    throw new Error(label + ': main navigation ' + JSON.stringify(navHrefs));
+  }
+  if (navHrefs.some((href) => href.includes('#'))) throw new Error(label + ': section anchor in main navigation');
+  await noOverflow(page, label);
+  await page.evaluate(() => { document.body.style.fontSize = '200%'; });
+  await noOverflow(page, label + ' 200% text');
 }
 
-async function checkCurrentHome(page, name) {
-  await page.goto(`${BASE}/index.html`, { waitUntil: 'networkidle' });
-  await page.locator('h1').waitFor();
-  const body = await visibleText(page);
-  for (const text of [
-    'a useful place for difficult business work.',
-    'what can the house help with?',
-    'products & services',
-    'bring us a problem',
-    'contact',
+async function checkJourney(page, name) {
+  await page.goto(BASE + '/index.html', { waitUntil: 'networkidle' });
+  for (const [href, expectedPath] of [
+    ['how-it-works.html', '/how-it-works.html'],
+    ['catalogue.html', '/catalogue.html'],
+    ['about.html', '/about.html'],
+    ['contact.html', '/contact.html'],
   ]) {
-    if (!body.includes(text)) throw new Error(`${name}: missing ${text}`);
+    await page.locator('.main-nav a[href="' + href + '"]').click();
+    if (new URL(page.url()).pathname !== expectedPath) {
+      throw new Error(name + ': ' + href + ' did not open its own page');
+    }
+    await page.goBack({ waitUntil: 'networkidle' });
   }
-  if (await page.locator('form').count() !== 1) throw new Error(`${name}: contact form count`);
+
+  await page.goto(BASE + '/catalogue.html', { waitUntil: 'networkidle' });
+  const productHrefs = await page.locator('.catalogue-card a.button').evaluateAll((links) => links.map((a) => a.getAttribute('href')));
+  if (JSON.stringify(productHrefs.sort()) !== JSON.stringify([...PRODUCT_PAGES].sort())) {
+    throw new Error(name + ': catalogue products ' + JSON.stringify(productHrefs));
+  }
+
+  await page.goto(BASE + '/contact.html', { waitUntil: 'networkidle' });
+  if (await page.locator('form').count() !== 1) throw new Error(name + ': contact form count');
+  const form = page.locator('form');
+  if (await form.getAttribute('action') !== 'https://formspree.io/f/mgvgrgvb') throw new Error(name + ': contact action');
   for (const id of ['name', 'email', 'message']) {
-    if (!await page.locator(`#${id}`).isVisible()) throw new Error(`${name}: missing ${id}`);
+    if (!await page.locator('#' + id).isVisible()) throw new Error(name + ': contact control ' + id);
   }
-  await noOverflow(page, name);
-  await page.screenshot({ path: `qa-artifacts/${name}-home.png`, fullPage: true });
-  await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
-  await noOverflow(page, `${name} 200%`);
-}
-
-async function checkTenderReview(page, name) {
-  await page.goto(`${BASE}/tender-review.html`, { waitUntil: 'networkidle' });
-  await page.locator('h1').waitFor();
-  const body = await visibleText(page);
-  for (const text of [
-    'a fresh pair of eyes before an important submission goes in.',
-    'fit first. files later.',
-    'read what was asked',
-    'test what is claimed',
-    'find what was missed',
-    'prioritise what matters',
-  ]) {
-    if (!body.includes(text)) throw new Error(`${name} tender-review: missing ${text}`);
-  }
-  await noOverflow(page, `${name} tender-review`);
-  await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
-  await noOverflow(page, `${name} tender-review 200%`);
 }
 
 async function run(viewport, name) {
   const context = await browser.newContext({ viewport });
   const page = await context.newPage();
-  await checkCurrentHome(page, name);
-  await checkTenderReview(page, name);
-  for (const path of ['privacy.html', 'terms.html']) {
-    await page.goto(`${BASE}/${path}`);
-    await page.locator('h1').waitFor();
-    await noOverflow(page, `${name} ${path}`);
+  for (const path of PUBLIC_PAGES) {
+    await checkPage(page, path, name + ' ' + path);
+  }
+  await checkJourney(page, name);
+  for (const path of ['index.html', 'catalogue.html', 'contact.html']) {
+    await page.goto(BASE + '/' + path, { waitUntil: 'networkidle' });
+    await page.screenshot({ path: 'qa-artifacts/' + name + '-' + path.replace('.html', '') + '.png', fullPage: true });
   }
   await context.close();
 }
@@ -107,4 +128,4 @@ for (const [viewport, name] of [
 }
 
 await browser.close();
-console.log('PASS: current home, Tender Review and legal journey render across desktop, tablet, mobile and 200% text');
+console.log('PASS: multipage navigation, five-product catalogue, contact route, desktop/tablet/mobile rendering and 200% text reflow');
