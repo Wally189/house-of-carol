@@ -26,11 +26,11 @@ async function baseline(page,path,label){
 }
 
 async function run(viewport,name){
-  const context=await browser.newContext({viewport});
+  const context=await browser.newContext({viewport,hasTouch:name==='mobile'||name==='reflow-320'});
   const page=await context.newPage();
 
   await baseline(page,'catalogue.html',name+' catalogue');
-  if((await page.locator('.area-entry .area-link').count())!==7) throw new Error(name+': main catalogue area count');
+  if((await page.locator('.area-entry .area-card-link').count())!==7) throw new Error(name+': main catalogue area count');
   if((await page.locator('.service-entry').count())!==0) throw new Error(name+': main catalogue exposes service entries');
   if((await page.locator('body').innerText()).match(/£\s?\d/)) throw new Error(name+': main catalogue displays a price');
   await page.screenshot({path:'qa-artifacts/'+name+'-catalogue.png',fullPage:true});
@@ -40,10 +40,17 @@ async function run(viewport,name){
   const reps=[];
   for(const area of AREA_PAGES){
     await baseline(page,area,name+' '+area);
-    if((await page.locator('.service-entry h3 a').count())<1) throw new Error(name+' '+area+': no service links');
+    if((await page.locator('.service-entry .service-card-link').count())<1) throw new Error(name+' '+area+': no service links');
     if((await page.locator('body').innerText()).match(/£\s?\d/)) throw new Error(name+' '+area+': area displays a price');
-    const first=await page.locator('.service-entry h3 a').first().getAttribute('href');
+    const firstLink=page.locator('.service-entry .service-card-link').first();
+    const first=await firstLink.getAttribute('href');
     reps.push(first);
+    if(name==='mobile'){
+      const expected=new URL(first,BASE+'/'+area).href;
+      await Promise.all([page.waitForURL(expected),firstLink.tap()]);
+      if(page.url()!==expected) throw new Error(name+' '+area+': tap did not navigate');
+      await page.goBack({waitUntil:'networkidle'});
+    }
     if(name==='desktop'||name==='mobile') await page.screenshot({path:'qa-artifacts/'+name+'-'+area.replace('.html','')+'.png',fullPage:true});
     await page.evaluate(()=>{document.body.style.fontSize='200%'});
     await noOverflow(page,name+' '+area+' 200%');
