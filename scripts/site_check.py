@@ -111,4 +111,22 @@ terms=' '.join((ROOT/'terms.html').read_text(encoding='utf-8').lower().split())
 for t in ('no automatic offer','intellectual property','nothing in these terms excludes','law of england and wales'):
     if t not in terms: fail('terms missing '+t)
 
+
+# NAVIGATION CONTRACT: homepage areas and exact service returns
+_home=(ROOT/'index.html').read_text(encoding='utf-8')
+for _dest in ["catalogue-operations.html","catalogue-ai-digital.html","catalogue-commercial.html","catalogue-learning.html","catalogue-research.html","catalogue-charity-public.html","catalogue-church-parish.html"]:
+    if f'href="{_dest}"' not in _home:
+        fail('homepage area route missing '+_dest)
+
+for _area,_plist in area_products.items():
+    _area_text=(ROOT/_area).read_text(encoding='utf-8')
+    for _product in _plist:
+        _m=re.search(r'<article class="service-entry" id="(hoc-\d{3})" data-offer-id="HOC-\d{3}">\s*<h3><a href="'+re.escape(_product)+r'">', _area_text, flags=re.S)
+        if not _m:
+            fail(_area+': anchored service entry missing for '+_product)
+        _target=_area+'#'+_m.group(1)
+        _product_text=(ROOT/_product).read_text(encoding='utf-8')
+        if _product_text.count('href="'+_target+'"') < 2:
+            fail(_product+': exact area return route missing '+_target)
+
 print('PASS: 7-area catalogue -> 7 area catalogues -> 52 service pages; hierarchy, pricing separation, metadata, containment, navigation, links, contact and legal checks pass')
