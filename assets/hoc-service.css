@@ -26,3 +26,40 @@
 .service-context-nav{border-top:1px solid var(--line);padding:26px 56px;margin:0;display:flex;flex-wrap:wrap;gap:14px 24px;font-size:14px;font-weight:800}
 .service-context-nav a{text-decoration:none}.service-context-nav a:hover{text-decoration:underline}
 @media(max-width:760px){.service-breadcrumbs{padding:16px 24px 0}.service-context-nav{padding:22px 24px;flex-direction:column;gap:10px}}
+
+
+/* Product page alignment */
+.product-hero>.shell,
+.product-section>.shell{
+  padding-left:56px;
+  padding-right:56px;
+}
+.product-hero>.shell{
+  padding-top:64px;
+  padding-bottom:56px;
+}
+.product-section>.shell{
+  padding-top:54px;
+  padding-bottom:54px;
+}
+.product-section{
+  border-top:1px solid var(--stone);
+}
+.product-section.alt{
+  background:var(--mist);
+}
+@media(max-width:760px){
+  .product-hero>.shell,
+  .product-section>.shell{
+    padding-left:24px;
+    padding-right:24px;
+  }
+  .product-hero>.shell{
+    padding-top:44px;
+    padding-bottom:46px;
+  }
+  .product-section>.shell{
+    padding-top:44px;
+    padding-bottom:44px;
+  }
+}
