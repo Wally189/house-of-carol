@@ -19,3 +19,10 @@
 .service-entry h3 a:hover{text-decoration:underline}
 .service-entry h3 a:focus-visible{outline:4px solid var(--claret);outline-offset:3px}
 @media(max-width:760px){.service-page-hero>.shell{padding:44px 24px 46px}.service-facts{grid-template-columns:1fr;gap:2px}.service-facts dd{margin-bottom:12px}.pricing-panel{padding:24px}.service-actions{flex-direction:column}.service-actions .button{width:100%;text-align:center}}
+.service-breadcrumbs{font-size:14px;font-weight:800;color:var(--muted);padding:18px 56px 0}
+.service-breadcrumbs ol{display:flex;flex-wrap:wrap;gap:6px 9px;list-style:none;margin:0;padding:0}
+.service-breadcrumbs li:not(:last-child)::after{content:"→";margin-left:9px;color:var(--warm-grey)}
+.service-breadcrumbs a{text-decoration:none}.service-breadcrumbs a:hover{text-decoration:underline}
+.service-context-nav{border-top:1px solid var(--line);padding:26px 56px;margin:0;display:flex;flex-wrap:wrap;gap:14px 24px;font-size:14px;font-weight:800}
+.service-context-nav a{text-decoration:none}.service-context-nav a:hover{text-decoration:underline}
+@media(max-width:760px){.service-breadcrumbs{padding:16px 24px 0}.service-context-nav{padding:22px 24px;flex-direction:column;gap:10px}}

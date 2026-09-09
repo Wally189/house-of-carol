@@ -5,6 +5,7 @@ const BASE='http://127.0.0.1:8000';
 const browser=await chromium.launch({headless:true});
 await fs.mkdir('qa-artifacts',{recursive:true});
 const EXPECTED_NAV=['index.html','how-it-works.html','catalogue.html','about.html','contact.html'];
+const AREA_PAGES=["catalogue-operations.html","catalogue-ai-digital.html","catalogue-commercial.html","catalogue-learning.html","catalogue-research.html","catalogue-charity-public.html","catalogue-church-parish.html"];
 
 async function noOverflow(page,label){
   const g=await page.evaluate(()=>{
@@ -29,16 +30,29 @@ async function run(viewport,name){
   const page=await context.newPage();
 
   await baseline(page,'catalogue.html',name+' catalogue');
-  if((await page.locator('.service-entry h3 a').count())!==52) throw new Error(name+': catalogue service link count');
-  if((await page.locator('body').innerText()).match(/£\s?\d/)) throw new Error(name+': catalogue displays a price');
-  const reps=await page.locator('.service-family').evaluateAll(families=>families.map(f=>f.querySelector('.service-entry h3 a')?.getAttribute('href')).filter(Boolean));
-  if(reps.length!==7) throw new Error(name+': representative family links '+JSON.stringify(reps));
+  if((await page.locator('.area-entry .area-link').count())!==7) throw new Error(name+': main catalogue area count');
+  if((await page.locator('.service-entry').count())!==0) throw new Error(name+': main catalogue exposes service entries');
+  if((await page.locator('body').innerText()).match(/£\s?\d/)) throw new Error(name+': main catalogue displays a price');
   await page.screenshot({path:'qa-artifacts/'+name+'-catalogue.png',fullPage:true});
   await page.evaluate(()=>{document.body.style.fontSize='200%'});
   await noOverflow(page,name+' catalogue 200%');
 
+  const reps=[];
+  for(const area of AREA_PAGES){
+    await baseline(page,area,name+' '+area);
+    if((await page.locator('.service-entry h3 a').count())<1) throw new Error(name+' '+area+': no service links');
+    if((await page.locator('body').innerText()).match(/£\s?\d/)) throw new Error(name+' '+area+': area displays a price');
+    const first=await page.locator('.service-entry h3 a').first().getAttribute('href');
+    reps.push(first);
+    if(name==='desktop'||name==='mobile') await page.screenshot({path:'qa-artifacts/'+name+'-'+area.replace('.html','')+'.png',fullPage:true});
+    await page.evaluate(()=>{document.body.style.fontSize='200%'});
+    await noOverflow(page,name+' '+area+' 200%');
+  }
+
   for(const href of reps){
     await baseline(page,href,name+' '+href);
+    if((await page.locator('.service-breadcrumbs').count())!==1) throw new Error(name+' '+href+': breadcrumb missing');
+    if((await page.locator('.service-context-nav').count())!==1) throw new Error(name+' '+href+': context nav missing');
     const body=(await page.locator('body').innerText()).toLowerCase();
     if(!body.includes('pricing') && !/£\s?\d/.test(body)) throw new Error(name+' '+href+': pricing information missing');
     await page.evaluate(()=>{document.body.style.fontSize='200%'});
@@ -52,4 +66,4 @@ async function run(viewport,name){
 
 for(const [v,n] of [[{width:1440,height:900},'desktop'],[{width:800,height:1280},'tablet'],[{width:390,height:844},'mobile'],[{width:320,height:900},'reflow-320']]) await run(v,n);
 await browser.close();
-console.log('PASS: catalogue directory and representative service-detail pages render across desktop, tablet, mobile, 320px reflow and 200% text');
+console.log('PASS: 7-area catalogue hierarchy and representative service pages render across desktop, tablet, mobile, 320px reflow and 200% text');

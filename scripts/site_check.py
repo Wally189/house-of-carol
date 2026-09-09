@@ -5,6 +5,7 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 CORE_PAGES = ['index.html','how-it-works.html','catalogue.html','about.html','contact.html','privacy.html','terms.html','404.html']
+AREA_PAGES = ["catalogue-operations.html","catalogue-ai-digital.html","catalogue-commercial.html","catalogue-learning.html","catalogue-research.html","catalogue-charity-public.html","catalogue-church-parish.html"]
 EXPECTED_NAV = ['index.html','how-it-works.html','catalogue.html','about.html','contact.html']
 REQUIRED_ASSETS = ['assets/hoc-rebuild.css','assets/hoc-contact.css','assets/hoc-catalogue.css','assets/hoc-service.css','assets/hoc-mark.svg','robots.txt']
 
@@ -42,12 +43,23 @@ def parsed(name):
 
 catalogue_text=(ROOT/'catalogue.html').read_text(encoding='utf-8')
 if re.search(r'£\s?\d', catalogue_text): fail('catalogue contains a displayed price')
-entries=re.findall(r'<article class="service-entry" data-offer-id="(HOC-\d{3})">\s*<h3><a href="([^"]+\.html)">', catalogue_text, flags=re.S)
-if len(entries)!=52: fail(f'catalogue service-link count {len(entries)}')
-ids=[x[0] for x in entries]; products=[x[1] for x in entries]
-if len(set(ids))!=52 or len(set(products))!=52: fail('catalogue service IDs/routes are not unique')
+area_links=re.findall(r'<h3><a class="area-link" href="([^"]+\.html)">', catalogue_text)
+if area_links!=AREA_PAGES: fail('main catalogue area links/order')
 
-PUBLIC_PAGES=CORE_PAGES+products
+entries=[]
+area_products={}
+for area in AREA_PAGES:
+    text=(ROOT/area).read_text(encoding='utf-8')
+    if re.search(r'£\s?\d', text): fail(area+': area catalogue contains a displayed price')
+    found=re.findall(r'<article class="service-entry" data-offer-id="(HOC-\d{3})">\s*<h3><a href="([^"]+\.html)">', text, flags=re.S)
+    if not found: fail(area+': no service entries')
+    area_products[area]=[x[1] for x in found]
+    entries.extend(found)
+if len(entries)!=52: fail(f'area catalogue service-link count {len(entries)}')
+ids=[x[0] for x in entries]; products=[x[1] for x in entries]
+if len(set(ids))!=52 or len(set(products))!=52: fail('service IDs/routes are not unique')
+
+PUBLIC_PAGES=CORE_PAGES+AREA_PAGES+products
 for name in PUBLIC_PAGES+REQUIRED_ASSETS:
     if not (ROOT/name).exists(): fail('missing '+name)
 
@@ -69,9 +81,13 @@ for name,p in parsers.items():
         target=ROOT/(u.path or name)
         if not target.exists(): fail(f'{name}: broken link {href}')
 
-cat=parsers['catalogue.html']
-for product in products:
-    if cat.hrefs.count(product)!=1: fail('catalogue expected one link to '+product)
+for area,plist in area_products.items():
+    ap=parsers[area]
+    for product in plist:
+        if ap.hrefs.count(product)!=1: fail(area+': expected one link to '+product)
+        pp=parsers[product]
+        if area not in pp.hrefs: fail(product+': service area route missing')
+        if 'catalogue.html' not in pp.hrefs or 'index.html' not in pp.hrefs: fail(product+': hierarchy route missing')
 
 contact=parsers['contact.html']
 all_forms=[(n,f) for n,p in parsers.items() for f in p.forms]
@@ -95,4 +111,4 @@ terms=' '.join((ROOT/'terms.html').read_text(encoding='utf-8').lower().split())
 for t in ('no automatic offer','intellectual property','nothing in these terms excludes','law of england and wales'):
     if t not in terms: fail('terms missing '+t)
 
-print('PASS: 52 catalogue services link to 52 detail pages; catalogue has no displayed prices; product pricing, metadata, containment, navigation, links, contact and legal checks pass')
+print('PASS: 7-area catalogue -> 7 area catalogues -> 52 service pages; hierarchy, pricing separation, metadata, containment, navigation, links, contact and legal checks pass')
