@@ -46,3 +46,28 @@
   .area-entry{grid-template-columns:1fr;gap:8px}
   .area-catalogue .service-entry{display:block}
 }
+
+
+/* Catalogue colour rhythm */
+.area-entry:nth-child(odd){background:#fff}
+.area-entry:nth-child(even){background:var(--pale)}
+
+@media(min-width:761px){
+  .area-directory{margin-left:-56px;margin-right:-56px}
+  .area-entry{padding-left:56px;padding-right:56px}
+}
+
+body:has(.area-catalogue) .catalogue-hero{
+  background:var(--pale);
+}
+body:has(.area-catalogue) .area-catalogue{
+  background:#fff;
+}
+body:has(.area-catalogue) .area-catalogue .service-entry{
+  background:#fff;
+}
+
+@media(max-width:760px){
+  .area-directory{margin-left:-24px;margin-right:-24px}
+  .area-entry{padding-left:24px;padding-right:24px}
+}
