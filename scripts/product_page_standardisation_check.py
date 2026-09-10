@@ -33,6 +33,20 @@ FORBIDDEN_CUSTOMER_STRINGS = (
 errors = []
 routes = {}
 
+
+def has_nested_details(markup: str) -> bool:
+    depth = 0
+    for match in re.finditer(r'</?details\b[^>]*>', markup, re.I):
+        token = match.group(0)
+        if token.startswith('</'):
+            depth = max(0, depth - 1)
+        else:
+            if depth > 0:
+                return True
+            depth += 1
+    return False
+
+
 for category in CATEGORY_PAGES:
     path = ROOT / category
     if not path.exists():
@@ -91,7 +105,7 @@ for offer_id, href in sorted(routes.items()):
         errors.append(f"{offer_id} {href}: must contain exactly one H1")
     if re.search(r"<script\b", html, re.I):
         errors.append(f"{offer_id} {href}: script element present despite no-script page model")
-    if re.search(r"<details\b[^>]*>.*?<details\b", html, re.I | re.S):
+    if has_nested_details(html):
         errors.append(f"{offer_id} {href}: nested details/accordion found")
     for forbidden in FORBIDDEN_CUSTOMER_STRINGS:
         if forbidden.lower() in html.lower():
@@ -108,12 +122,10 @@ for offer_id, href in sorted(routes.items()):
     elif pounds:
         errors.append(f"{offer_id} {href}: generic/unpriced page contains numeric price(s): {sorted(pounds)}")
 
-# The three current TBD portfolio gaps must not be exposed as catalogue entries.
 for tbd in ("HOC-036", "HOC-044", "HOC-054"):
     if tbd in routes:
         errors.append(f"TBD offer exposed as product route: {tbd}")
 
-# BrandLab pages are experiments, not product routes.
 brandlab = {p.name for p in ROOT.glob("brandlab-*.html")}
 if seen_hrefs & brandlab:
     errors.append("BrandLab experiment page exposed as a product route")
