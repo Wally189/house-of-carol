@@ -1,0 +1,166 @@
+name: one-time-standardise-product-pages
+
+on:
+  push:
+    branches:
+      - product-page-standardisation-20260910
+
+permissions:
+  contents: write
+
+jobs:
+  standardise:
+    if: ${{ !contains(github.event.head_commit.message, '[skip standardise]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: product-page-standardisation-20260910
+          fetch-depth: 0
+      - name: Standardise Business Plan portfolio pages
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def one(pattern, text, label):
+              m = re.search(pattern, text, re.S | re.I)
+              if not m:
+                  raise RuntimeError(f"Missing {label}")
+              return m.group(1).strip()
+
+          def lis(block):
+              return [x.strip() for x in re.findall(r'<li>(.*?)</li>', block, re.S | re.I)]
+
+          def normalise(path):
+              html = path.read_text(encoding='utf-8')
+              if 'class="service-page-hero"' not in html:
+                  return False
+
+              prefix, rest = html.split('<main id="main">', 1)
+              _, suffix = rest.split('</main>', 1)
+              prefix = re.sub(r'assets/hoc-service\.css(?:\?[^"\']*)?', 'assets/hoc-service.css?v=20260910-product-standard2', prefix)
+
+              breadcrumb = one(r'(<nav class="service-breadcrumbs".*?</nav>)', html, 'breadcrumb')
+              context = one(r'(<nav class="service-context-nav".*?</nav>)', html, 'context nav')
+              hero = one(r'<section class="service-page-hero">(.*?)</section>', html, 'hero')
+              h1 = one(r'<h1>(.*?)</h1>', hero, 'h1')
+              audience = one(r'<p class="service-for"><strong>For:</strong>\s*(.*?)</p>', hero, 'audience')
+              value = one(r'<p class="lede">(.*?)</p>', hero, 'value proposition')
+
+              problem_section = one(r'(<section class="section">.*?<p class="eyebrow">The problem</p>.*?</section>)', html, 'problem section')
+              problem = one(r'<div class="copy">\s*<p>(.*?)</p>\s*</div>', problem_section, 'problem')
+
+              delivery_section = one(r'(<section class="section">.*?<p class="eyebrow">Delivery</p>.*?</section>)', html, 'delivery section')
+              facts_block = one(r'<dl class="service-facts">(.*?)</dl>', delivery_section, 'service facts')
+              pairs = re.findall(r'<dt>(.*?)</dt>\s*<dd>(.*?)</dd>', facts_block, re.S | re.I)
+              facts = {re.sub('<.*?>','',k).strip(): v.strip() for k,v in pairs}
+              service_type = facts.get('Service type')
+              delivery = facts.get('Delivery')
+              inputs = facts.get('What we need from you')
+              if not all([service_type, delivery, inputs]):
+                  raise RuntimeError(f'{path}: incomplete delivery facts')
+
+              deliver_section = one(r'(<section class="section pale">.*?<p class="eyebrow">What you get</p>.*?</section>)', html, 'deliverables section')
+              deliver_block = one(r'<ul class="service-detail-list">(.*?)</ul>', deliver_section, 'deliverables list')
+              deliverables = lis(deliver_block)
+              if not deliverables:
+                  raise RuntimeError(f'{path}: no deliverables')
+
+              boundary_section = one(r'(<section class="section pale">.*?<p class="eyebrow">Boundaries</p>.*?</section>)', html, 'boundary section')
+              boundary = one(r'<div class="copy">\s*<p>(.*?)</p>\s*</div>', boundary_section, 'boundary')
+
+              pricing_section = one(r'(<section class="section">.*?<div class="pricing-panel">.*?</section>)', html, 'pricing section')
+              price_heading = one(r'<p class="eyebrow">Pricing</p>\s*<h2>(.*?)</h2>', pricing_section, 'pricing mechanism')
+              price_text = one(r'<h2>.*?</h2>\s*<p>(.*?)</p>', pricing_section, 'pricing text')
+              cta = re.search(r'<a class="button light" href="([^"]+)">(.*?)</a>', pricing_section, re.S | re.I)
+              if not cta:
+                  raise RuntimeError(f'{path}: CTA missing')
+              cta_href = cta.group(1)
+
+              cards = '\n'.join(f'        <article><p>{d}</p></article>' for d in deliverables)
+              new = f'''<main id="main">
+  {breadcrumb}
+
+  <section class="product-hero standard-product-hero">
+    <div class="shell">
+      <h1>{h1}</h1>
+      <p class="product-hook"><strong>{value}</strong></p>
+      <p class="intro">{problem}</p>
+      <p class="product-audience"><strong>For:</strong> {audience}</p>
+      <div class="product-price product-fee-text"><strong>{price_heading}</strong></div>
+      <p class="product-scope-line">{price_text}</p>
+      <p class="product-trust-line"><strong>Scope, timing, responsibilities and price agreed before commitment · customer fit checked before work begins</strong></p>
+      <div class="actions"><a class="button" href="{cta_href}">Discuss the outcome you need</a></div>
+    </div>
+  </section>
+
+  <section class="product-section alt">
+    <div class="shell">
+      <h2>Does this sound familiar?</h2>
+      <div class="recognition-grid recognition-grid-one">
+        <article><p>{problem}</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="product-section">
+    <div class="shell">
+      <h2>What you will receive</h2>
+      <p class="section-lead">The current defined deliverables for this service are:</p>
+      <div class="deliverable-groups generic-deliverables">
+{cards}
+      </div>
+    </div>
+  </section>
+
+  <section class="product-section alt">
+    <div class="shell bounded-review">
+      <h2>A defined engagement</h2>
+      <p class="section-lead">The commercial boundary is agreed before you commit.</p>
+      <dl class="service-facts standard-service-facts"><dt>Service type</dt><dd>{service_type}</dd><dt>Delivery</dt><dd>{delivery}</dd><dt>Pricing</dt><dd>{price_heading}</dd></dl>
+      <p>{price_text}</p>
+    </div>
+  </section>
+
+  <section class="product-section disclosures-section">
+    <div class="shell"><div class="hoc-accordion-group" aria-label="Questions about this service">
+      <details class="hoc-accordion"><summary>What would you need from us?</summary><div class="hoc-accordion-panel"><p>{inputs}</p></div></details>
+      <details class="hoc-accordion"><summary>What is outside the scope?</summary><div class="hoc-accordion-panel"><p>{boundary}</p></div></details>
+      <details class="hoc-accordion"><summary>Is this the right service for our organisation?</summary><div class="hoc-accordion-panel"><p><strong>Intended customer:</strong> {audience}</p><p>{problem}</p><p>We confirm fit, competence, capacity, risk and the necessary inputs before any commitment.</p></div></details>
+    </div></div>
+  </section>
+
+  <section class="product-section alt">
+    <div class="shell cta-panel"><div class="copy"><p class="eyebrow">Start with the problem</p><h2>What outcome do you need?</h2><p>Tell us what is happening, what you need to achieve and any constraints that matter. We will first establish whether the work fits this service, then define the scope, timing, responsibilities and price before anything is agreed.</p></div><a class="button" href="{cta_href}">Discuss the outcome you need</a></div>
+  </section>
+
+  {context}
+</main>{suffix}'''
+              path.write_text(prefix + new, encoding='utf-8')
+              return True
+
+          changed=[]
+          for p in sorted(Path('.').glob('*.html')):
+              if normalise(p):
+                  changed.append(p.name)
+
+          expected=48
+          if len(changed) != expected:
+              raise SystemExit(f'Expected {expected} generic portfolio pages, standardised {len(changed)}: {changed}')
+          print(f'Standardised {len(changed)} generic Business Plan portfolio pages')
+          print('\n'.join(changed))
+          PY
+      - name: Commit generated page changes
+        shell: bash
+        run: |
+          if git diff --quiet -- '*.html'; then
+            echo "No generated page changes"
+            exit 0
+          fi
+          git config user.name "House of Carol page standardiser"
+          git config user.email "53058801+Wally189@users.noreply.github.com"
+          git add -- '*.html'
+          git commit -m "Standardise portfolio service pages [skip standardise]"
+          git push origin HEAD:product-page-standardisation-20260910
