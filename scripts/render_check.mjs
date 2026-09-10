@@ -6,6 +6,8 @@ const browser=await chromium.launch({headless:true});
 await fs.mkdir('qa-artifacts',{recursive:true});
 const EXPECTED_NAV=['index.html','how-it-works.html','catalogue.html','about.html','contact.html'];
 const AREA_PAGES=["catalogue-operations.html","catalogue-ai-digital.html","catalogue-commercial.html","catalogue-learning.html","catalogue-research.html","catalogue-charity-public.html","catalogue-church-parish.html"];
+const AREA_LINKS='.area-entry .area-card-link';
+const SERVICE_LINKS='.service-entry .service-card-link';
 
 async function noOverflow(page,label){
   const g=await page.evaluate(()=>{
@@ -14,6 +16,11 @@ async function noOverflow(page,label){
     return {w,offenders};
   });
   if(g.offenders.length) throw new Error(label+': visible overflow '+JSON.stringify(g));
+}
+
+async function noStickyInset(locator,label){
+  const shadow=await locator.evaluate(el=>getComputedStyle(el).boxShadow);
+  if(shadow!=='none') throw new Error(label+': touch navigation left an inset/hover shadow '+shadow);
 }
 
 async function baseline(page,path,label){
@@ -25,14 +32,29 @@ async function baseline(page,path,label){
   await noOverflow(page,label);
 }
 
+async function tapAllAndReturn(page,selector,label){
+  const count=await page.locator(selector).count();
+  for(let i=0;i<count;i++){
+    const link=page.locator(selector).nth(i);
+    const href=await link.getAttribute('href');
+    if(!href) throw new Error(label+': missing href at '+i);
+    const expected=new URL(href,page.url()).href;
+    await Promise.all([page.waitForURL(expected),link.tap()]);
+    if(page.url()!==expected) throw new Error(label+': tap did not navigate to '+href);
+    await page.goBack({waitUntil:'networkidle'});
+    await noStickyInset(page.locator(selector).nth(i),label+' return '+href);
+  }
+}
+
 async function run(viewport,name){
   const context=await browser.newContext({viewport,hasTouch:name==='mobile'||name==='reflow-320'});
   const page=await context.newPage();
 
   await baseline(page,'catalogue.html',name+' catalogue');
-  if((await page.locator('.area-entry .area-card-link').count())!==7) throw new Error(name+': main catalogue area count');
+  if((await page.locator(AREA_LINKS).count())!==7) throw new Error(name+': main catalogue area count');
   if((await page.locator('.service-entry').count())!==0) throw new Error(name+': main catalogue exposes service entries');
   if((await page.locator('body').innerText()).match(/£\s?\d/)) throw new Error(name+': main catalogue displays a price');
+  if(name==='mobile') await tapAllAndReturn(page,AREA_LINKS,name+' main catalogue');
   await page.screenshot({path:'qa-artifacts/'+name+'-catalogue.png',fullPage:true});
   await page.evaluate(()=>{document.body.style.fontSize='200%'});
   await noOverflow(page,name+' catalogue 200%');
@@ -40,17 +62,12 @@ async function run(viewport,name){
   const reps=[];
   for(const area of AREA_PAGES){
     await baseline(page,area,name+' '+area);
-    if((await page.locator('.service-entry .service-card-link').count())<1) throw new Error(name+' '+area+': no service links');
+    const serviceCount=await page.locator(SERVICE_LINKS).count();
+    if(serviceCount<1) throw new Error(name+' '+area+': no service links');
     if((await page.locator('body').innerText()).match(/£\s?\d/)) throw new Error(name+' '+area+': area displays a price');
-    const firstLink=page.locator('.service-entry .service-card-link').first();
-    const first=await firstLink.getAttribute('href');
+    const first=await page.locator(SERVICE_LINKS).first().getAttribute('href');
     reps.push(first);
-    if(name==='mobile'){
-      const expected=new URL(first,BASE+'/'+area).href;
-      await Promise.all([page.waitForURL(expected),firstLink.tap()]);
-      if(page.url()!==expected) throw new Error(name+' '+area+': tap did not navigate');
-      await page.goBack({waitUntil:'networkidle'});
-    }
+    if(name==='mobile') await tapAllAndReturn(page,SERVICE_LINKS,name+' '+area);
     if(name==='desktop'||name==='mobile') await page.screenshot({path:'qa-artifacts/'+name+'-'+area.replace('.html','')+'.png',fullPage:true});
     await page.evaluate(()=>{document.body.style.fontSize='200%'});
     await noOverflow(page,name+' '+area+' 200%');
@@ -73,4 +90,4 @@ async function run(viewport,name){
 
 for(const [v,n] of [[{width:1440,height:900},'desktop'],[{width:800,height:1280},'tablet'],[{width:390,height:844},'mobile'],[{width:320,height:900},'reflow-320']]) await run(v,n);
 await browser.close();
-console.log('PASS: 7-area catalogue hierarchy and representative service pages render across desktop, tablet, mobile, 320px reflow and 200% text');
+console.log('PASS: 7-area catalogue hierarchy, all 7 area links and all 52 service links pass mobile tap-return regression; representative service pages render across desktop, tablet, mobile, 320px reflow and 200% text');
