@@ -22,6 +22,8 @@ jobs:
           python-version: '3.12'
       - name: Production-site static integrity and containment checks
         run: python scripts/site_check.py
+      - name: Product-page standardisation and source-boundary checks
+        run: python scripts/product_page_standardisation_check.py
       - name: QA storefront containment and brand checks
         run: python scripts/qa_site_check.py
       - name: Install Playwright
