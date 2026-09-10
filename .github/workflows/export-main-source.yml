@@ -1,0 +1,27 @@
+name: export-main-source
+
+on:
+  push:
+    branches:
+      - product-page-standardisation-20260910
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact merged main commit
+        uses: actions/checkout@v4
+        with:
+          ref: 9f4335286d9bc2063caa41d50e0f3feafb3a15d8
+          fetch-depth: 1
+      - name: Upload exact merged source
+        uses: actions/upload-artifact@v4
+        with:
+          name: hoc-main-source-9f4335286d9bc2063caa41d50e0f3feafb3a15d8
+          path: .
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
