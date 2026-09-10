@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   standardise:
-    if: ${{ !contains(github.event.head_commit.message, '[skip standardise]') }}
+    if: "${{ !contains(github.event.head_commit.message, '[skip standardise]') }}"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,7 +40,7 @@ jobs:
 
               prefix, rest = html.split('<main id="main">', 1)
               _, suffix = rest.split('</main>', 1)
-              prefix = re.sub(r'assets/hoc-service\.css(?:\?[^"\']*)?', 'assets/hoc-service.css?v=20260910-product-standard2', prefix)
+              prefix = re.sub(r"assets/hoc-service\.css(?:\?[^\"']*)?", 'assets/hoc-service.css?v=20260910-product-standard2', prefix)
 
               breadcrumb = one(r'(<nav class="service-breadcrumbs".*?</nav>)', html, 'breadcrumb')
               context = one(r'(<nav class="service-context-nav".*?</nav>)', html, 'context nav')
