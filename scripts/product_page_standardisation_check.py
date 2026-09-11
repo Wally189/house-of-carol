@@ -25,6 +25,7 @@ ALLOWED_PRICES = {
     "process-design-sprint.html": "£1,500",
     "shared-drive-cleanup.html": "£1,250",
     "research-briefing.html": "£900",
+    "customer-journey-and-service-operations-review.html": "£1,250",
 }
 FORBIDDEN_CUSTOMER_STRINGS = (
     "DEVELOP FOR 02/10",
@@ -142,6 +143,6 @@ if errors:
 
 print("PRODUCT PAGE STANDARDISATION QA: PASS")
 print(f"Verified {len(routes)} current DEVELOP product routes")
-print("Verified 8 offer-specific numeric price boundaries and 44 non-numeric pricing mechanisms")
+print(f"Verified {len(ALLOWED_PRICES)} offer-specific numeric price boundaries and {len(routes) - len(ALLOWED_PRICES)} non-numeric pricing mechanisms")
 print("Verified native disclosure, one-H1, noindex, CSP, skip-link and contact-route requirements")
 print("Verified HOC-036/HOC-044/HOC-054 remain unexposed and BrandLab is not a product route")
