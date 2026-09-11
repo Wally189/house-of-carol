@@ -13,31 +13,56 @@ CATEGORY_PAGES = [
     "catalogue-research.html",
 ]
 
-EXPECTED_IDS = {f"HOC-{n:03d}" for n in range(1, 57)} - {
-    "HOC-027", "HOC-036", "HOC-044", "HOC-054"
+TBD_IDS = {
+    "HOC-027", "HOC-036", "HOC-044", "HOC-054", "HOC-057",
+    "HOC-058", "HOC-059", "HOC-060", "HOC-061", "HOC-062", "HOC-063",
 }
+EXPECTED_IDS = {f"HOC-{n:03d}" for n in range(1, 65)} - TBD_IDS
+
 ALLOWED_PRICES = {
     "ai-data-use-rules-sprint.html": "£1,250",
+    "ai-policy-and-sop-implementation-service.html": "£1,500",
+    "responsible-ai-workplace-training.html": "£750",
+    "role-based-ai-skills-workshop.html": "£1,250",
     "ai-workflow-opportunity-review.html": "£900",
     "ai-workflow-implementation-sprint.html": "£1,500",
-    "role-based-ai-skills-workshop.html": "£1,250",
     "independent-document-review.html": "£750",
     "process-design-sprint.html": "£1,500",
     "shared-drive-cleanup.html": "£1,250",
-    "research-briefing.html": "£900",
+    "management-information-and-kpi-setup.html": "£1,250",
     "customer-journey-and-service-operations-review.html": "£1,250",
+    "research-briefing.html": "£900",
+    "church-and-parish-grant-funding-research.html": "£595",
+    "website-completion-sprint.html": "£1,250",
 }
+
+REFERENCE_PAGES = {
+    "ai-data-use-rules-sprint.html",
+    "role-based-ai-skills-workshop.html",
+    "ai-workflow-opportunity-review.html",
+    "ai-workflow-implementation-sprint.html",
+    "process-design-sprint.html",
+    "customer-journey-and-service-operations-review.html",
+    "website-completion-sprint.html",
+}
+
 FORBIDDEN_CUSTOMER_STRINGS = (
     "DEVELOP FOR 02/10",
     "EXTERNAL PROOF REQUIRED",
     "Customer 000",
     "INTERNAL BUILD PASS",
     "PROPRIETOR-APPROVED",
+    "R0 INTERNAL ONLY",
+    "A2 PARTIAL",
+    "A2 COMPLETE",
+    "BUYER-TEST",
+    "PROPRIETOR DECISION",
+    "LIVE-PAID",
+    "PRE-BUYER",
 )
 
 errors = []
 routes = {}
-
 
 def has_nested_details(markup: str) -> bool:
     depth = 0
@@ -50,7 +75,6 @@ def has_nested_details(markup: str) -> bool:
                 return True
             depth += 1
     return False
-
 
 for category in CATEGORY_PAGES:
     path = ROOT / category
@@ -76,8 +100,8 @@ if set(routes) != EXPECTED_IDS:
     if extra:
         errors.append("Unexpected/TBD routes exposed: " + ", ".join(extra))
 
-if len(routes) != 52:
-    errors.append(f"Expected 52 current DEVELOP product routes; found {len(routes)}")
+if len(routes) != 53:
+    errors.append(f"Expected 53 current DEVELOP product routes; found {len(routes)}")
 
 seen_hrefs = set()
 for offer_id, href in sorted(routes.items()):
@@ -99,8 +123,9 @@ for offer_id, href in sorted(routes.items()):
         "main target": 'id="main"' in html,
         "product hero": 'class="product-hero' in html,
         "breadcrumb": 'aria-label="Breadcrumb"' in html,
-        "contact CTA": 'href="contact.html"' in html,
+        "contact CTA": 'href="contact.html"' in html or 'href="index.html#contact"' in html,
         "native disclosure": '<details class="hoc-accordion">' in html and '<summary>' in html,
+        "context navigation": 'class="service-context-nav"' in html,
     }
     for label, ok in checks.items():
         if not ok:
@@ -127,7 +152,27 @@ for offer_id, href in sorted(routes.items()):
     elif pounds:
         errors.append(f"{offer_id} {href}: generic/unpriced page contains numeric price(s): {sorted(pounds)}")
 
-for tbd in ("HOC-036", "HOC-044", "HOC-054"):
+    # Whole-estate completion contract. Existing best-in-class references retain
+    # their proven bespoke information architecture; every rewritten page must
+    # carry the full common customer-information contract.
+    if href not in REFERENCE_PAGES:
+        contract = {
+            "outcome hook": 'class="product-hook"' in html,
+            "audience": 'class="product-audience"' in html,
+            "pricing fact": "<dt>Pricing</dt>" in html,
+            "scope fact": "<dt>Scope</dt>" in html,
+            "what changes": "<h2>What changes</h2>" in html,
+            "deliverables": "<h2>What you will receive</h2>" in html,
+            "requirements disclosure": "<summary>What needs to be in place?</summary>" in html,
+            "exclusions disclosure": "<summary>What is outside the scope?</summary>" in html,
+            "fit disclosure": "<summary>Is this the right service?</summary>" in html,
+            "claim boundary": "<summary>What does House of Carol not promise?</summary>" in html,
+        }
+        for label, ok in contract.items():
+            if not ok:
+                errors.append(f"{offer_id} {href}: page-contract failure: {label}")
+
+for tbd in sorted(TBD_IDS):
     if tbd in routes:
         errors.append(f"TBD offer exposed as product route: {tbd}")
 
@@ -144,5 +189,5 @@ if errors:
 print("PRODUCT PAGE STANDARDISATION QA: PASS")
 print(f"Verified {len(routes)} current DEVELOP product routes")
 print(f"Verified {len(ALLOWED_PRICES)} offer-specific numeric price boundaries and {len(routes) - len(ALLOWED_PRICES)} non-numeric pricing mechanisms")
-print("Verified native disclosure, one-H1, noindex, CSP, skip-link and contact-route requirements")
-print("Verified HOC-036/HOC-044/HOC-054 remain unexposed and BrandLab is not a product route")
+print("Verified customer-information contract, native disclosure, one-H1, noindex, CSP, skip-link and contact-route requirements")
+print("Verified all 11 TBD offers remain unexposed and BrandLab is not a product route")

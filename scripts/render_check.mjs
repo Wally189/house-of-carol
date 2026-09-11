@@ -59,21 +59,26 @@ async function run(viewport,name){
   await page.evaluate(()=>{document.body.style.fontSize='200%'});
   await noOverflow(page,name+' catalogue 200%');
 
+  const products=[];
   const reps=[];
   for(const area of AREA_PAGES){
     await baseline(page,area,name+' '+area);
     const serviceCount=await page.locator(SERVICE_LINKS).count();
     if(serviceCount<1) throw new Error(name+' '+area+': no service links');
     if((await page.locator('body').innerText()).match(/£\s?\d/)) throw new Error(name+' '+area+': area displays a price');
-    const first=await page.locator(SERVICE_LINKS).first().getAttribute('href');
-    reps.push(first);
+    const hrefs=await page.locator(SERVICE_LINKS).evaluateAll(a=>a.map(x=>x.getAttribute('href')));
+    products.push(...hrefs);
+    reps.push(hrefs[0]);
     if(name==='mobile') await tapAllAndReturn(page,SERVICE_LINKS,name+' '+area);
     if(name==='desktop'||name==='mobile') await page.screenshot({path:'qa-artifacts/'+name+'-'+area.replace('.html','')+'.png',fullPage:true});
     await page.evaluate(()=>{document.body.style.fontSize='200%'});
     await noOverflow(page,name+' '+area+' 200%');
   }
 
-  for(const href of reps){
+  if(new Set(products).size!==53) throw new Error(name+': expected 53 unique product routes, found '+new Set(products).size);
+
+  // Whole-estate rendering: every product, every viewport, plus 200% text.
+  for(const href of products){
     await baseline(page,href,name+' '+href);
     if((await page.locator('.service-breadcrumbs').count())!==1) throw new Error(name+' '+href+': breadcrumb missing');
     if((await page.locator('.service-context-nav').count())!==1) throw new Error(name+' '+href+': context nav missing');
@@ -83,6 +88,11 @@ async function run(viewport,name){
     await noOverflow(page,name+' '+href+' 200%');
   }
 
+  for(const href of reps){
+    await page.goto(BASE+'/'+href,{waitUntil:'networkidle'});
+    if(name==='desktop'||name==='mobile') await page.screenshot({path:'qa-artifacts/'+name+'-rep-'+href.replace('.html','')+'.png',fullPage:true});
+  }
+
   await baseline(page,'contact.html',name+' contact');
   if(await page.locator('form').count()!==1) throw new Error(name+': contact form count');
   await context.close();
@@ -90,4 +100,4 @@ async function run(viewport,name){
 
 for(const [v,n] of [[{width:1440,height:900},'desktop'],[{width:800,height:1280},'tablet'],[{width:390,height:844},'mobile'],[{width:320,height:900},'reflow-320']]) await run(v,n);
 await browser.close();
-console.log('PASS: 7-area catalogue hierarchy, all 7 area links and all 52 service links pass mobile tap-return regression; representative service pages render across desktop, tablet, mobile, 320px reflow and 200% text');
+console.log('PASS: 7-area catalogue hierarchy, all 53 service links and all 53 product pages pass desktop, tablet, mobile, 320px reflow and 200% text regression; mobile tap-return checks cover every catalogue service link');

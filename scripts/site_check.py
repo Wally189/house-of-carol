@@ -55,9 +55,9 @@ for area in AREA_PAGES:
     if not found: fail(area+': no service entries')
     area_products[area]=[x[1] for x in found]
     entries.extend(found)
-if len(entries)!=52: fail(f'area catalogue service-link count {len(entries)}')
+if len(entries)!=53: fail(f'area catalogue service-link count {len(entries)}')
 ids=[x[0] for x in entries]; products=[x[1] for x in entries]
-if len(set(ids))!=52 or len(set(products))!=52: fail('service IDs/routes are not unique')
+if len(set(ids))!=53 or len(set(products))!=53: fail('service IDs/routes are not unique')
 
 PUBLIC_PAGES=CORE_PAGES+AREA_PAGES+products
 for name in PUBLIC_PAGES+REQUIRED_ASSETS:
@@ -111,10 +111,9 @@ terms=' '.join((ROOT/'terms.html').read_text(encoding='utf-8').lower().split())
 for t in ('no automatic offer','intellectual property','nothing in these terms excludes','law of england and wales'):
     if t not in terms: fail('terms missing '+t)
 
-
 # NAVIGATION CONTRACT: homepage areas and exact service returns
 _home=(ROOT/'index.html').read_text(encoding='utf-8')
-for _dest in ["catalogue-operations.html","catalogue-ai-digital.html","catalogue-commercial.html","catalogue-learning.html","catalogue-research.html","catalogue-charity-public.html","catalogue-church-parish.html"]:
+for _dest in AREA_PAGES:
     if f'href="{_dest}"' not in _home:
         fail('homepage area route missing '+_dest)
 
@@ -128,7 +127,6 @@ for _area,_plist in area_products.items():
         _product_text=(ROOT/_product).read_text(encoding='utf-8')
         if _product_text.count('href="'+_target+'"') < 2:
             fail(_product+': exact area return route missing '+_target)
-
 
 # INTERACTION CONTRACT: catalogue cards and service rows
 _catalogue=(ROOT/'catalogue.html').read_text(encoding='utf-8')
@@ -147,4 +145,4 @@ for _area in AREA_PAGES:
     if _txt.count('class="service-cue"') != _service_count:
         fail(_area+': service cue count mismatch')
 
-print('PASS: 7-area catalogue -> 7 area catalogues -> 52 service pages; hierarchy, pricing separation, metadata, containment, navigation, links, contact and legal checks pass')
+print('PASS: 7-area catalogue -> 7 area catalogues -> 53 service pages; hierarchy, pricing separation, metadata, containment, navigation, links, contact and legal checks pass')
