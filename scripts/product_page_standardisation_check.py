@@ -18,6 +18,7 @@ EXPECTED_IDS = {f"HOC-{n:03d}" for n in range(1, 57)} - {
 }
 ALLOWED_PRICES = {
     "ai-data-use-rules-sprint.html": "£1,250",
+    "role-based-ai-skills-workshop.html": "£1,250",
     "independent-document-review.html": "£750",
     "process-design-sprint.html": "£1,500",
     "shared-drive-cleanup.html": "£1,250",
@@ -139,6 +140,6 @@ if errors:
 
 print("PRODUCT PAGE STANDARDISATION QA: PASS")
 print(f"Verified {len(routes)} current DEVELOP product routes")
-print("Verified 5 offer-specific numeric price boundaries and 47 non-numeric pricing mechanisms")
+print("Verified 6 offer-specific numeric price boundaries and 46 non-numeric pricing mechanisms")
 print("Verified native disclosure, one-H1, noindex, CSP, skip-link and contact-route requirements")
 print("Verified HOC-036/HOC-044/HOC-054 remain unexposed and BrandLab is not a product route")
