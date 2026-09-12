@@ -50,6 +50,7 @@
 .product-section.alt{
   background:var(--mist);
 }
+.completion-release-note{margin-top:30px}
 @media(max-width:760px){
   .product-hero>.shell,
   .product-section>.shell{
