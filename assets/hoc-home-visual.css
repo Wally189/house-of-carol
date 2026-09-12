@@ -1,0 +1,3 @@
+.home-visual{margin:0;background:var(--carol-blue);overflow:hidden;border-top:1px solid var(--stone);border-bottom:1px solid var(--stone)}
+.home-visual img{display:block;width:100%;height:auto;object-fit:cover}
+@media(max-width:760px){.home-visual img{min-height:220px;object-fit:cover;object-position:center}}
