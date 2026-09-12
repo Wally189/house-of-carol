@@ -65,10 +65,12 @@ for name in PUBLIC_PAGES+REQUIRED_ASSETS:
 
 parsers={name:parsed(name) for name in PUBLIC_PAGES}
 for name,p in parsers.items():
+    text=(ROOT/name).read_text(encoding='utf-8')
     if p.lang!='en-GB' or not p.viewport or p.titles!=1 or p.h1s!=1 or len(p.descriptions)!=1: fail(name+': baseline metadata')
     if p.robots!='noindex,nofollow': fail(name+': indexing containment')
-    if not p.csp or any(d not in p.csp for d in ("object-src 'none'","base-uri 'self'","script-src 'none'")): fail(name+': CSP')
+    if not p.csp or any(d not in p.csp for d in ("object-src 'none'","base-uri 'self'","script-src 'none'","style-src 'self'")): fail(name+': CSP')
     if p.scripts: fail(name+': scripts present')
+    if re.search(r'\sstyle\s*=', text, re.I): fail(name+': inline style is incompatible with CSP style-src self')
     if p.main_nav_hrefs!=EXPECTED_NAV: fail(name+': main navigation')
     if p.controls-p.labels: fail(name+': unlabelled controls')
 
@@ -155,4 +157,4 @@ for _area in AREA_PAGES:
     if _txt.count('class="service-cue"') != _service_count:
         fail(_area+': service cue count mismatch')
 
-print('PASS: 7-area catalogue -> 7 area catalogues -> 53 service pages; hierarchy, pricing separation, metadata, noindex crawlability, navigation, links, held contact route, branded identity and legal checks pass')
+print('PASS: 7-area catalogue -> 7 area catalogues -> 53 service pages; hierarchy, pricing separation, metadata, CSP-compatible styling, noindex crawlability, navigation, links, held contact route, branded identity and legal checks pass')
