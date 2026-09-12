@@ -49,6 +49,7 @@ REFERENCE_PAGES = {
     "shared-drive-cleanup.html",
     "management-information-and-kpi-setup.html",
     "customer-journey-and-service-operations-review.html",
+    "business-continuity-and-operational-readiness-pack.html",
     "website-completion-sprint.html",
 }
 
@@ -155,7 +156,7 @@ for category in CATEGORY_PAGES:
         continue
     html = path.read_text(encoding="utf-8")
     for match in re.finditer(
-        r'<article class="service-entry" id="hoc-\d+" data-offer-id="(HOC-\d{3})">\s*<a class="service-card-link" href="([^"]+)">',
+        r'<article class="service-entry(?: [^"]*)?" id="hoc-\d+" data-offer-id="(HOC-\d{3})">\s*<a class="service-card-link" href="([^"]+)">',
         html,
         re.I,
     ):
