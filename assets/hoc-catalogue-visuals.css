@@ -1,0 +1,11 @@
+.service-card-copy{min-width:0}
+.service-card-visual{margin:0 0 16px;aspect-ratio:16/9;overflow:hidden;background:var(--stone);line-height:0}
+.service-card-visual img{display:block;width:100%;height:100%;object-fit:cover}
+.service-card-copy>p{margin:0;max-width:64ch;color:#3B4A54}
+@media(min-width:861px){
+  .area-catalogue .service-entry-visual .service-card-copy{grid-column:2;grid-row:1 / span 3;align-self:start}
+  .area-catalogue .service-entry-visual .service-card-copy .service-cue{margin-top:14px}
+}
+@media(max-width:860px){
+  .area-catalogue .service-entry-visual .service-card-copy{margin-top:16px}
+}
