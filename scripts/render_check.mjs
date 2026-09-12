@@ -18,13 +18,13 @@ async function noOverflow(page,label){
       for(let p=el.parentElement;p;p=p.parentElement){
         const s=getComputedStyle(p);
         const r=p.getBoundingClientRect();
-        const x=s.overflowX || s.overflow;
-        if((x==='hidden'||x==='clip') && r.left>=-1 && r.right<=w+1) return true;
+        const clipsX=s.overflowX==='hidden'||s.overflowX==='clip'||s.overflow==='hidden'||s.overflow==='clip';
+        if(clipsX && r.left>=-1 && r.right<=w+1) return true;
       }
       return false;
     };
     const offenders=[...document.querySelectorAll('*')]
-      .map(el=>{const r=el.getBoundingClientRect();return {el,r,tag:el.tagName,left:r.left,right:r.right,text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,80)}})
+      .map(el=>{const r=el.getBoundingClientRect();return {el,tag:el.tagName,left:r.left,right:r.right,text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,80)}})
       .filter(x=>(x.right>w+1||x.left<-1) && !clippedByAncestor(x.el))
       .map(({tag,left,right,text})=>({tag,left,right,text}))
       .slice(0,10);
@@ -76,8 +76,6 @@ async function run(viewport,name){
   const page=await context.newPage();
   const runAccessibility=name==='desktop'||name==='mobile';
 
-  // Core customer and legal routes are part of the browser/reflow estate, not
-  // merely static-file checks.
   for(const core of CORE_PAGES){
     await baseline(page,core,name+' '+core,runAccessibility);
     if(core==='contact.html'){
@@ -117,8 +115,6 @@ async function run(viewport,name){
 
   if(new Set(products).size!==53) throw new Error(name+': expected 53 unique product routes, found '+new Set(products).size);
 
-  // Whole-estate rendering: every product, every viewport, plus 200% text.
-  // Serious/critical axe checks run for every product on desktop and mobile.
   for(const href of products){
     await baseline(page,href,name+' '+href,runAccessibility);
     if((await page.locator('.service-breadcrumbs').count())!==1) throw new Error(name+' '+href+': breadcrumb missing');
