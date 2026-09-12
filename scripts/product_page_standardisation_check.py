@@ -31,6 +31,7 @@ ALLOWED_PRICES = {
     "shared-drive-cleanup.html": "£1,250",
     "management-information-and-kpi-setup.html": "£1,250",
     "customer-journey-and-service-operations-review.html": "£1,250",
+    "customer-support-knowledge-base-build.html": "£1,750",
     "research-briefing.html": "£900",
     "church-and-parish-grant-funding-research.html": "£595",
     "website-completion-sprint.html": "£1,250",
