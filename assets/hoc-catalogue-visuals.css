@@ -38,6 +38,8 @@
 }
 @media(min-width:861px) and (max-width:1100px){
   .catalogue-index-page .area-card-link{
+    grid-column:1 / -1;
+    width:100%;
     grid-template-columns:minmax(185px,.78fr) minmax(0,1fr) minmax(185px,.72fr);
     gap:24px;
   }
