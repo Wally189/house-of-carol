@@ -77,7 +77,7 @@ HOC017_REQUIRED_MARKERS = (
     "Make the numbers you already have useful for management decisions.",
     "£1,250 fixed",
     "5–8 management measures",
-    "up to five existing systems or files",
+    "five existing systems or files",
     "one correction round for errors in the agreed work.",
     "This is a <strong>management-information service</strong>, not an accounting or financial-advice service.",
     "Check whether this service fits",
