@@ -74,6 +74,10 @@ h3{font-size:22px;line-height:1.18;margin:0 0 8px}
 .problem h2{color:var(--carol-blue)}
 .about-teaser{background:#fff}
 .contact{background:var(--pale)}
+.brand-lockup-section{background:var(--paper)}
+.brand-lockup-section>.shell{padding:48px 56px}
+.brand-lockup-figure{margin:0 auto;max-width:820px}
+.brand-lockup-figure img{display:block;width:100%;height:auto;border:0}
 .footer-layout{display:flex;justify-content:space-between;align-items:flex-end;gap:28px;padding:30px 44px}
 .footer-brand{font-size:24px;color:#fff;letter-spacing:.04em;text-transform:uppercase}
 .site-footer p{margin:4px 0 0;color:#E7EEF3;font-size:14px}
