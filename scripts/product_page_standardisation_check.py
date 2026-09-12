@@ -19,22 +19,64 @@ TBD_IDS = {
 }
 EXPECTED_IDS = {f"HOC-{n:03d}" for n in range(1, 65)} - TBD_IDS
 
-ALLOWED_PRICES = {
-    "ai-data-use-rules-sprint.html": "£1,250",
-    "ai-policy-and-sop-implementation-service.html": "£1,500",
-    "responsible-ai-workplace-training.html": "£750",
-    "role-based-ai-skills-workshop.html": "£1,250",
-    "ai-workflow-opportunity-review.html": "£900",
-    "ai-workflow-implementation-sprint.html": "£1,500",
-    "independent-document-review.html": "£750",
-    "process-design-sprint.html": "£1,500",
-    "shared-drive-cleanup.html": "£1,250",
-    "management-information-and-kpi-setup.html": "£1,250",
-    "customer-journey-and-service-operations-review.html": "£1,250",
-    "customer-support-knowledge-base-build.html": "£1,750",
-    "research-briefing.html": "£900",
-    "church-and-parish-grant-funding-research.html": "£595",
-    "website-completion-sprint.html": "£1,250",
+# Owner-approved website pricing settlement, 12 September 2026.
+# Each DEVELOP route must expose exactly this set of GBP amounts. Sets are
+# used because a price can legitimately appear more than once on one page
+# (for example in the hero and the service-facts block).
+EXPECTED_PRICES = {
+    "ai-data-use-rules-sprint.html": {"£1,250"},
+    "ai-policy-and-sop-implementation-service.html": {"£1,500"},
+    "responsible-ai-workplace-training.html": {"£750"},
+    "role-based-ai-skills-workshop.html": {"£1,250"},
+    "ai-leadership-and-management-workshop.html": {"£700", "£950", "£1,250"},
+    "ai-workflow-opportunity-review.html": {"£900"},
+    "ai-workflow-implementation-sprint.html": {"£1,500"},
+    "ai-tool-and-account-governance-review.html": {"£750", "£1,250", "£2,000"},
+    "ai-vendor-tool-selection-review.html": {"£850", "£1,250", "£1,750"},
+    "independent-document-review.html": {"£750"},
+    "ai-operating-model-and-governance-blueprint.html": {"£1,250", "£1,750", "£2,500"},
+    "ai-adoption-support-retainer.html": {"£300", "£900"},
+    "no-code-ai-automation-implementation.html": {"£1,500", "£3,500"},
+    "business-knowledge-base-and-ai-retrieval-setup.html": {"£1,000", "£1,500", "£2,250"},
+    "process-design-sprint.html": {"£1,500"},
+    "shared-drive-cleanup.html": {"£1,250"},
+    "management-information-and-kpi-setup.html": {"£1,250"},
+    "customer-journey-and-service-operations-review.html": {"£1,250"},
+    "customer-support-knowledge-base-build.html": {"£1,250", "£1,750", "£2,500"},
+    "business-continuity-and-operational-readiness-pack.html": {"£1,250", "£1,750", "£2,500"},
+    "decision-rights-and-governance-review.html": {"£950", "£1,250", "£1,750"},
+    "complaints-and-redress-process-design.html": {"£1,000", "£1,500", "£2,250"},
+    "evidence-and-marketing-claim-substantiation-review.html": {"£750", "£1,000", "£1,500"},
+    "tender-review.html": {"£750", "£850", "£950"},
+    "tender-readiness-and-bid-evidence-library.html": {"£1,250", "£1,750", "£2,500"},
+    "public-procurement-opportunity-monitoring.html": {"£250", "£600"},
+    "invoice-to-cash-process-setup.html": {"£1,000", "£1,500", "£2,250"},
+    "cash-flow-and-financial-operations-setup.html": {"£1,000", "£1,500", "£2,250"},
+    "supplier-and-purchasing-process-setup.html": {"£1,000", "£1,500", "£2,250"},
+    "bespoke-organisational-training-design.html": {"£1,250", "£1,750", "£2,500"},
+    "assessment-and-competency-framework-design.html": {"£1,250", "£1,750", "£2,500"},
+    "internal-academy-learning-pathway-design.html": {"£1,500", "£2,000", "£3,000"},
+    "microlearning-and-scenario-assessment-packs.html": {"£750", "£1,250", "£1,750"},
+    "research-briefing.html": {"£900"},
+    "training-quality-review.html": {"£750", "£1,250", "£1,750"},
+    "church-and-parish-grant-funding-research.html": {"£595"},
+    "church-grant-application-development-support.html": {"£1,250", "£1,750", "£2,500"},
+    "church-building-funding-and-maintenance-roadmap.html": {"£1,250", "£1,750", "£2,500"},
+    "parish-operations-and-administration-improvement.html": {"£1,250", "£1,750", "£2,500"},
+    "parish-digital-and-ai-governance-starter-service.html": {"£1,000", "£1,500", "£2,250"},
+    "parish-communications-service.html": {"£350", "£650"},
+    "charity-ai-governance-pack-and-implementation.html": {"£1,250", "£1,750", "£2,500"},
+    "charity-cyber-and-digital-governance-readiness-review.html": {"£750", "£1,250", "£1,750"},
+    "charity-governance-and-trustee-information-pack-review.html": {"£750", "£1,250", "£1,750"},
+    "public-sector-decision-governance-review.html": {"£1,250", "£2,500"},
+    "committee-board-paper-quality-review.html": {"£750", "£1,000", "£1,500"},
+    "public-sector-sop-and-process-modernisation.html": {"£1,250", "£1,750", "£2,500"},
+    "consultation-and-evidence-synthesis-service.html": {"£1,250", "£1,750", "£2,500"},
+    "evidence-based-executive-briefing-service.html": {"£750", "£1,500"},
+    "b2b-charity-newsletter-production.html": {"£350", "£650", "£850"},
+    "explainer-and-thought-leadership-production.html": {"£750", "£2,000"},
+    "research-monitoring-horizon-scanning-subscription.html": {"£500", "£1,500"},
+    "website-completion-sprint.html": {"£1,250"},
 }
 
 # Pages with an authoritative bespoke customer-information architecture are
@@ -176,6 +218,18 @@ if set(routes) != EXPECTED_IDS:
 if len(routes) != 53:
     errors.append(f"Expected 53 current DEVELOP product routes; found {len(routes)}")
 
+route_hrefs = set(routes.values())
+price_hrefs = set(EXPECTED_PRICES)
+if len(EXPECTED_PRICES) != 53:
+    errors.append(f"Expected 53 approved pricing entries; found {len(EXPECTED_PRICES)}")
+if route_hrefs != price_hrefs:
+    missing_prices = sorted(route_hrefs - price_hrefs)
+    extra_prices = sorted(price_hrefs - route_hrefs)
+    if missing_prices:
+        errors.append("DEVELOP routes without approved pricing contract: " + ", ".join(missing_prices))
+    if extra_prices:
+        errors.append("Approved pricing entries without DEVELOP route: " + ", ".join(extra_prices))
+
 seen_hrefs = set()
 for offer_id, href in sorted(routes.items()):
     if href in seen_hrefs:
@@ -218,15 +272,18 @@ for offer_id, href in sorted(routes.items()):
             errors.append(f"{offer_id} {href}: internal lifecycle language exposed: {forbidden}")
 
     pounds = set(re.findall(r"£[0-9][0-9,]*(?:\.[0-9]{1,2})?", html))
-    allowed = ALLOWED_PRICES.get(href)
-    if allowed:
-        if allowed not in pounds:
-            errors.append(f"{offer_id} {href}: authoritative price {allowed} missing")
-        unexpected = pounds - {allowed}
-        if unexpected:
-            errors.append(f"{offer_id} {href}: unexpected numeric price(s): {sorted(unexpected)}")
-    elif pounds:
-        errors.append(f"{offer_id} {href}: generic/unpriced page contains numeric price(s): {sorted(pounds)}")
+    expected_prices = EXPECTED_PRICES.get(href)
+    if expected_prices is None:
+        errors.append(f"{offer_id} {href}: no approved pricing contract")
+    else:
+        missing_prices = expected_prices - pounds
+        unexpected_prices = pounds - expected_prices
+        if missing_prices:
+            errors.append(f"{offer_id} {href}: approved numeric price(s) missing: {sorted(missing_prices)}")
+        if unexpected_prices:
+            errors.append(f"{offer_id} {href}: unexpected numeric price(s): {sorted(unexpected_prices)}")
+        if not pounds:
+            errors.append(f"{offer_id} {href}: DEVELOP route has no numerical GBP pricing presentation")
 
     # Whole-estate completion contract. Existing best-in-class or separately
     # accepted reference pages retain their proven bespoke information
@@ -289,7 +346,7 @@ if errors:
 
 print("PRODUCT PAGE STANDARDISATION QA: PASS")
 print(f"Verified {len(routes)} current DEVELOP product routes")
-print(f"Verified {len(ALLOWED_PRICES)} offer-specific numeric price boundaries and {len(routes) - len(ALLOWED_PRICES)} non-numeric pricing mechanisms")
+print(f"Verified {len(EXPECTED_PRICES)}/53 DEVELOP routes against their exact approved numerical GBP price sets")
 print("Verified common-contract pages plus authoritative bespoke reference-page source boundaries, one-H1, noindex, CSP, skip-link and contact-route requirements")
 print("Verified HOC-016 against accepted Candidate 01 markers without forcing a redesign")
 print("Verified HOC-017 against approved customer-facing markers and superseded-copy drift checks")
