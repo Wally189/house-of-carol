@@ -51,7 +51,7 @@ area_products={}
 for area in AREA_PAGES:
     text=(ROOT/area).read_text(encoding='utf-8')
     if re.search(r'£\s?\d', text): fail(area+': area catalogue contains a displayed price')
-    found=re.findall(r'<article class="service-entry"(?: id="hoc-\d{3}")? data-offer-id="(HOC-\d{3})">\s*<a class="service-card-link" href="([^"]+\.html)">', text, flags=re.S)
+    found=re.findall(r'<article class="service-entry(?: [^"]*)?"(?: id="hoc-\d{3}")? data-offer-id="(HOC-\d{3})">\s*<a class="service-card-link" href="([^"]+\.html)">', text, flags=re.S)
     if not found: fail(area+': no service entries')
     area_products[area]=[x[1] for x in found]
     entries.extend(found)
@@ -132,7 +132,7 @@ for _dest in AREA_PAGES:
 for _area,_plist in area_products.items():
     _area_text=(ROOT/_area).read_text(encoding='utf-8')
     for _product in _plist:
-        _m=re.search(r'<article class="service-entry" id="(hoc-\d{3})" data-offer-id="HOC-\d{3}">\s*<a class="service-card-link" href="'+re.escape(_product)+r'">', _area_text, flags=re.S)
+        _m=re.search(r'<article class="service-entry(?: [^"]*)?" id="(hoc-\d{3})" data-offer-id="HOC-\d{3}">\s*<a class="service-card-link" href="'+re.escape(_product)+r'">', _area_text, flags=re.S)
         if not _m:
             fail(_area+': anchored service entry missing for '+_product)
         _target=_area+'#'+_m.group(1)
@@ -151,7 +151,7 @@ if 'class="text-link"' in _catalogue and 'View ' in _catalogue:
 
 for _area in AREA_PAGES:
     _txt=(ROOT/_area).read_text(encoding='utf-8')
-    _service_count=len(re.findall(r'<article class="service-entry"', _txt))
+    _service_count=len(re.findall(r'<article class="service-entry(?: [^"]*)?"', _txt))
     if _txt.count('class="service-card-link"') != _service_count:
         fail(_area+': whole-row link count mismatch')
     if _txt.count('class="service-cue"') != _service_count:
