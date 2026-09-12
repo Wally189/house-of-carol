@@ -1,0 +1,42 @@
+name: pages-gated
+
+on:
+  workflow_run:
+    workflows:
+      - site-qa
+    types:
+      - completed
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_branch == 'main' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout exact QA-passed commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload exact QA-passed site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy exact QA-passed site
+        id: deployment
+        uses: actions/deploy-pages@v4
