@@ -1,0 +1,31 @@
+name: RC03 binary reconstruction
+on:
+  push:
+    branches:
+      - release/operations-catalogue-rc03
+    paths:
+      - '.rc03-trigger'
+permissions:
+  contents: write
+jobs:
+  reconstruct:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reconstruct and verify exact RC03
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets
+          for f in operations-business-continuity.webp operations-complaints-redress.webp operations-customer-journey.webp operations-decision-rights.webp operations-document-control.webp operations-evidence-claims.webp operations-management-information.webp operations-sop-process-design.webp operations-support-knowledge-base.webp; do
+            cat ".rc03/chunks/${f}."* | base64 -d > "assets/${f}"
+          done
+          sha256sum -c .rc03/SHA256SUMS
+          rm -rf .rc03 .rc03-trigger .github/workflows/rc03-reconstruct.yml
+          git config user.name "House of Carol release"
+          git config user.email "53058801+Wally189@users.noreply.github.com"
+          git add -A
+          git commit -m "Release Operations catalogue RC03 reconciled"
+          git push origin HEAD:release/operations-catalogue-rc03
