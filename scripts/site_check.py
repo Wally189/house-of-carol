@@ -72,7 +72,9 @@ for name,p in parsers.items():
     if p.main_nav_hrefs!=EXPECTED_NAV: fail(name+': main navigation')
     if p.controls-p.labels: fail(name+': unlabelled controls')
 
-if 'Disallow: /' not in (ROOT/'robots.txt').read_text(encoding='utf-8'): fail('robots containment')
+robots=(ROOT/'robots.txt').read_text(encoding='utf-8')
+if not re.search(r'(?im)^User-agent:\s*\*\s*$', robots): fail('robots missing universal user agent')
+if re.search(r'(?im)^Disallow:\s*/\s*$', robots): fail('robots blocks crawlers from reading page noindex directives')
 
 for name,p in parsers.items():
     for href in p.hrefs:
@@ -90,10 +92,15 @@ for area,plist in area_products.items():
         if 'catalogue.html' not in pp.hrefs or 'index.html' not in pp.hrefs: fail(product+': hierarchy route missing')
 
 contact=parsers['contact.html']
+contact_text=(ROOT/'contact.html').read_text(encoding='utf-8')
 all_forms=[(n,f) for n,p in parsers.items() for f in p.forms]
 if len(all_forms)!=1 or all_forms[0][0]!='contact.html': fail('contact form location/count')
 form=contact.forms[0]
-if form.get('action')!='https://formspree.io/f/mgvgrgvb' or form.get('method','').lower()!='post': fail('contact route')
+if form.get('action'): fail('contact form must have no live external action while E-072 is open')
+if form.get('method','').lower()!='post': fail('contact form method')
+if "form-action 'none'" not in (contact.csp or ''): fail('contact CSP must prevent form submission while route is held')
+if 'formspree' in contact_text.lower(): fail('contact page exposes held Formspree route')
+if '<fieldset disabled' not in contact_text or '<button type="submit" disabled' not in contact_text: fail('contact form is not visibly and technically held')
 if contact.controls!={'name','email','message'} or contact.controls-contact.labels: fail('contact controls')
 
 for product in products:
@@ -103,12 +110,15 @@ for product in products:
 all_text='\n'.join((ROOT/n).read_text(encoding='utf-8').lower() for n in PUBLIC_PAGES)
 for claim in ('industry-leading','world-class','52 departments','customer 000'):
     if claim in all_text: fail('unsupported/internal claim '+claim)
+if 'alanwgallagher1@gmail.com' in all_text: fail('underlying personal Gmail exposed in customer-facing estate')
+if 'https://formspree.io/f/mgvgrgvb' in all_text: fail('held Formspree endpoint exposed in customer-facing estate')
 
 privacy=' '.join((ROOT/'privacy.html').read_text(encoding='utf-8').lower().split())
-for t in ('data controller','legitimate interests','formspree','united states','standard contractual clauses','information commissioner','cookies and analytics'):
+for t in ('data controller','alan@houseofcarol.co.uk','legitimate interests','right to object','information commissioner','cookies and analytics','website enquiry form is currently disabled'):
     if t not in privacy: fail('privacy missing '+t)
+if 'formspree or another website-form processor' not in privacy: fail('privacy missing current inactive processor state')
 terms=' '.join((ROOT/'terms.html').read_text(encoding='utf-8').lower().split())
-for t in ('no automatic offer','intellectual property','nothing in these terms excludes','law of england and wales'):
+for t in ('alan@houseofcarol.co.uk','no automatic offer','intellectual property','nothing in these terms excludes','law of england and wales'):
     if t not in terms: fail('terms missing '+t)
 
 # NAVIGATION CONTRACT: homepage areas and exact service returns
@@ -145,4 +155,4 @@ for _area in AREA_PAGES:
     if _txt.count('class="service-cue"') != _service_count:
         fail(_area+': service cue count mismatch')
 
-print('PASS: 7-area catalogue -> 7 area catalogues -> 53 service pages; hierarchy, pricing separation, metadata, containment, navigation, links, contact and legal checks pass')
+print('PASS: 7-area catalogue -> 7 area catalogues -> 53 service pages; hierarchy, pricing separation, metadata, noindex crawlability, navigation, links, held contact route, branded identity and legal checks pass')
