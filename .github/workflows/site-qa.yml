@@ -4,15 +4,16 @@ on:
   push:
     branches:
       - main
+      - 'hoc-website-remediation-*'
   pull_request:
 
 permissions:
   contents: read
 
 jobs:
-  quality:
+  static-integrity:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 8
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,13 +23,46 @@ jobs:
           python-version: '3.12'
       - name: Production-site static integrity and containment checks
         run: python scripts/site_check.py
+
+  product-standardisation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Product-page standardisation and source-boundary checks
         run: python scripts/product_page_standardisation_check.py
+
+  qa-storefront-static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: QA storefront containment and brand checks
         run: python scripts/qa_site_check.py
-      - name: Install Playwright
+
+  browser-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser assurance tools
         run: |
-          npm install --no-save playwright@1.55.0
+          npm install --no-save playwright@1.55.0 @axe-core/playwright@4.10.2
           npx playwright install --with-deps chromium
       - name: Serve site
         run: |
@@ -36,8 +70,12 @@ jobs:
           echo $! > /tmp/hoc-http.pid
           sleep 2
       - name: Production browser, accessibility, responsive and enlarged-text regression
+        id: production_browser
+        continue-on-error: true
         run: node scripts/render_check.mjs
       - name: QA storefront responsive and enlarged-text regression
+        id: qa_storefront_browser
+        continue-on-error: true
         run: node scripts/qa_render_check.mjs
       - name: Upload QA screenshots
         if: always()
@@ -47,3 +85,62 @@ jobs:
           path: qa-artifacts/
           if-no-files-found: warn
           retention-days: 14
+      - name: Enforce browser assurance results
+        if: always()
+        env:
+          PRODUCTION_BROWSER: ${{ steps.production_browser.outcome }}
+          QA_STOREFRONT_BROWSER: ${{ steps.qa_storefront_browser.outcome }}
+        run: |
+          test "$PRODUCTION_BROWSER" = "success" || { echo "Production browser/accessibility regression failed: $PRODUCTION_BROWSER"; exit 1; }
+          test "$QA_STOREFRONT_BROWSER" = "success" || { echo "QA storefront browser regression failed: $QA_STOREFRONT_BROWSER"; exit 1; }
+
+  performance-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Serve site
+        run: |
+          python -m http.server 8000 --bind 127.0.0.1 > /tmp/hoc-http.log 2>&1 &
+          echo $! > /tmp/hoc-http.pid
+          sleep 2
+      - name: Synthetic performance regression guard
+        run: node scripts/performance_check.mjs
+
+  quality-gate:
+    if: always()
+    needs:
+      - static-integrity
+      - product-standardisation
+      - qa-storefront-static
+      - browser-regression
+      - performance-regression
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every independent assurance job to pass
+        env:
+          STATIC_INTEGRITY: ${{ needs.static-integrity.result }}
+          PRODUCT_STANDARDISATION: ${{ needs.product-standardisation.result }}
+          QA_STOREFRONT_STATIC: ${{ needs.qa-storefront-static.result }}
+          BROWSER_REGRESSION: ${{ needs.browser-regression.result }}
+          PERFORMANCE_REGRESSION: ${{ needs.performance-regression.result }}
+        run: |
+          failed=0
+          for result in "$STATIC_INTEGRITY" "$PRODUCT_STANDARDISATION" "$QA_STOREFRONT_STATIC" "$BROWSER_REGRESSION" "$PERFORMANCE_REGRESSION"; do
+            if [ "$result" != "success" ]; then failed=1; fi
+          done
+          if [ "$failed" -ne 0 ]; then
+            echo "Required QA did not all pass."
+            printf 'static=%s\nproduct=%s\nqa-storefront=%s\nbrowser=%s\nperformance=%s\n' "$STATIC_INTEGRITY" "$PRODUCT_STANDARDISATION" "$QA_STOREFRONT_STATIC" "$BROWSER_REGRESSION" "$PERFORMANCE_REGRESSION"
+            exit 1
+          fi
+          echo "PASS: all required independent House website assurance jobs succeeded."
