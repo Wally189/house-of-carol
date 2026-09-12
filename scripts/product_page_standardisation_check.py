@@ -76,6 +76,32 @@ def has_nested_details(markup: str) -> bool:
             depth += 1
     return False
 
+def plain(fragment: str) -> str:
+    fragment = re.sub(r'<[^>]+>', ' ', fragment)
+    fragment = re.sub(r'\s+', ' ', fragment).strip().casefold()
+    return fragment.strip(' .:;–—-')
+
+def placeholder_deliverables(markup: str):
+    """Reject generated cards where the body merely repeats the heading."""
+    block = re.search(
+        r'<div class="deliverable-groups generic-deliverables">(.*?)</div>',
+        markup,
+        re.I | re.S,
+    )
+    if not block:
+        return []
+    defects = []
+    for heading, body in re.findall(
+        r'<article>\s*<h3>(.*?)</h3>\s*<p>(.*?)</p>\s*</article>',
+        block.group(1),
+        re.I | re.S,
+    ):
+        h = plain(heading)
+        b = plain(body)
+        if h and b and h == b:
+            defects.append(h)
+    return defects
+
 for category in CATEGORY_PAGES:
     path = ROOT / category
     if not path.exists():
@@ -172,6 +198,13 @@ for offer_id, href in sorted(routes.items()):
             if not ok:
                 errors.append(f"{offer_id} {href}: page-contract failure: {label}")
 
+        repeated = placeholder_deliverables(html)
+        if repeated:
+            errors.append(
+                f"{offer_id} {href}: placeholder deliverable description repeats heading: "
+                + ", ".join(repeated)
+            )
+
 for tbd in sorted(TBD_IDS):
     if tbd in routes:
         errors.append(f"TBD offer exposed as product route: {tbd}")
@@ -189,5 +222,5 @@ if errors:
 print("PRODUCT PAGE STANDARDISATION QA: PASS")
 print(f"Verified {len(routes)} current DEVELOP product routes")
 print(f"Verified {len(ALLOWED_PRICES)} offer-specific numeric price boundaries and {len(routes) - len(ALLOWED_PRICES)} non-numeric pricing mechanisms")
-print("Verified customer-information contract, native disclosure, one-H1, noindex, CSP, skip-link and contact-route requirements")
+print("Verified customer-information contract, substantive deliverable copy, native disclosure, one-H1, noindex, CSP, skip-link and contact-route requirements")
 print("Verified all 11 TBD offers remain unexposed and BrandLab is not a product route")
