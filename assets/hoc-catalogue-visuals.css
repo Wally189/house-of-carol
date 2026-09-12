@@ -38,13 +38,13 @@
 }
 @media(min-width:861px) and (max-width:1100px){
   .catalogue-index-page .area-card-link{
-    grid-template-columns:minmax(230px,.85fr) minmax(0,1.15fr);
-    gap:20px 36px;
+    grid-template-columns:minmax(185px,.78fr) minmax(0,1fr) minmax(185px,.72fr);
+    gap:24px;
   }
   .catalogue-index-page .area-card-visual{
-    grid-column:1 / -1;
+    grid-column:auto;
     width:100%;
-    max-height:250px;
+    max-height:none;
   }
 }
 @media(max-width:860px){
