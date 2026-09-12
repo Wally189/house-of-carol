@@ -14,7 +14,20 @@ const SERVICE_LINKS='.service-entry .service-card-link';
 async function noOverflow(page,label){
   const g=await page.evaluate(()=>{
     const w=document.documentElement.clientWidth;
-    const offenders=[...document.querySelectorAll('*')].map(el=>{const r=el.getBoundingClientRect();return {tag:el.tagName,left:r.left,right:r.right,text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,80)}}).filter(x=>x.right>w+1||x.left<-1).slice(0,10);
+    const clippedByAncestor=(el)=>{
+      for(let p=el.parentElement;p;p=p.parentElement){
+        const s=getComputedStyle(p);
+        const r=p.getBoundingClientRect();
+        const x=s.overflowX || s.overflow;
+        if((x==='hidden'||x==='clip') && r.left>=-1 && r.right<=w+1) return true;
+      }
+      return false;
+    };
+    const offenders=[...document.querySelectorAll('*')]
+      .map(el=>{const r=el.getBoundingClientRect();return {el,r,tag:el.tagName,left:r.left,right:r.right,text:(el.textContent||'').trim().replace(/\s+/g,' ').slice(0,80)}})
+      .filter(x=>(x.right>w+1||x.left<-1) && !clippedByAncestor(x.el))
+      .map(({tag,left,right,text})=>({tag,left,right,text}))
+      .slice(0,10);
     return {w,offenders};
   });
   if(g.offenders.length) throw new Error(label+': visible overflow '+JSON.stringify(g));
