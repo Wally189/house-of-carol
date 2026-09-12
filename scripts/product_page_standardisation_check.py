@@ -46,6 +46,7 @@ REFERENCE_PAGES = {
     "ai-workflow-implementation-sprint.html",
     "process-design-sprint.html",
     "shared-drive-cleanup.html",
+    "management-information-and-kpi-setup.html",
     "customer-journey-and-service-operations-review.html",
     "website-completion-sprint.html",
 }
@@ -69,6 +70,25 @@ HOC016_FORBIDDEN_DRIFT = (
     "House of Carol reviews one shared document area",
     "The current standard engagement is for organisation-paid work",
     "What House of Carol does not promise",
+)
+
+HOC017_REQUIRED_MARKERS = (
+    "Management Reporting Setup",
+    "Make the numbers you already have useful for management decisions.",
+    "£1,250 fixed",
+    "5–8 management measures",
+    "up to five existing systems or files",
+    "one correction round for errors in the agreed work.",
+    "This is a <strong>management-information service</strong>, not an accounting or financial-advice service.",
+    "Check whether this service fits",
+)
+
+HOC017_FORBIDDEN_DRIFT = (
+    "Management Information &amp; KPI Setup",
+    "standard scope",
+    "bounded correction cycle",
+    "platform-neutral specification",
+    "decision-linked KPIs",
 )
 
 FORBIDDEN_CUSTOMER_STRINGS = (
@@ -243,6 +263,14 @@ for offer_id, href in sorted(routes.items()):
         if '<details' in html.lower():
             errors.append(f"{offer_id} {href}: accepted Candidate 01 should not be redesigned into disclosure accordions")
 
+    if href == "management-information-and-kpi-setup.html":
+        for marker in HOC017_REQUIRED_MARKERS:
+            if marker not in html:
+                errors.append(f"{offer_id} {href}: approved HOC-017 marker missing: {marker}")
+        for drift in HOC017_FORBIDDEN_DRIFT:
+            if drift.lower() in html.lower():
+                errors.append(f"{offer_id} {href}: superseded HOC-017 wording remains: {drift}")
+
 for tbd in sorted(TBD_IDS):
     if tbd in routes:
         errors.append(f"TBD offer exposed as product route: {tbd}")
@@ -262,4 +290,5 @@ print(f"Verified {len(routes)} current DEVELOP product routes")
 print(f"Verified {len(ALLOWED_PRICES)} offer-specific numeric price boundaries and {len(routes) - len(ALLOWED_PRICES)} non-numeric pricing mechanisms")
 print("Verified common-contract pages plus authoritative bespoke reference-page source boundaries, one-H1, noindex, CSP, skip-link and contact-route requirements")
 print("Verified HOC-016 against accepted Candidate 01 markers without forcing a redesign")
+print("Verified HOC-017 against approved customer-facing markers and superseded-copy drift checks")
 print("Verified all 11 TBD offers remain unexposed and BrandLab is not a product route")
