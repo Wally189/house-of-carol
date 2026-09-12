@@ -36,15 +36,40 @@ ALLOWED_PRICES = {
     "website-completion-sprint.html": "£1,250",
 }
 
+# Pages with an authoritative bespoke customer-information architecture are
+# checked against their own source boundary rather than forced into the common
+# rewritten-page contract.
 REFERENCE_PAGES = {
     "ai-data-use-rules-sprint.html",
     "role-based-ai-skills-workshop.html",
     "ai-workflow-opportunity-review.html",
     "ai-workflow-implementation-sprint.html",
     "process-design-sprint.html",
+    "shared-drive-cleanup.html",
     "customer-journey-and-service-operations-review.html",
     "website-completion-sprint.html",
 }
+
+HOC016_REQUIRED_MARKERS = (
+    "Shared drives rarely become a mess all at once.",
+    "Nobody wants to delete anything because nobody is certain what is still needed.",
+    "House of Carol takes one shared document area, works out what is actually going on, and gives you a simpler structure and a controlled plan for putting it right.",
+    "A keep / move / archive / review plan.",
+    "Nothing is deleted or moved by House of Carol under the standard review without explicit customer approval.",
+    "Normally returned within 7 working days once the agreed access/inventory and discovery inputs are complete.",
+    "Safe read-only access where appropriate, or a sufficient folder/file inventory, screenshots or directory listing.",
+    "If everyone can reliably find the current version, ownership is clear and the problem is mostly that you dislike the folder names, keep your £1,250.",
+    "No attempt to turn one messy team drive into an enterprise information-governance programme.",
+    "Where does your team lose track of the right document?",
+    "Discuss the shared drive",
+)
+
+HOC016_FORBIDDEN_DRIFT = (
+    "Shared document areas rarely become a mess all at once.",
+    "House of Carol reviews one shared document area",
+    "The current standard engagement is for organisation-paid work",
+    "What House of Carol does not promise",
+)
 
 FORBIDDEN_CUSTOMER_STRINGS = (
     "DEVELOP FOR 02/10",
@@ -150,12 +175,15 @@ for offer_id, href in sorted(routes.items()):
         "product hero": 'class="product-hero' in html,
         "breadcrumb": 'aria-label="Breadcrumb"' in html,
         "contact CTA": 'href="contact.html"' in html or 'href="index.html#contact"' in html,
-        "native disclosure": '<details class="hoc-accordion">' in html and '<summary>' in html,
         "context navigation": 'class="service-context-nav"' in html,
     }
     for label, ok in checks.items():
         if not ok:
             errors.append(f"{offer_id} {href}: missing {label}")
+
+    if href not in REFERENCE_PAGES:
+        if '<details class="hoc-accordion">' not in html or '<summary>' not in html:
+            errors.append(f"{offer_id} {href}: missing native disclosure")
 
     if len(re.findall(r"<h1\b", html, re.I)) != 1:
         errors.append(f"{offer_id} {href}: must contain exactly one H1")
@@ -178,9 +206,9 @@ for offer_id, href in sorted(routes.items()):
     elif pounds:
         errors.append(f"{offer_id} {href}: generic/unpriced page contains numeric price(s): {sorted(pounds)}")
 
-    # Whole-estate completion contract. Existing best-in-class references retain
-    # their proven bespoke information architecture; every rewritten page must
-    # carry the full common customer-information contract.
+    # Whole-estate completion contract. Existing best-in-class or separately
+    # accepted reference pages retain their proven bespoke information
+    # architecture; rewritten pages carry the full common contract.
     if href not in REFERENCE_PAGES:
         contract = {
             "outcome hook": 'class="product-hook"' in html,
@@ -205,6 +233,16 @@ for offer_id, href in sorted(routes.items()):
                 + ", ".join(repeated)
             )
 
+    if href == "shared-drive-cleanup.html":
+        for marker in HOC016_REQUIRED_MARKERS:
+            if marker not in html:
+                errors.append(f"{offer_id} {href}: accepted Candidate 01 marker missing: {marker}")
+        for drift in HOC016_FORBIDDEN_DRIFT:
+            if drift.lower() in html.lower():
+                errors.append(f"{offer_id} {href}: superseded HOC-016 wording remains: {drift}")
+        if '<details' in html.lower():
+            errors.append(f"{offer_id} {href}: accepted Candidate 01 should not be redesigned into disclosure accordions")
+
 for tbd in sorted(TBD_IDS):
     if tbd in routes:
         errors.append(f"TBD offer exposed as product route: {tbd}")
@@ -222,5 +260,6 @@ if errors:
 print("PRODUCT PAGE STANDARDISATION QA: PASS")
 print(f"Verified {len(routes)} current DEVELOP product routes")
 print(f"Verified {len(ALLOWED_PRICES)} offer-specific numeric price boundaries and {len(routes) - len(ALLOWED_PRICES)} non-numeric pricing mechanisms")
-print("Verified customer-information contract, substantive deliverable copy, native disclosure, one-H1, noindex, CSP, skip-link and contact-route requirements")
+print("Verified common-contract pages plus authoritative bespoke reference-page source boundaries, one-H1, noindex, CSP, skip-link and contact-route requirements")
+print("Verified HOC-016 against accepted Candidate 01 markers without forcing a redesign")
 print("Verified all 11 TBD offers remain unexposed and BrandLab is not a product route")
