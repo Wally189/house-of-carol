@@ -1,0 +1,69 @@
+/* Operations catalogue — consistent image-led service rows. Scoped to this page. */
+.operations-catalogue-page{
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+.operations-catalogue-page .area-catalogue .service-card-link{
+  display:grid;
+  grid-template-columns:minmax(220px,.82fr) minmax(260px,1.18fr) 220px;
+  grid-template-areas:"heading copy visual";
+  column-gap:30px;
+  align-items:start;
+  padding:24px 0;
+}
+.operations-catalogue-page .service-card-heading{grid-area:heading;min-width:0}
+.operations-catalogue-page .service-card-heading h3{
+  margin:0 0 7px;
+  font-size:20px;
+  line-height:1.25;
+}
+.operations-catalogue-page .service-card-heading .service-for{margin:0;font-size:14px}
+.operations-catalogue-page .service-card-copy{grid-area:copy;min-width:0}
+.operations-catalogue-page .service-card-copy>p{
+  margin:0;
+  max-width:64ch;
+  color:#3B4A54;
+  font-size:16px;
+  line-height:1.55;
+}
+.operations-catalogue-page .service-card-copy .service-cue{margin-top:12px}
+.operations-catalogue-page .service-card-visual{
+  grid-area:visual;
+  margin:0;
+  aspect-ratio:4/3;
+  overflow:hidden;
+  background:var(--stone);
+  line-height:0;
+}
+.operations-catalogue-page .service-card-visual img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+@media(max-width:1024px){
+  .operations-catalogue-page .area-catalogue .service-card-link{
+    grid-template-columns:minmax(0,1fr) 180px;
+    grid-template-areas:"heading visual" "copy visual";
+    column-gap:24px;
+    row-gap:10px;
+  }
+}
+@media(max-width:760px){
+  .operations-catalogue-page .area-catalogue .service-card-link{
+    display:flex;
+    flex-direction:column;
+    padding:22px 0;
+  }
+  .operations-catalogue-page .service-card-heading{order:1}
+  .operations-catalogue-page .service-card-visual{
+    order:2;
+    width:100%;
+    margin:16px 0 14px;
+    aspect-ratio:4/3;
+  }
+  .operations-catalogue-page .service-card-copy{order:3}
+  .operations-catalogue-page .service-card-heading h3{font-size:20px;line-height:1.25}
+  .operations-catalogue-page .service-card-copy>p{font-size:16px;line-height:1.55}
+  .operations-catalogue-page .service-card-copy .service-cue{margin-top:13px}
+}
