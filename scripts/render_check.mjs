@@ -103,7 +103,8 @@ async function run(viewport,name){
     await baseline(page,area,name+' '+area,runAccessibility);
     const serviceCount=await page.locator(SERVICE_LINKS).count();
     if(serviceCount<1) throw new Error(name+' '+area+': no service links');
-    if((await page.locator('body').innerText()).match(/£\s?\d/)) throw new Error(name+' '+area+': area displays a price');
+    const pricedCount=await page.locator('.service-entry .service-for').evaluateAll(nodes=>nodes.filter(n=>/Price:\s*[\s\S]*£\s?\d/.test(n.innerText)).length);
+    if(pricedCount!==serviceCount) throw new Error(name+' '+area+': displayed price count '+pricedCount+' does not match service count '+serviceCount);
     const hrefs=await page.locator(SERVICE_LINKS).evaluateAll(a=>a.map(x=>x.getAttribute('href')));
     products.push(...hrefs);
     reps.push(hrefs[0]);
@@ -135,4 +136,4 @@ async function run(viewport,name){
 
 for(const [v,n] of [[{width:1440,height:900},'desktop'],[{width:800,height:1280},'tablet'],[{width:390,height:844},'mobile'],[{width:320,height:900},'reflow-320']]) await run(v,n);
 await browser.close();
-console.log('PASS: core pages, 7-area catalogue hierarchy and all 53 product pages pass browser, desktop/tablet/mobile/320px reflow and 200% text regression; serious/critical axe checks cover every core, catalogue, area and product page on desktop and mobile; mobile tap-return checks cover every catalogue service link');
+console.log('PASS: core pages, 7-area priced catalogue hierarchy and all 53 product pages pass browser, desktop/tablet/mobile/320px reflow and 200% text regression; serious/critical axe checks cover every core, catalogue, area and product page on desktop and mobile; mobile tap-return checks cover every catalogue service link');
