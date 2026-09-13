@@ -50,9 +50,13 @@ entries=[]
 area_products={}
 for area in AREA_PAGES:
     text=(ROOT/area).read_text(encoding='utf-8')
-    if re.search(r'£\s?\d', text): fail(area+': area catalogue contains a displayed price')
     found=re.findall(r'<article class="service-entry(?: [^"]*)?"(?: id="hoc-\d{3}")? data-offer-id="(HOC-\d{3})">\s*<a class="service-card-link" href="([^"]+\.html)">', text, flags=re.S)
     if not found: fail(area+': no service entries')
+    blocks=re.findall(r'<article class="service-entry(?: [^"]*)?"[^>]*>.*?</article>', text, flags=re.S)
+    if len(blocks)!=len(found): fail(area+': service-entry block count mismatch')
+    for block in blocks:
+        if not re.search(r'<strong>Price:</strong>[^<]*(?:<[^>]+>[^<]*)*£\s?\d', block, flags=re.S):
+            fail(area+': service entry missing displayed numerical price')
     area_products[area]=[x[1] for x in found]
     entries.extend(found)
 if len(entries)!=53: fail(f'area catalogue service-link count {len(entries)}')
@@ -157,4 +161,4 @@ for _area in AREA_PAGES:
     if _txt.count('class="service-cue"') != _service_count:
         fail(_area+': service cue count mismatch')
 
-print('PASS: 7-area catalogue -> 7 area catalogues -> 53 service pages; hierarchy, pricing separation, metadata, CSP-compatible styling, noindex crawlability, navigation, links, held contact route, branded identity and legal checks pass')
+print('PASS: 7-area catalogue -> 7 priced area catalogues -> 53 service pages; hierarchy, pricing visibility, metadata, CSP-compatible styling, noindex crawlability, navigation, links, held contact route, branded identity and legal checks pass')
