@@ -1,0 +1,36 @@
+name: RC03 Netlify exact-source package
+on:
+  push:
+    branches:
+      - release/operations-catalogue-rc03-staging-backup
+    paths:
+      - '.github/workflows/rc03-netlify-package.yml'
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact production commit
+        uses: actions/checkout@v4
+        with:
+          ref: f23ec4b0a63590eb3705d79edb50b55a47380a75
+          fetch-depth: 1
+          path: source
+      - name: Verify exact production SHA and package source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C source rev-parse HEAD)" = "f23ec4b0a63590eb3705d79edb50b55a47380a75"
+          rm -rf source/.git
+          (cd source && zip -qr ../house-of-carol-f23ec4b0a63590eb3705d79edb50b55a47380a75.zip .)
+          sha256sum house-of-carol-f23ec4b0a63590eb3705d79edb50b55a47380a75.zip > package-sha256.txt
+      - name: Upload exact source package
+        uses: actions/upload-artifact@v4
+        with:
+          name: house-of-carol-f23ec4b0a63590eb3705d79edb50b55a47380a75
+          path: |
+            house-of-carol-f23ec4b0a63590eb3705d79edb50b55a47380a75.zip
+            package-sha256.txt
+          if-no-files-found: error
+          retention-days: 1
