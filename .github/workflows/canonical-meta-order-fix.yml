@@ -1,0 +1,52 @@
+name: Canonical Meta Order Fix
+
+on:
+  push:
+    branches:
+      - hoc-canonical-template-meta-fix-20260914
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: hoc-canonical-template-meta-fix-20260914
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore stable product-page meta/link attribute order
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import ast, re
+          root = Path('.')
+          tree = ast.parse((root/'scripts/product_page_standardisation_check.py').read_text(encoding='utf-8'))
+          routes = []
+          for node in tree.body:
+              if isinstance(node, ast.Assign):
+                  for target in node.targets:
+                      if isinstance(target, ast.Name) and target.id == 'EXPECTED_PRICES':
+                          routes = list(ast.literal_eval(node.value).keys())
+          if len(routes) != 53:
+              raise SystemExit(f'Expected 53 routes, found {len(routes)}')
+          for route in routes:
+              p = root / route
+              html = p.read_text(encoding='utf-8')
+              html = re.sub(r'<meta content="noindex,nofollow" name="robots"\s*/?>', '<meta name="robots" content="noindex,nofollow">', html)
+              html = re.sub(r'<meta content="([^"]+)" http-equiv="Content-Security-Policy"\s*/?>', lambda m: '<meta http-equiv="Content-Security-Policy" content="' + m.group(1) + '">', html)
+              html = re.sub(r'<link href="([^"]+)" rel="stylesheet"\s*/?>', r'<link rel="stylesheet" href="\1">', html)
+              p.write_text(html, encoding='utf-8')
+          PY
+      - name: Commit fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- '*.html'
+          git commit -m "Restore canonical product page meta serialization"
+          git push origin HEAD:hoc-canonical-template-meta-fix-20260914
