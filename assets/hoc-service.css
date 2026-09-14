@@ -182,3 +182,20 @@
 .product-section .product-visual{margin-bottom:30px}
 .product-visual-deliverables img{max-height:760px;object-fit:contain;object-position:left top}
 @media(max-width:760px){.product-visual{margin-top:24px}.product-section .product-visual{margin-bottom:24px}}
+
+
+/* CANONICAL PRODUCT RENDER LOCK 2026-09-14 */
+body.canonical-product-page .product-hero{background:linear-gradient(180deg,#fff 0%,var(--mist) 100%);border-bottom:1px solid var(--stone)}
+body.canonical-product-page .product-hero>.shell,body.canonical-product-page .product-section>.shell,body.canonical-product-page .service-context-nav,body.canonical-product-page .service-breadcrumbs{max-width:1180px;margin-left:auto;margin-right:auto;width:100%;box-sizing:border-box}
+body.canonical-product-page .product-hero>.shell{padding:64px 56px 56px}
+body.canonical-product-page .product-section{border-top:1px solid var(--stone);background:#fff}
+body.canonical-product-page .product-section.alt{background:var(--mist)}
+body.canonical-product-page .product-section>.shell{padding:54px 56px}
+body.canonical-product-page .product-section h2{max-width:860px;margin-top:0}
+body.canonical-product-page .recognition-grid,body.canonical-product-page .deliverable-groups{width:100%;max-width:980px}
+body.canonical-product-page .service-facts{max-width:900px}
+body.canonical-product-page .hoc-accordion-group{max-width:940px}
+body.canonical-product-page .cta-panel{display:flex;align-items:center;justify-content:space-between;gap:32px}
+body.canonical-product-page .product-optional-modules:empty{display:none}
+body.canonical-product-page .product-optional-modules>.product-section{border-top:1px solid var(--stone)}
+@media(max-width:760px){body.canonical-product-page .product-hero>.shell,body.canonical-product-page .product-section>.shell{padding:44px 24px}body.canonical-product-page .cta-panel{display:block}body.canonical-product-page .cta-panel .button{margin-top:18px}}
