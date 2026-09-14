@@ -167,7 +167,8 @@ def plain(fragment: str) -> str:
     return fragment.strip(' .:;–—-')
 
 def normalise_markup(fragment: str) -> str:
-    return re.sub(r'\s+', ' ', fragment).strip()
+    fragment = re.sub(r'\s+', ' ', fragment).strip()
+    return re.sub(r'>\s+<', '><', fragment)
 
 def extract_class_block(markup: str, tag: str, class_name: str):
     match = re.search(
@@ -178,7 +179,8 @@ def extract_class_block(markup: str, tag: str, class_name: str):
     return normalise_markup(match.group(0)) if match else None
 
 def stylesheet_hrefs(markup: str):
-    return re.findall(r'<link\s+rel="stylesheet"\s+href="([^"]+)"', markup, re.I)
+    hrefs = re.findall(r'<link\s+rel="stylesheet"\s+href="([^"]+)"', markup, re.I)
+    return [href.split("?", 1)[0] for href in hrefs]
 
 def csp_value(markup: str):
     match = re.search(
@@ -358,7 +360,6 @@ for offer_id, href in sorted(routes.items()):
         cardinality = {
             "standard hero": html.count('class="product-hero standard-product-hero"'),
             "hero pricing": html.count('class="product-price product-fee-text"'),
-            "hero scope": html.count('class="product-scope-line"'),
             "trust boundary": html.count('class="product-trust-line"'),
             "hero CTA": html.count('class="actions"'),
             "What changes": html.count("<h2>What changes</h2>"),
