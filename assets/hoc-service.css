@@ -221,3 +221,43 @@ body.canonical-product-page .product-card p:last-child,body.canonical-product-pa
 body.canonical-product-page .bounded-review .product-section-body{max-width:900px}
 body.canonical-product-page .cta-panel{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:32px}
 @media(max-width:760px){body.canonical-product-page .product-hero>.shell{grid-template-columns:1fr;row-gap:30px}body.canonical-product-page .product-hero-offer{padding:22px 20px}body.canonical-product-page .recognition-grid,body.canonical-product-page .deliverable-groups{grid-template-columns:1fr}body.canonical-product-page .cta-panel{grid-template-columns:1fr}}
+
+/* HOC-020 responsive remediation 2026-09-14 */
+body.hoc-020-page .product-price strong{font-size:clamp(38px,5vw,54px);overflow-wrap:normal;word-break:normal}
+body.hoc-020-page .product-price span,body.hoc-020-page .product-trust-line,body.hoc-020-page .product-trust-line strong,body.hoc-020-page .service-facts dt,body.hoc-020-page .service-facts dd,body.hoc-020-page .product-card h3,body.hoc-020-page .product-card p{overflow-wrap:break-word;word-break:normal}
+body.hoc-020-page .product-price-note{margin:0 0 14px;color:#31404A}
+body.hoc-020-page .product-price-note strong{color:var(--carol-blue)}
+body.hoc-020-page .cta-panel .button{max-width:280px}
+@media(max-width:1100px){
+  body.hoc-020-page .site-header,body.hoc-020-page main,body.hoc-020-page .site-footer{width:100%;margin-inline:0}
+  body.hoc-020-page .site-header{margin-top:0;box-shadow:none}
+  body.hoc-020-page .site-footer{margin-bottom:0;box-shadow:none}
+  body.hoc-020-page .header-inner{padding:22px 28px;align-items:flex-start;flex-direction:column;gap:16px}
+  body.hoc-020-page .main-nav{gap:12px 18px}
+  body.hoc-020-page .service-breadcrumbs{padding:16px 28px 0}
+  body.hoc-020-page .product-hero>.shell{grid-template-columns:1fr;row-gap:28px;padding:42px 28px 46px}
+  body.hoc-020-page .product-hero-offer{padding:24px}
+  body.hoc-020-page .product-price strong{font-size:clamp(38px,8vw,52px)}
+  body.hoc-020-page .product-trust-line{margin-top:18px;padding:14px 16px}
+  body.hoc-020-page .product-hero-offer .actions{margin-top:20px}
+  body.hoc-020-page .product-hero-offer .button{width:100%;text-align:center}
+  body.hoc-020-page .product-section>.shell{padding:42px 28px}
+  body.hoc-020-page .recognition-grid,body.hoc-020-page .deliverable-groups{grid-template-columns:1fr;gap:14px}
+  body.hoc-020-page .deliverable-groups article:last-child{grid-column:auto;max-width:none}
+  body.hoc-020-page .product-card{padding:20px}
+  body.hoc-020-page .service-facts{grid-template-columns:1fr;gap:2px}
+  body.hoc-020-page .service-facts dt{margin-top:14px}
+  body.hoc-020-page .service-facts dt:first-child{margin-top:0}
+  body.hoc-020-page .service-facts dd{margin:0 0 10px}
+  body.hoc-020-page .cta-panel{grid-template-columns:1fr;gap:18px}
+  body.hoc-020-page .cta-panel .button{margin-top:0;max-width:none;width:100%;text-align:center}
+  body.hoc-020-page .service-context-nav{padding:22px 28px;flex-direction:column;gap:10px}
+  body.hoc-020-page .footer-layout{padding:28px;align-items:flex-start;flex-direction:column}
+}
+@media(max-width:560px){
+  body.hoc-020-page .header-inner,body.hoc-020-page .service-breadcrumbs,body.hoc-020-page .product-hero>.shell,body.hoc-020-page .product-section>.shell,body.hoc-020-page .service-context-nav,body.hoc-020-page .footer-layout{padding-left:20px;padding-right:20px}
+  body.hoc-020-page .product-hero h1{font-size:clamp(36px,11vw,46px)}
+  body.hoc-020-page .product-hook{font-size:21px}
+  body.hoc-020-page .product-hero .intro,body.hoc-020-page .section-lead{font-size:17px}
+  body.hoc-020-page .hoc-accordion summary{font-size:17px;padding-right:46px}
+}
