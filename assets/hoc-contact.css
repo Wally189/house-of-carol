@@ -145,3 +145,81 @@ body.hoc-018-page .worked-example-promo-grid{gap:10px}
 body.hoc-018-page .cta-panel .button{max-width:none}
 body.hoc-018-page .footer-layout{padding-left:20px;padding-right:20px}
 }
+
+/* HOC-017 page-specific responsive and readability remediation — 2026-09-14 */
+body.hoc-017-page .product-hero-offer,
+body.hoc-017-page .product-card,
+body.hoc-017-page .service-facts,
+body.hoc-017-page .cta-panel,
+body.hoc-017-page .service-context-nav,
+body.hoc-017-page .worked-example-promo-grid{min-width:0}
+body.hoc-017-page .product-price strong{font-family:var(--sans);font-size:clamp(32px,5vw,42px);font-weight:800;line-height:1.12;letter-spacing:0;overflow-wrap:normal;word-break:normal}
+body.hoc-017-page .product-trust-line,
+body.hoc-017-page .product-trust-line strong,
+body.hoc-017-page .product-scope-line,
+body.hoc-017-page .product-audience,
+body.hoc-017-page .product-card h3,
+body.hoc-017-page .product-card p,
+body.hoc-017-page .service-facts dt,
+body.hoc-017-page .service-facts dd{overflow-wrap:break-word;word-break:normal}
+body.hoc-017-page .product-section-body>p{max-width:760px}
+body.hoc-017-page .deliverable-groups .product-card h3{margin:0 0 8px;font-size:20px;line-height:1.3}
+body.hoc-017-page .deliverable-groups .product-card p{margin:0;line-height:1.55}
+
+@media(max-width:980px){
+body.hoc-017-page .site-header,
+body.hoc-017-page main,
+body.hoc-017-page .site-footer{width:100%;margin-inline:0}
+body.hoc-017-page .site-header{margin-top:0;box-shadow:none}
+body.hoc-017-page .header-inner{min-height:0;padding:20px 28px;align-items:flex-start;flex-direction:column;gap:14px}
+body.hoc-017-page .main-nav{width:100%;justify-content:flex-start;flex-wrap:wrap;gap:10px 18px;font-size:14px}
+body.hoc-017-page .service-breadcrumbs{padding:18px 28px 0;font-size:13px}
+body.hoc-017-page .product-hero>.shell{grid-template-columns:minmax(0,1fr);row-gap:28px;padding:44px 28px}
+body.hoc-017-page .product-hero-identity,
+body.hoc-017-page .product-hero-offer{width:100%;max-width:none}
+body.hoc-017-page .product-hero h1{font-size:clamp(42px,7vw,56px);line-height:1.04}
+body.hoc-017-page .product-hook{font-size:clamp(22px,3.4vw,27px);line-height:1.3}
+body.hoc-017-page .product-hero-offer{padding:22px 24px}
+body.hoc-017-page .product-hero-offer .actions{display:block}
+body.hoc-017-page .product-hero-offer .button{width:100%;max-width:380px;text-align:center}
+body.hoc-017-page .product-section>.shell{padding:42px 28px}
+body.hoc-017-page .product-section-heading{margin-bottom:22px}
+body.hoc-017-page .product-section h2{font-size:clamp(30px,5vw,40px);line-height:1.08}
+body.hoc-017-page .deliverable-groups,
+body.hoc-017-page .worked-example-promo-grid{grid-template-columns:minmax(0,1fr);gap:16px}
+body.hoc-017-page .product-card{padding:20px}
+body.hoc-017-page .deliverable-groups article:last-child{grid-column:auto;max-width:none}
+body.hoc-017-page .worked-example-mini-flow{border-left:0;border-top:1px solid var(--line);padding:18px 0 0}
+body.hoc-017-page .service-facts{grid-template-columns:minmax(0,1fr);gap:0;width:100%;max-width:820px}
+body.hoc-017-page .service-facts dt{margin-top:15px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;line-height:1.4;letter-spacing:.04em;text-transform:uppercase}
+body.hoc-017-page .service-facts dt:first-child{margin-top:0;padding-top:0;border-top:0}
+body.hoc-017-page .service-facts dd{margin:2px 0 0}
+body.hoc-017-page .hoc-accordion summary{font-size:17px;min-height:58px;padding:15px 46px 15px 0}
+body.hoc-017-page .hoc-accordion-panel{padding-right:0}
+body.hoc-017-page .cta-panel{grid-template-columns:minmax(0,1fr);align-items:start;gap:18px}
+body.hoc-017-page .cta-panel .button{width:100%;max-width:380px;text-align:center}
+body.hoc-017-page .service-context-nav{flex-direction:column;gap:10px;padding:22px 28px}
+body.hoc-017-page .site-footer{margin-bottom:0;box-shadow:none}
+body.hoc-017-page .footer-layout{padding:28px;align-items:flex-start;flex-direction:column}
+}
+
+@media(max-width:560px){
+body.hoc-017-page .header-inner,
+body.hoc-017-page .product-hero>.shell,
+body.hoc-017-page .product-section>.shell,
+body.hoc-017-page .service-context-nav{padding-left:20px;padding-right:20px}
+body.hoc-017-page .service-breadcrumbs{padding-left:20px;padding-right:20px}
+body.hoc-017-page .brand{font-size:21px}
+body.hoc-017-page .main-nav{font-size:13px;gap:8px 14px}
+body.hoc-017-page .product-hero h1{font-size:clamp(38px,11vw,46px)}
+body.hoc-017-page .product-section h2{font-size:clamp(29px,8vw,36px)}
+body.hoc-017-page .product-hook{font-size:21px}
+body.hoc-017-page .product-audience,
+body.hoc-017-page .product-scope-line,
+body.hoc-017-page .product-trust-line{font-size:17px;line-height:1.55}
+body.hoc-017-page .product-trust-line{padding:14px 16px}
+body.hoc-017-page .product-card{padding:18px}
+body.hoc-017-page .product-hero-offer .button,
+body.hoc-017-page .cta-panel .button{max-width:none}
+body.hoc-017-page .footer-layout{padding-left:20px;padding-right:20px}
+}
