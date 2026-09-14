@@ -79,21 +79,35 @@ EXPECTED_PRICES = {
     "website-completion-sprint.html": {"£1,250"},
 }
 
-# Pages with an authoritative bespoke customer-information architecture are
-# checked against their own source boundary rather than forced into the common
-# rewritten-page contract.
+# Separately accepted non-Operations reference pages retain their source-bound
+# information architecture. HOC-015 through HOC-023 now share one structural
+# Operations contract and are therefore deliberately not exempted here.
 REFERENCE_PAGES = {
     "ai-data-use-rules-sprint.html",
     "role-based-ai-skills-workshop.html",
     "ai-workflow-opportunity-review.html",
     "ai-workflow-implementation-sprint.html",
+    "website-completion-sprint.html",
+}
+
+OPERATIONS_PAGES = {
     "process-design-sprint.html",
     "shared-drive-cleanup.html",
     "management-information-and-kpi-setup.html",
     "customer-journey-and-service-operations-review.html",
+    "customer-support-knowledge-base-build.html",
     "business-continuity-and-operational-readiness-pack.html",
-    "website-completion-sprint.html",
+    "decision-rights-and-governance-review.html",
+    "complaints-and-redress-process-design.html",
+    "evidence-and-marketing-claim-substantiation-review.html",
 }
+
+MANDATORY_OPERATION_DISCLOSURES = (
+    "<summary>What needs to be in place?</summary>",
+    "<summary>What is outside the scope?</summary>",
+    "<summary>Is this the right service?</summary>",
+    "<summary>What does House of Carol not promise?</summary>",
+)
 
 HOC016_REQUIRED_MARKERS = (
     "Shared drives rarely become a mess all at once.",
@@ -113,7 +127,6 @@ HOC016_FORBIDDEN_DRIFT = (
     "Shared document areas rarely become a mess all at once.",
     "House of Carol reviews one shared document area",
     "The current standard engagement is for organisation-paid work",
-    "What House of Carol does not promise",
 )
 
 HOC017_REQUIRED_MARKERS = (
@@ -152,6 +165,7 @@ FORBIDDEN_CUSTOMER_STRINGS = (
 
 errors = []
 routes = {}
+operations_snapshots = {}
 
 def has_nested_details(markup: str) -> bool:
     depth = 0
@@ -169,6 +183,28 @@ def plain(fragment: str) -> str:
     fragment = re.sub(r'<[^>]+>', ' ', fragment)
     fragment = re.sub(r'\s+', ' ', fragment).strip().casefold()
     return fragment.strip(' .:;–—-')
+
+def normalise_markup(fragment: str) -> str:
+    return re.sub(r'\s+', ' ', fragment).strip()
+
+def extract_class_block(markup: str, tag: str, class_name: str):
+    match = re.search(
+        rf'<{tag}\b[^>]*class="[^"]*{re.escape(class_name)}[^"]*"[^>]*>.*?</{tag}>',
+        markup,
+        re.I | re.S,
+    )
+    return normalise_markup(match.group(0)) if match else None
+
+def stylesheet_hrefs(markup: str):
+    return re.findall(r'<link\s+rel="stylesheet"\s+href="([^"]+)"', markup, re.I)
+
+def csp_value(markup: str):
+    match = re.search(
+        r'<meta\s+http-equiv="Content-Security-Policy"\s+content="([^"]+)"',
+        markup,
+        re.I,
+    )
+    return normalise_markup(match.group(1)) if match else None
 
 def placeholder_deliverables(markup: str):
     """Reject generated cards where the body merely repeats the heading."""
@@ -285,9 +321,9 @@ for offer_id, href in sorted(routes.items()):
         if not pounds:
             errors.append(f"{offer_id} {href}: DEVELOP route has no numerical GBP pricing presentation")
 
-    # Whole-estate completion contract. Existing best-in-class or separately
-    # accepted reference pages retain their proven bespoke information
-    # architecture; rewritten pages carry the full common contract.
+    # Whole-estate completion contract. Separately accepted non-Operations
+    # reference pages retain their proven source-bound information architecture;
+    # every other page carries the common customer-information contract.
     if href not in REFERENCE_PAGES:
         contract = {
             "outcome hook": 'class="product-hook"' in html,
@@ -312,6 +348,126 @@ for offer_id, href in sorted(routes.items()):
                 + ", ".join(repeated)
             )
 
+    if href in OPERATIONS_PAGES:
+        operations_contract = {
+            "standard hero": 'class="product-hero standard-product-hero"' in html,
+            "outcome hook": 'class="product-hook"' in html,
+            "audience": 'class="product-audience"' in html,
+            "hero pricing": 'class="product-price product-fee-text"' in html,
+            "hero scope": 'class="product-scope-line"' in html,
+            "trust boundary": 'class="product-trust-line"' in html,
+            "hero CTA": 'class="actions"' in html,
+            "what changes": "<h2>What changes</h2>" in html,
+            "deliverables": "<h2>What you will receive</h2>" in html,
+            "generic deliverables": 'class="deliverable-groups generic-deliverables"' in html,
+            "defined engagement": "<h2>A defined engagement</h2>" in html,
+            "service facts": 'class="service-facts standard-service-facts"' in html,
+            "service type fact": "<dt>Service type</dt>" in html,
+            "delivery fact": "<dt>Delivery</dt>" in html,
+            "pricing fact": "<dt>Pricing</dt>" in html,
+            "scope fact": "<dt>Scope</dt>" in html,
+            "disclosure group": 'class="hoc-accordion-group"' in html,
+            "final CTA": 'class="shell cta-panel"' in html,
+        }
+        for label, ok in operations_contract.items():
+            if not ok:
+                errors.append(f"{offer_id} {href}: Operations canonical-contract failure: {label}")
+
+        cardinality = {
+            "standard hero": html.count('class="product-hero standard-product-hero"'),
+            "hero pricing": html.count('class="product-price product-fee-text"'),
+            "hero scope": html.count('class="product-scope-line"'),
+            "trust boundary": html.count('class="product-trust-line"'),
+            "hero CTA": html.count('class="actions"'),
+            "What changes": html.count("<h2>What changes</h2>"),
+            "What you will receive": html.count("<h2>What you will receive</h2>"),
+            "defined engagement": html.count("<h2>A defined engagement</h2>"),
+            "disclosure group": html.count('class="hoc-accordion-group"'),
+            "final CTA": html.count('class="shell cta-panel"'),
+            "context navigation": html.count('class="service-context-nav"'),
+        }
+        for label, count in cardinality.items():
+            if count != 1:
+                errors.append(f"{offer_id} {href}: Operations canonical cardinality {label}={count}, expected 1")
+
+        for disclosure in MANDATORY_OPERATION_DISCLOSURES:
+            count = html.count(disclosure)
+            if count != 1:
+                errors.append(f"{offer_id} {href}: mandatory disclosure count {plain(disclosure)}={count}, expected 1")
+
+        order_markers = (
+            ("breadcrumbs", 'class="service-breadcrumbs"'),
+            ("hero", 'class="product-hero standard-product-hero"'),
+            ("what changes", "<h2>What changes</h2>"),
+            ("deliverables", "<h2>What you will receive</h2>"),
+            ("defined engagement", "<h2>A defined engagement</h2>"),
+            ("disclosures", 'class="hoc-accordion-group"'),
+            ("final CTA", 'class="shell cta-panel"'),
+            ("context navigation", 'class="service-context-nav"'),
+            ("footer", '<footer class="site-footer">'),
+        )
+        positions = [(label, html.find(marker)) for label, marker in order_markers]
+        if any(position < 0 for _, position in positions):
+            errors.append(f"{offer_id} {href}: Operations module-order marker missing")
+        else:
+            numeric_positions = [position for _, position in positions]
+            if numeric_positions != sorted(numeric_positions) or len(set(numeric_positions)) != len(numeric_positions):
+                errors.append(
+                    f"{offer_id} {href}: Operations module order invalid: "
+                    + " -> ".join(label for label, _ in positions)
+                )
+
+        expected_anchor = f"catalogue-operations.html#{offer_id.lower()}"
+        breadcrumb = extract_class_block(html, "nav", "service-breadcrumbs")
+        context_nav = extract_class_block(html, "nav", "service-context-nav")
+        if not breadcrumb or f'href="{expected_anchor}"' not in breadcrumb:
+            errors.append(f"{offer_id} {href}: breadcrumb does not point to {expected_anchor}")
+        if not context_nav:
+            errors.append(f"{offer_id} {href}: context navigation block unreadable")
+        else:
+            nav_hrefs = re.findall(r'<a\s+href="([^"]+)"', context_nav, re.I)
+            expected_hrefs = [expected_anchor, "catalogue.html", "index.html"]
+            if nav_hrefs != expected_hrefs:
+                errors.append(f"{offer_id} {href}: context navigation hrefs {nav_hrefs}, expected {expected_hrefs}")
+
+        if 'class="worked-example-promo"' in html:
+            worked = html.find('class="worked-example-promo"')
+            deliverables = html.find("<h2>What you will receive</h2>")
+            defined = html.find("<h2>A defined engagement</h2>")
+            if not (deliverables < worked < defined):
+                errors.append(f"{offer_id} {href}: worked example is outside its canonical slot")
+            if 'class="worked-example-disclosure"' not in html:
+                errors.append(f"{offer_id} {href}: worked example missing disclosure")
+
+        if 'class="product-visual' in html:
+            if "hoc015-preview.css" in html:
+                errors.append(f"{offer_id} {href}: product visuals still depend on page-specific hoc015-preview.css")
+            figures = re.findall(
+                r'<figure\s+class="[^"]*product-visual[^"]*"[^>]*>(.*?)</figure>',
+                html,
+                re.I | re.S,
+            )
+            if not figures:
+                errors.append(f"{offer_id} {href}: product visual marker exists without a figure")
+            for index, figure in enumerate(figures, 1):
+                image = re.search(r'<img\b([^>]*)>', figure, re.I | re.S)
+                if not image:
+                    errors.append(f"{offer_id} {href}: product visual {index} has no img")
+                    continue
+                attrs = image.group(1)
+                alt = re.search(r'alt="([^"]*)"', attrs, re.I)
+                if not alt or not alt.group(1).strip():
+                    errors.append(f"{offer_id} {href}: product visual {index} missing meaningful alt text")
+                if not re.search(r'\bwidth="\d+"', attrs, re.I) or not re.search(r'\bheight="\d+"', attrs, re.I):
+                    errors.append(f"{offer_id} {href}: product visual {index} missing width/height")
+
+        operations_snapshots[href] = {
+            "header": extract_class_block(html, "header", "site-header"),
+            "footer": extract_class_block(html, "footer", "site-footer"),
+            "stylesheets": stylesheet_hrefs(html),
+            "csp": csp_value(html),
+        }
+
     if href == "shared-drive-cleanup.html":
         for marker in HOC016_REQUIRED_MARKERS:
             if marker not in html:
@@ -319,8 +475,6 @@ for offer_id, href in sorted(routes.items()):
         for drift in HOC016_FORBIDDEN_DRIFT:
             if drift.lower() in html.lower():
                 errors.append(f"{offer_id} {href}: superseded HOC-016 wording remains: {drift}")
-        if '<details' in html.lower():
-            errors.append(f"{offer_id} {href}: accepted Candidate 01 should not be redesigned into disclosure accordions")
 
     if href == "management-information-and-kpi-setup.html":
         for marker in HOC017_REQUIRED_MARKERS:
@@ -329,6 +483,29 @@ for offer_id, href in sorted(routes.items()):
         for drift in HOC017_FORBIDDEN_DRIFT:
             if drift.lower() in html.lower():
                 errors.append(f"{offer_id} {href}: superseded HOC-017 wording remains: {drift}")
+
+if set(operations_snapshots) != OPERATIONS_PAGES:
+    missing = sorted(OPERATIONS_PAGES - set(operations_snapshots))
+    if missing:
+        errors.append("Operations canonical snapshots missing: " + ", ".join(missing))
+else:
+    reference_href = "process-design-sprint.html"
+    reference = operations_snapshots[reference_href]
+    if not reference["header"] or not reference["footer"] or not reference["csp"]:
+        errors.append("Operations canonical reference page has unreadable global shell")
+    for href in sorted(OPERATIONS_PAGES):
+        snapshot = operations_snapshots[href]
+        if snapshot["header"] != reference["header"]:
+            errors.append(f"{href}: Operations global header differs from canonical reference")
+        if snapshot["footer"] != reference["footer"]:
+            errors.append(f"{href}: Operations global footer differs from canonical reference")
+        if snapshot["stylesheets"] != reference["stylesheets"]:
+            errors.append(
+                f"{href}: Operations stylesheet list differs from canonical reference: "
+                f"{snapshot['stylesheets']} != {reference['stylesheets']}"
+            )
+        if snapshot["csp"] != reference["csp"]:
+            errors.append(f"{href}: Operations CSP differs from canonical reference")
 
 for tbd in sorted(TBD_IDS):
     if tbd in routes:
@@ -347,7 +524,8 @@ if errors:
 print("PRODUCT PAGE STANDARDISATION QA: PASS")
 print(f"Verified {len(routes)} current DEVELOP product routes")
 print(f"Verified {len(EXPECTED_PRICES)}/53 DEVELOP routes against their exact approved numerical GBP price sets")
-print("Verified common-contract pages plus authoritative bespoke reference-page source boundaries, one-H1, noindex, CSP, skip-link and contact-route requirements")
-print("Verified HOC-016 against accepted Candidate 01 markers without forcing a redesign")
-print("Verified HOC-017 against approved customer-facing markers and superseded-copy drift checks")
+print("Verified common-contract pages plus separately accepted non-Operations reference-page source boundaries, one-H1, noindex, CSP, skip-link and contact-route requirements")
+print("Verified HOC-015 through HOC-023 against one canonical Operations structure, module order, mandatory disclosures, global shell and optional-module controls")
+print("Verified HOC-016 accepted Candidate 01 content markers while permitting canonical structural normalisation")
+print("Verified HOC-017 approved customer-facing markers and superseded-copy drift checks")
 print("Verified all 11 TBD offers remain unexposed and BrandLab is not a product route")
