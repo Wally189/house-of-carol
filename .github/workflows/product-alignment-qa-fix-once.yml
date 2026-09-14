@@ -1,0 +1,34 @@
+name: product-alignment-qa-fix-once
+
+on:
+  push:
+    branches:
+      - hoc-website-remediation-product-page-base-template-20260914
+    paths:
+      - scripts/fix_product_alignment_qa_once.py
+      - .github/workflows/product-alignment-qa-fix-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: hoc-website-remediation-product-page-base-template-20260914
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python scripts/fix_product_alignment_qa_once.py
+      - run: rm scripts/fix_product_alignment_qa_once.py .github/workflows/product-alignment-qa-fix-once.yml
+      - shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Correct whole-estate product alignment QA rules'
+          git push origin HEAD:hoc-website-remediation-product-page-base-template-20260914
