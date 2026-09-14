@@ -1,0 +1,61 @@
+name: repair-operations-cta-close
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/repair-operations-cta-close.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Correct final CTA closing structure
+        shell: python
+        run: |
+          from pathlib import Path
+
+          files = [
+              'process-design-sprint.html',
+              'shared-drive-cleanup.html',
+              'management-information-and-kpi-setup.html',
+              'customer-journey-and-service-operations-review.html',
+              'customer-support-knowledge-base-build.html',
+              'business-continuity-and-operational-readiness-pack.html',
+              'decision-rights-and-governance-review.html',
+              'complaints-and-redress-process-design.html',
+              'evidence-and-marketing-claim-substantiation-review.html',
+          ]
+
+          for name in files:
+              path = Path(name)
+              text = path.read_text(encoding='utf-8')
+              nav = text.find('<nav aria-label="Service navigation"')
+              start = text.rfind('<section class="product-section alt">', 0, nav)
+              if start < 0 or nav < 0:
+                  raise SystemExit(f'{name}: final CTA bounds missing')
+              segment = text[start:nav]
+              old = '</a></div></div></section>'
+              new = '</a></div></section>'
+              if old not in segment:
+                  raise SystemExit(f'{name}: expected surplus closing structure not found')
+              segment = segment.replace(old, new, 1)
+              text = text[:start] + segment + text[nav:]
+              path.write_text(text, encoding='utf-8')
+
+          Path('.github/workflows/repair-operations-cta-close.yml').unlink()
+      - name: Commit bounded HTML correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add process-design-sprint.html shared-drive-cleanup.html management-information-and-kpi-setup.html customer-journey-and-service-operations-review.html customer-support-knowledge-base-build.html business-continuity-and-operational-readiness-pack.html decision-rights-and-governance-review.html complaints-and-redress-process-design.html evidence-and-marketing-claim-substantiation-review.html .github/workflows/repair-operations-cta-close.yml
+          git diff --cached --check
+          git commit -m "Correct Operations CTA closing structure"
+          git push origin HEAD:main
