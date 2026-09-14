@@ -33,7 +33,7 @@ jobs:
               raise SystemExit('STOP: incorrect pseudo-element block not found exactly once')
           if css.count(wrong_block) != 1:
               raise SystemExit('STOP: incorrect pseudo-element block count is not 1')
-          css_path.write_text(css.replace(wrong_block, '\n', 1), encoding='utf-8')
+          css_path.write_text(css.replace(wrong_block, '', 1), encoding='utf-8')
 
           banner = '<section class="identity-banner" aria-label="House of Carol"><img src="assets/house-of-carol-identity.webp" alt="House of Carol — People, Ideas, Solutions, Real Progress. Intelligence for a kinder, more capable world." width="1536" height="1152"></section>'
           disclosures = '<section class="product-section disclosures-section">'
