@@ -1,6 +1,6 @@
 name: pages-direct-once
 
-# production trigger: canonical product template visual normalisation 2026-09-14
+# production trigger: HOC-020 authorised product-page deployment 2026-09-14
 on:
   push:
     branches:
