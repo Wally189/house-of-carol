@@ -79,28 +79,10 @@ EXPECTED_PRICES = {
     "website-completion-sprint.html": {"£1,250"},
 }
 
-# Separately accepted non-Operations reference pages retain their source-bound
-# information architecture. HOC-015 through HOC-023 now share one structural
-# Operations contract and are therefore deliberately not exempted here.
-REFERENCE_PAGES = {
-    "ai-data-use-rules-sprint.html",
-    "role-based-ai-skills-workshop.html",
-    "ai-workflow-opportunity-review.html",
-    "ai-workflow-implementation-sprint.html",
-    "website-completion-sprint.html",
-}
+# All 53 current DEVELOP product pages use one canonical structural contract.
+REFERENCE_PAGES = set()
 
-OPERATIONS_PAGES = {
-    "process-design-sprint.html",
-    "shared-drive-cleanup.html",
-    "management-information-and-kpi-setup.html",
-    "customer-journey-and-service-operations-review.html",
-    "customer-support-knowledge-base-build.html",
-    "business-continuity-and-operational-readiness-pack.html",
-    "decision-rights-and-governance-review.html",
-    "complaints-and-redress-process-design.html",
-    "evidence-and-marketing-claim-substantiation-review.html",
-}
+CANONICAL_PAGES = set(EXPECTED_PRICES)
 
 MANDATORY_OPERATION_DISCLOSURES = (
     "<summary>What needs to be in place?</summary>",
@@ -165,7 +147,7 @@ FORBIDDEN_CUSTOMER_STRINGS = (
 
 errors = []
 routes = {}
-operations_snapshots = {}
+canonical_snapshots = {}
 
 def has_nested_details(markup: str) -> bool:
     depth = 0
@@ -348,7 +330,7 @@ for offer_id, href in sorted(routes.items()):
                 + ", ".join(repeated)
             )
 
-    if href in OPERATIONS_PAGES:
+    if href in CANONICAL_PAGES:
         operations_contract = {
             "standard hero": 'class="product-hero standard-product-hero"' in html,
             "outcome hook": 'class="product-hook"' in html,
@@ -371,7 +353,7 @@ for offer_id, href in sorted(routes.items()):
         }
         for label, ok in operations_contract.items():
             if not ok:
-                errors.append(f"{offer_id} {href}: Operations canonical-contract failure: {label}")
+                errors.append(f"{offer_id} {href}: canonical-contract failure: {label}")
 
         cardinality = {
             "standard hero": html.count('class="product-hero standard-product-hero"'),
@@ -388,7 +370,7 @@ for offer_id, href in sorted(routes.items()):
         }
         for label, count in cardinality.items():
             if count != 1:
-                errors.append(f"{offer_id} {href}: Operations canonical cardinality {label}={count}, expected 1")
+                errors.append(f"{offer_id} {href}: canonical cardinality {label}={count}, expected 1")
 
         for disclosure in MANDATORY_OPERATION_DISCLOSURES:
             count = html.count(disclosure)
@@ -408,23 +390,28 @@ for offer_id, href in sorted(routes.items()):
         )
         positions = [(label, html.find(marker)) for label, marker in order_markers]
         if any(position < 0 for _, position in positions):
-            errors.append(f"{offer_id} {href}: Operations module-order marker missing")
+            errors.append(f"{offer_id} {href}: canonical module-order marker missing")
         else:
             numeric_positions = [position for _, position in positions]
             if numeric_positions != sorted(numeric_positions) or len(set(numeric_positions)) != len(numeric_positions):
                 errors.append(
-                    f"{offer_id} {href}: Operations module order invalid: "
+                    f"{offer_id} {href}: canonical module order invalid: "
                     + " -> ".join(label for label, _ in positions)
                 )
 
-        expected_anchor = f"catalogue-operations.html#{offer_id.lower()}"
         breadcrumb = extract_class_block(html, "nav", "service-breadcrumbs")
         context_nav = extract_class_block(html, "nav", "service-context-nav")
-        if not breadcrumb or f'href="{expected_anchor}"' not in breadcrumb:
-            errors.append(f"{offer_id} {href}: breadcrumb does not point to {expected_anchor}")
+        if not breadcrumb:
+            errors.append(f"{offer_id} {href}: breadcrumb block unreadable")
+            expected_anchor = None
+        else:
+            breadcrumb_hrefs = re.findall(r'<a\s+href="([^"]+)"', breadcrumb, re.I)
+            expected_anchor = breadcrumb_hrefs[-1] if breadcrumb_hrefs else None
+            if not expected_anchor or not expected_anchor.endswith(f"#{offer_id.lower()}"):
+                errors.append(f"{offer_id} {href}: breadcrumb family route does not end with #{offer_id.lower()}")
         if not context_nav:
             errors.append(f"{offer_id} {href}: context navigation block unreadable")
-        else:
+        elif expected_anchor:
             nav_hrefs = re.findall(r'<a\s+href="([^"]+)"', context_nav, re.I)
             expected_hrefs = [expected_anchor, "catalogue.html", "index.html"]
             if nav_hrefs != expected_hrefs:
@@ -461,7 +448,7 @@ for offer_id, href in sorted(routes.items()):
                 if not re.search(r'\bwidth="\d+"', attrs, re.I) or not re.search(r'\bheight="\d+"', attrs, re.I):
                     errors.append(f"{offer_id} {href}: product visual {index} missing width/height")
 
-        operations_snapshots[href] = {
+        canonical_snapshots[href] = {
             "header": extract_class_block(html, "header", "site-header"),
             "footer": extract_class_block(html, "footer", "site-footer"),
             "stylesheets": stylesheet_hrefs(html),
@@ -484,28 +471,28 @@ for offer_id, href in sorted(routes.items()):
             if drift.lower() in html.lower():
                 errors.append(f"{offer_id} {href}: superseded HOC-017 wording remains: {drift}")
 
-if set(operations_snapshots) != OPERATIONS_PAGES:
-    missing = sorted(OPERATIONS_PAGES - set(operations_snapshots))
+if set(canonical_snapshots) != CANONICAL_PAGES:
+    missing = sorted(CANONICAL_PAGES - set(canonical_snapshots))
     if missing:
-        errors.append("Operations canonical snapshots missing: " + ", ".join(missing))
+        errors.append("Canonical snapshots missing: " + ", ".join(missing))
 else:
     reference_href = "process-design-sprint.html"
-    reference = operations_snapshots[reference_href]
+    reference = canonical_snapshots[reference_href]
     if not reference["header"] or not reference["footer"] or not reference["csp"]:
-        errors.append("Operations canonical reference page has unreadable global shell")
-    for href in sorted(OPERATIONS_PAGES):
-        snapshot = operations_snapshots[href]
+        errors.append("Canonical reference page has unreadable global shell")
+    for href in sorted(CANONICAL_PAGES):
+        snapshot = canonical_snapshots[href]
         if snapshot["header"] != reference["header"]:
-            errors.append(f"{href}: Operations global header differs from canonical reference")
+            errors.append(f"{href}: global header differs from canonical reference")
         if snapshot["footer"] != reference["footer"]:
-            errors.append(f"{href}: Operations global footer differs from canonical reference")
+            errors.append(f"{href}: global footer differs from canonical reference")
         if snapshot["stylesheets"] != reference["stylesheets"]:
             errors.append(
-                f"{href}: Operations stylesheet list differs from canonical reference: "
+                f"{href}: stylesheet list differs from canonical reference: "
                 f"{snapshot['stylesheets']} != {reference['stylesheets']}"
             )
         if snapshot["csp"] != reference["csp"]:
-            errors.append(f"{href}: Operations CSP differs from canonical reference")
+            errors.append(f"{href}: CSP differs from canonical reference")
 
 for tbd in sorted(TBD_IDS):
     if tbd in routes:
@@ -524,8 +511,8 @@ if errors:
 print("PRODUCT PAGE STANDARDISATION QA: PASS")
 print(f"Verified {len(routes)} current DEVELOP product routes")
 print(f"Verified {len(EXPECTED_PRICES)}/53 DEVELOP routes against their exact approved numerical GBP price sets")
-print("Verified common-contract pages plus separately accepted non-Operations reference-page source boundaries, one-H1, noindex, CSP, skip-link and contact-route requirements")
-print("Verified HOC-015 through HOC-023 against one canonical Operations structure, module order, mandatory disclosures, global shell and optional-module controls")
+print("Verified all 53 current DEVELOP pages against one common product-page contract, one-H1, noindex, CSP, skip-link and contact-route requirements")
+print("Verified all 53 current DEVELOP pages against one canonical structure, module order, mandatory disclosures, global shell and optional-module controls")
 print("Verified HOC-016 accepted Candidate 01 content markers while permitting canonical structural normalisation")
 print("Verified HOC-017 approved customer-facing markers and superseded-copy drift checks")
 print("Verified all 11 TBD offers remain unexposed and BrandLab is not a product route")
