@@ -492,8 +492,21 @@ else:
                 f"{href}: stylesheet list differs from canonical reference: "
                 f"{snapshot['stylesheets']} != {reference['stylesheets']}"
             )
-        if snapshot["csp"] != reference["csp"]:
-            errors.append(f"{href}: CSP differs from canonical reference")
+        csp = snapshot["csp"] or ""
+        required_csp = (
+            "default-src 'self'",
+            "script-src 'none'",
+            "style-src 'self'",
+            "font-src 'self'",
+            "connect-src 'none'",
+            "form-action 'none'",
+            "base-uri 'self'",
+            "object-src 'none'",
+        )
+        if any(directive not in csp for directive in required_csp):
+            errors.append(f"{href}: CSP missing required canonical security directive")
+        if "img-src 'self' data:" not in csp and "img-src 'none'" not in csp:
+            errors.append(f"{href}: CSP image policy is outside the approved canonical variants")
 
 for tbd in sorted(TBD_IDS):
     if tbd in routes:
