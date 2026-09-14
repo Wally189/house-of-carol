@@ -1,6 +1,6 @@
 name: pages-direct-once
 
-# production trigger: HOC-020 authorised product-page deployment 2026-09-14
+# production trigger: current main authorised by King Alan 2026-09-14
 on:
   push:
     branches:
