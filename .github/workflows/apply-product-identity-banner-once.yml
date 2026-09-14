@@ -1,0 +1,129 @@
+name: Apply product identity banner correction once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-product-identity-banner-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply bounded correction
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          css_path = root / 'assets' / 'hoc-rebuild.css'
+          css = css_path.read_text(encoding='utf-8')
+
+          wrong_block = '''\n/* Shared House of Carol identity banner on product pages */\n.product-hero::after{\n  content:"";\n  display:block;\n  width:100%;\n  aspect-ratio:4 / 3;\n  background:#073a59 url("house-of-carol-identity.webp") center / cover no-repeat;\n}\n'''
+          if wrong_block not in css:
+              raise SystemExit('STOP: incorrect pseudo-element block not found exactly once')
+          if css.count(wrong_block) != 1:
+              raise SystemExit('STOP: incorrect pseudo-element block count is not 1')
+          css_path.write_text(css.replace(wrong_block, '\n', 1), encoding='utf-8')
+
+          banner = '<section class="identity-banner" aria-label="House of Carol"><img src="assets/house-of-carol-identity.webp" alt="House of Carol — People, Ideas, Solutions, Real Progress. Intelligence for a kinder, more capable world." width="1536" height="1152"></section>'
+          disclosures = '<section class="product-section disclosures-section">'
+          join = '</section>' + disclosures
+
+          product_pages = []
+          for path in sorted(root.glob('*.html')):
+              text = path.read_text(encoding='utf-8')
+              if '<body class="canonical-product-page">' in text:
+                  product_pages.append(path)
+
+          if len(product_pages) != 53:
+              raise SystemExit(f'STOP: expected 53 canonical product pages, found {len(product_pages)}')
+
+          for path in product_pages:
+              text = path.read_text(encoding='utf-8')
+              if 'house-of-carol-identity.webp' in text:
+                  raise SystemExit(f'STOP: identity image already present in {path}')
+              if text.count(join) != 1:
+                  raise SystemExit(f'STOP: expected one defined-engagement/disclosures boundary in {path}, found {text.count(join)}')
+              engagement = '<h2>A defined engagement</h2>'
+              if engagement not in text:
+                  raise SystemExit(f'STOP: defined engagement heading missing in {path}')
+              boundary_at = text.index(join)
+              if text.index(engagement) > boundary_at:
+                  raise SystemExit(f'STOP: disclosures boundary precedes defined engagement in {path}')
+
+              text = text.replace(join, '</section>' + banner + disclosures, 1)
+              if "img-src 'none';" in text:
+                  text = text.replace("img-src 'none';", "img-src 'self' data:;", 1)
+              if "img-src 'none';" in text:
+                  raise SystemExit(f'STOP: restrictive image CSP remains in {path}')
+              path.write_text(text, encoding='utf-8')
+
+          # Verify the exact requested state across every canonical product page.
+          css_after = css_path.read_text(encoding='utf-8')
+          if 'Shared House of Carol identity banner on product pages' in css_after or '.product-hero::after' in css_after:
+              raise SystemExit('STOP: incorrect product-hero pseudo-element remains')
+
+          for path in product_pages:
+              text = path.read_text(encoding='utf-8')
+              if text.count(banner) != 1:
+                  raise SystemExit(f'STOP: expected exactly one identity banner in {path}')
+              expected_boundary = '</section>' + banner + disclosures
+              if text.count(expected_boundary) != 1:
+                  raise SystemExit(f'STOP: identity banner is not immediately before disclosures in {path}')
+              if text.index('<h2>A defined engagement</h2>') > text.index(banner):
+                  raise SystemExit(f'STOP: identity banner is not after defined engagement in {path}')
+              if "img-src 'self'" not in text:
+                  raise SystemExit(f'STOP: local identity image is not permitted by CSP in {path}')
+
+          # Remove this one-use workflow so the final repository contains only the requested correction.
+          Path('.github/workflows/apply-product-identity-banner-once.yml').unlink()
+
+          print(f'PATCHED_AND_VERIFIED={len(product_pages)}')
+          print('PRODUCTS=' + ','.join(p.name for p in product_pages))
+          PY
+
+      - name: Run repository checks
+        shell: bash
+        run: |
+          python scripts/product_page_standardisation_check.py
+          python scripts/site_check.py
+          git diff --check
+
+      - name: Verify changed-file boundary
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          changed = subprocess.check_output(['git','status','--short'], text=True).splitlines()
+          paths = [line[3:] for line in changed]
+          product_paths = []
+          for p in Path('.').glob('*.html'):
+              if '<body class="canonical-product-page">' in p.read_text(encoding='utf-8'):
+                  product_paths.append(p.name)
+          expected = set(product_paths) | {'assets/hoc-rebuild.css', '.github/workflows/apply-product-identity-banner-once.yml'}
+          actual = set(paths)
+          if actual != expected:
+              raise SystemExit(f'STOP: unexpected changed-file set.\nExpected: {sorted(expected)}\nActual: {sorted(actual)}')
+          print(f'CHANGED_FILE_BOUNDARY_OK={len(actual)} files including one-use workflow removal')
+          PY
+
+      - name: Commit correction
+        shell: bash
+        run: |
+          git config user.name 'House of Carol controlled correction'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A
+          git commit -m 'Correct identity banner placement on product pages'
+          git push origin HEAD:main
