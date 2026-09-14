@@ -133,6 +133,16 @@ async function run(viewport,name){
   await context.close();
 }
 
-for(const [v,n] of [[{width:1440,height:900},'desktop'],[{width:800,height:1280},'tablet'],[{width:390,height:844},'mobile'],[{width:320,height:900},'reflow-320']]) await run(v,n);
+const VIEWPORTS=[
+  [{width:1440,height:900},'desktop'],
+  [{width:1280,height:800},'desktop-1280'],
+  [{width:1024,height:768},'desktop-1024'],
+  [{width:800,height:1280},'tablet'],
+  [{width:760,height:1000},'mobile-760'],
+  [{width:430,height:932},'mobile-430'],
+  [{width:390,height:844},'mobile'],
+  [{width:320,height:900},'reflow-320'],
+];
+for(const [v,n] of VIEWPORTS) await run(v,n);
 await browser.close();
-console.log('PASS: core pages, 7-area catalogue hierarchy and all 53 product pages pass browser, desktop/tablet/mobile/320px reflow and 200% text regression; serious/critical axe checks cover every core, catalogue, area and product page on desktop and mobile; mobile tap-return checks cover every catalogue service link');
+console.log('PASS: core pages, 7-area catalogue hierarchy and all 53 product pages pass browser regression at 1440x900, 1280x800, 1024x768, 800x1280, 760x1000, 430x932, 390x844 and 320x900 plus 200% text reflow; serious/critical axe checks cover every core, catalogue, area and product page on desktop and 390px mobile; mobile tap-return checks cover every catalogue service link');
