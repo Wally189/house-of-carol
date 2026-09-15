@@ -1,6 +1,6 @@
 name: pages-direct-once
 
-# production trigger: current main authorised by King Alan 2026-09-15 — HOC-016 responsive correction
+# production trigger: current main authorised by King Alan 2026-09-15 — website commercial journey deployment
 on:
   push:
     branches:
