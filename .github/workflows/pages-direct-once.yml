@@ -1,6 +1,6 @@
 name: pages-direct-once
 
-# production trigger: current main authorised by King Alan 2026-09-15 — HOC-017 mobile layout correction
+# production trigger: current main authorised by King Alan 2026-09-15 — HOC-016 responsive correction
 on:
   push:
     branches:
