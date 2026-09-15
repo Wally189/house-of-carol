@@ -1,10 +1,6 @@
-/* Operations catalogue — image-free service rows. Scoped to this page. */
+/* Operations catalogue — visual service cards. Scoped to this page. */
 .operations-catalogue-page{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-.operations-catalogue-page .area-catalogue .service-card-link{display:grid;grid-template-columns:minmax(220px,.82fr) minmax(260px,1.18fr);grid-template-areas:"heading copy";column-gap:30px;align-items:start;padding:24px 0}
-.operations-catalogue-page .service-card-heading{grid-area:heading;min-width:0}
-.operations-catalogue-page .service-card-heading h3{margin:0 0 7px;font-size:20px;line-height:1.25}
-.operations-catalogue-page .service-card-heading .service-for{margin:0;font-size:14px}
-.operations-catalogue-page .service-card-copy{grid-area:copy;min-width:0}
+.operations-catalogue-page .service-card-heading h3{margin:0 0 7px;font-size:21px;line-height:1.25}
+.operations-catalogue-page .service-card-heading .service-for{margin:0;font-size:14px;color:#52616b}
 .operations-catalogue-page .service-card-copy>p{margin:0;max-width:64ch;color:#3B4A54;font-size:16px;line-height:1.55}
-.operations-catalogue-page .service-card-copy .service-cue{margin-top:12px}
-@media(max-width:760px){.operations-catalogue-page .area-catalogue .service-card-link{display:block;padding:22px 0}.operations-catalogue-page .service-card-copy{margin-top:12px}.operations-catalogue-page .service-card-heading h3{font-size:20px;line-height:1.25}.operations-catalogue-page .service-card-copy>p{font-size:16px;line-height:1.55}.operations-catalogue-page .service-card-copy .service-cue{margin-top:13px}}
+.operations-catalogue-page .service-card-copy .service-cue{display:inline-block;margin-top:13px;font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
