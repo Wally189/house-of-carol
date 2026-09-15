@@ -71,6 +71,69 @@ async function tapAllAndReturn(page,selector,label){
   }
 }
 
+async function hoc019ResponsiveCheck(viewport){
+  const {width,height}=viewport;
+  const label='hoc019-'+width;
+  const context=await browser.newContext({viewport,hasTouch:width<=760});
+  const page=await context.newPage();
+  await baseline(page,'customer-support-knowledge-base-build.html',label,false);
+
+  const state=await page.evaluate(()=>{
+    const rect=(el)=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};
+    const heroShell=document.querySelector('.product-hero>.shell');
+    const identity=document.querySelector('.product-hero-identity');
+    const offer=document.querySelector('.product-hero-offer');
+    const grid=document.querySelector('.deliverable-groups');
+    const cards=[...grid.querySelectorAll('.product-card')];
+    const wrappingTargets=[...document.querySelectorAll('.product-price strong,.product-price span,.product-trust-line,.product-trust-line strong,.product-scope-line,.product-turnaround,.product-audience,.deliverable-groups .product-card h3,.deliverable-groups .product-card p,.service-facts dt,.service-facts dd')];
+    const badWrapping=wrappingTargets.map(el=>({text:(el.textContent||'').trim().slice(0,80),wordBreak:getComputedStyle(el).wordBreak,overflowWrap:getComputedStyle(el).overflowWrap})).filter(x=>x.wordBreak!=='normal'||x.overflowWrap==='anywhere');
+    return {
+      heroShell:rect(heroShell),
+      identity:rect(identity),
+      offer:rect(offer),
+      heroColumns:getComputedStyle(heroShell).gridTemplateColumns,
+      cardCount:cards.length,
+      card7:cards[6]?rect(cards[6]):null,
+      card8:cards[7]?rect(cards[7]):null,
+      card7Title:cards[6]?.querySelector('h3')?.textContent?.trim()||'',
+      card8Title:cards[7]?.querySelector('h3')?.textContent?.trim()||'',
+      badWrapping
+    };
+  });
+
+  if(state.cardCount!==8) throw new Error(label+': expected 8 deliverable cards, found '+state.cardCount);
+  if(state.card7Title!=='Maintenance process and handover'||state.card8Title!=='Final factual correction') throw new Error(label+': card 7/8 source order changed '+JSON.stringify({card7:state.card7Title,card8:state.card8Title}));
+  if(state.badWrapping.length) throw new Error(label+': unsafe word-breaking styles '+JSON.stringify(state.badWrapping));
+
+  const stackExpected=width<=1040;
+  const heroStacked=state.offer.top>=state.identity.bottom-1;
+  if(stackExpected&&!heroStacked) throw new Error(label+': hero should stack before tablet/mobile cramping '+JSON.stringify(state));
+  if(!stackExpected&&heroStacked) throw new Error(label+': desktop hero unexpectedly stacked '+JSON.stringify(state));
+
+  if(stackExpected){
+    const rowGap=state.offer.top-state.identity.bottom;
+    const bottomGap=state.heroShell.bottom-state.offer.bottom;
+    const minimumReadable=Math.min(600,state.heroShell.width*.75);
+    if(rowGap<16||rowGap>48) throw new Error(label+': hero row gap is not normal document flow '+rowGap);
+    if(bottomGap>80) throw new Error(label+': unexplained blank space remains below stacked offer '+bottomGap);
+    if(state.offer.width<minimumReadable) throw new Error(label+': stacked offer remains unnaturally narrow '+JSON.stringify({offerWidth:state.offer.width,minimumReadable}));
+  }else{
+    if(Math.abs(state.offer.top-state.identity.top)>4||state.offer.left<=state.identity.left+40) throw new Error(label+': desktop hero columns are not coherent '+JSON.stringify(state));
+  }
+
+  if(width>760){
+    if(Math.abs(state.card7.top-state.card8.top)>2) throw new Error(label+': final two cards are not on the same grid row '+JSON.stringify({card7:state.card7,card8:state.card8}));
+    if(state.card8.left<=state.card7.left+40) throw new Error(label+': final factual correction is not in the right grid column '+JSON.stringify({card7:state.card7,card8:state.card8}));
+  }else{
+    if(state.card8.top<state.card7.bottom-1) throw new Error(label+': final two cards do not stack in source order '+JSON.stringify({card7:state.card7,card8:state.card8}));
+    if(Math.abs(state.card7.left-state.card8.left)>2) throw new Error(label+': single-column cards are not aligned '+JSON.stringify({card7:state.card7,card8:state.card8}));
+  }
+
+  await noOverflow(page,label+' final');
+  await page.screenshot({path:'qa-artifacts/'+label+'.png',fullPage:true});
+  await context.close();
+}
+
 async function run(viewport,name){
   const context=await browser.newContext({viewport,hasTouch:name==='mobile'||name==='reflow-320'});
   const page=await context.newPage();
@@ -144,5 +207,18 @@ const VIEWPORTS=[
   [{width:320,height:900},'reflow-320'],
 ];
 for(const [v,n] of VIEWPORTS) await run(v,n);
+
+const HOC019_VIEWPORTS=[
+  {width:320,height:900},
+  {width:360,height:900},
+  {width:390,height:844},
+  {width:412,height:915},
+  {width:768,height:1024},
+  {width:800,height:1280},
+  {width:1024,height:768},
+  {width:1440,height:900},
+];
+for(const viewport of HOC019_VIEWPORTS) await hoc019ResponsiveCheck(viewport);
+
 await browser.close();
-console.log('PASS: core pages, 7-area catalogue hierarchy and all 53 product pages pass browser regression at 1440x900, 1280x800, 1024x768, 800x1280, 760x1000, 430x932, 390x844 and 320x900 plus 200% text reflow; serious/critical axe checks cover every core, catalogue, area and product page on desktop and 390px mobile; mobile tap-return checks cover every catalogue service link');
+console.log('PASS: core pages, 7-area catalogue hierarchy and all 53 product pages pass browser regression at 1440x900, 1280x800, 1024x768, 800x1280, 760x1000, 430x932, 390x844 and 320x900 plus 200% text reflow; serious/critical axe checks cover every core, catalogue, area and product page on desktop and 390px mobile; mobile tap-return checks cover every catalogue service link; HOC-019 specific responsive assertions pass at 320, 360, 390, 412, 768, 800, 1024 and 1440px.');
