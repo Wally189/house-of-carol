@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'">
   <link rel="stylesheet" href="assets/hoc-rebuild.css">
   <link rel="stylesheet" href="assets/hoc-service.css?v=20260911-hoc018-prebuyer1">
-  <link rel="stylesheet" href="assets/hoc-catalogue.css">
+  <link rel="stylesheet" href="assets/hoc-catalogue.css?v=20260915-customer-journey-01">
   <title>Making a complicated account-opening journey simple — House of Carol</title>
   <meta name="description" content="A fictional illustrative worked example showing how House of Carol can map a fragmented customer journey, preserve necessary controls and show a clearer target state.">
 </head>
@@ -52,25 +52,13 @@
         <h2>One customer journey had become several separate activities</h2>
         <p>Alderwick Trade Supplies had a useful trade-account service, but the route from wanting an account to being ready to order had developed in stages.</p>
         <p>Each individual step could have a reason. The difficulty appears when nobody looks at the whole route from the customer's point of view.</p>
-
         <div class="journey-panel before">
           <span class="journey-label">Before</span>
           <div class="journey-flow" aria-label="Illustrative current-state customer journey">
-            <div class="journey-step">Discover trade account</div>
-            <div class="journey-step">Download application</div>
-            <div class="journey-step">Complete and return separately</div>
-            <div class="journey-step">Application enters review</div>
-            <div class="journey-step">Wait for an outcome</div>
-            <div class="journey-step">Account created</div>
-            <div class="journey-step">Separate online activation</div>
-            <div class="journey-step">Additional account setup</div>
-            <div class="journey-step">Ready to order</div>
+            <div class="journey-step">Discover trade account</div><div class="journey-step">Download application</div><div class="journey-step">Complete and return separately</div><div class="journey-step">Application enters review</div><div class="journey-step">Wait for an outcome</div><div class="journey-step">Account created</div><div class="journey-step">Separate online activation</div><div class="journey-step">Additional account setup</div><div class="journey-step">Ready to order</div>
           </div>
         </div>
-
-        <div class="worked-example-principle">
-          <p>What feels like a series of internal tasks to the business can feel like one unnecessarily complicated process to the customer.</p>
-        </div>
+        <div class="worked-example-principle"><p>What feels like a series of internal tasks to the business can feel like one unnecessarily complicated process to the customer.</p></div>
       </div>
     </section>
 
@@ -111,15 +99,7 @@
         <div class="journey-panel after">
           <span class="journey-label">After</span>
           <div class="journey-flow after" aria-label="Illustrative target-state customer journey">
-            <div class="journey-step">Understand the account</div>
-            <div class="journey-step">Apply through one route</div>
-            <div class="journey-step">Receive confirmation and reference</div>
-            <div class="journey-step">Application reviewed</div>
-            <div class="journey-step">Provide anything further if required</div>
-            <div class="journey-step">Decision</div>
-            <div class="journey-step">Activate securely</div>
-            <div class="journey-step">Complete account setup</div>
-            <div class="journey-step">Ready to order</div>
+            <div class="journey-step">Understand the account</div><div class="journey-step">Apply through one route</div><div class="journey-step">Receive confirmation and reference</div><div class="journey-step">Application reviewed</div><div class="journey-step">Provide anything further if required</div><div class="journey-step">Decision</div><div class="journey-step">Activate securely</div><div class="journey-step">Complete account setup</div><div class="journey-step">Ready to order</div>
           </div>
         </div>
         <div class="worked-example-principle"><p>The underlying business process can still be sophisticated. The customer experience does not have to feel sophisticated.</p></div>
@@ -131,49 +111,28 @@
         <p class="eyebrow">What better could look like</p>
         <h2>Turn the target journey into something people can actually understand</h2>
         <div class="worked-example-screens">
-          <article class="worked-example-screen">
-            <p class="screen-kicker">Application</p>
-            <h3>Open your trade account</h3>
-            <p>Tell us about your business and how you expect to use the account.</p>
-            <p><strong>Business details</strong><br>Required information</p>
-            <p><strong>Main contact</strong><br>Required information</p>
-            <p><strong>Account requirements</strong></p>
-            <ul class="screen-list"><li>More than one person will order</li><li>More than one location</li><li>Purchasing limits or approvals</li></ul>
-            <span class="screen-action">REVIEW APPLICATION</span>
-          </article>
-
-          <article class="worked-example-screen">
-            <p class="screen-kicker">Confirmation</p>
-            <h3>We've received your application</h3>
-            <p><strong>Reference: ATS-001234</strong></p>
-            <p>You do not need to submit another application while this one is under review.</p>
-            <p><strong>What happens next</strong></p>
-            <ol class="screen-list"><li>Completeness check</li><li>Request anything further</li><li>Appropriate review</li><li>Decision communicated</li></ol>
-          </article>
-
-          <article class="worked-example-screen">
-            <p class="screen-kicker">Activation</p>
-            <h3>Your account is ready to activate</h3>
-            <p>Complete your online account setup to start ordering.</p>
-            <span class="screen-action">ACTIVATE ACCOUNT</span>
-            <p class="screen-footnote">Additional users, locations or purchasing controls can then be configured where required.</p>
-          </article>
+          <article class="worked-example-screen"><p class="screen-kicker">Application</p><h3>Open your trade account</h3><p>Tell us about your business and how you expect to use the account.</p><p><strong>Business details</strong><br>Required information</p><p><strong>Main contact</strong><br>Required information</p><p><strong>Account requirements</strong></p><ul class="screen-list"><li>More than one person will order</li><li>More than one location</li><li>Purchasing limits or approvals</li></ul><span class="screen-action">REVIEW APPLICATION</span></article>
+          <article class="worked-example-screen"><p class="screen-kicker">Confirmation</p><h3>We've received your application</h3><p><strong>Reference: ATS-001234</strong></p><p>You do not need to submit another application while this one is under review.</p><p><strong>What happens next</strong></p><ol class="screen-list"><li>Completeness check</li><li>Request anything further</li><li>Appropriate review</li><li>Decision communicated</li></ol></article>
+          <article class="worked-example-screen"><p class="screen-kicker">Activation</p><h3>Your account is ready to activate</h3><p>Complete your online account setup to start ordering.</p><span class="screen-action">ACTIVATE ACCOUNT</span><p class="screen-footnote">Additional users, locations or purchasing controls can then be configured where required.</p></article>
         </div>
       </div>
     </section>
 
     <section class="product-section alt">
       <div class="shell">
-        <p class="eyebrow">What the review changes</p>
-        <h2>A practical view of what HOC-018 gives the business</h2>
+        <p class="eyebrow">What the review gives the business</p>
+        <h2>Useful outputs before anybody starts changing systems</h2>
         <div class="worked-example-benefits">
-          <div><strong>Map the complete journey</strong><span>Hidden complexity becomes visible.</span></div>
-          <div><strong>Review the hand-offs</strong><span>Channel and ownership changes can be challenged.</span></div>
-          <div><strong>Separate controls from friction</strong><span>Important safeguards are not removed in the name of simplicity.</span></div>
-          <div><strong>Identify evidence gaps</strong><span>Assumptions stay visible instead of becoming facts.</span></div>
-          <div><strong>Prioritise improvements</strong><span>Attention goes to changes most worth considering.</span></div>
-          <div><strong>Show a bounded target state</strong><span>People can understand what a clearer journey could actually look like.</span></div>
+          <div><strong>Map the complete journey</strong><span>Hidden complexity becomes visible.</span></div><div><strong>Review the hand-offs</strong><span>Channel and ownership changes can be challenged.</span></div><div><strong>Separate controls from friction</strong><span>Important safeguards are not removed in the name of simplicity.</span></div><div><strong>Identify evidence gaps</strong><span>Assumptions stay visible instead of becoming facts.</span></div><div><strong>Prioritise improvements</strong><span>Attention goes to changes most worth considering.</span></div><div><strong>Show a bounded target state</strong><span>People can understand what a clearer journey could actually look like.</span></div>
         </div>
+      </div>
+    </section>
+
+    <section class="product-section commercial-route">
+      <div class="shell">
+        <p class="eyebrow">From review to practical next step</p>
+        <h2>If this were a real customer journey, what could happen next?</h2>
+        <div class="route-flow"><article class="route-step"><strong>1 · Review the complete journey</strong><p>Start with the Customer Journey &amp; Service Operations Review when the business does not yet have one reliable end-to-end view.</p><a href="customer-journey-and-service-operations-review.html">See the review, scope and price →</a></article><article class="route-step"><strong>2 · Fix the finding that matters</strong><p>If the evidence points to one internal process, a support knowledge gap or an unfinished existing website, that can become a separately scoped implementation service.</p><a href="process-design-sprint.html">Process Design</a> · <a href="customer-support-knowledge-base-build.html">Support Knowledge Base</a> · <a href="website-completion-sprint.html">Website Completion</a></article><article class="route-step"><strong>3 · Stop when the useful work is done</strong><p>The worked example does not imply that every review leads to another purchase. If the priorities can be handled internally, the handover should make that clear.</p><a href="catalogue-operations.html">See operations services →</a></article></div>
       </div>
     </section>
 
@@ -188,37 +147,14 @@
 
     <section class="product-section worked-example-closing">
       <div class="shell cta-panel">
-        <div class="copy">
-          <p class="eyebrow">Customer Journey &amp; Service Operations Review</p>
-          <h2>Complexity should be managed behind the service — not handed to the customer.</h2>
-          <p>Map what happens, identify where the journey becomes unnecessarily difficult, preserve controls that genuinely matter and show where the experience could become clearer.</p>
-        </div>
-        <a class="button light" href="customer-journey-and-service-operations-review.html">View Customer Journey &amp; Service Operations Review</a>
+        <div class="copy"><p class="eyebrow">Customer Journey &amp; Service Operations Review</p><h2>Complexity should be managed behind the service — not handed to the customer.</h2><p>Map what happens, identify where the journey becomes unnecessarily difficult, preserve controls that genuinely matter and leave with clear priorities for what to do next.</p></div>
+        <a class="button light" href="customer-journey-and-service-operations-review.html">View the review, scope and pricing</a>
       </div>
     </section>
 
-    <nav class="service-context-nav" aria-label="Service navigation">
-      <a href="customer-journey-and-service-operations-review.html">← Back to Customer Journey &amp; Service Operations Review</a>
-      <a href="catalogue-operations.html#hoc-018">Operations, process &amp; governance services</a>
-    </nav>
+    <nav class="service-context-nav" aria-label="Service navigation"><a href="customer-journey-and-service-operations-review.html">← Back to Customer Journey &amp; Service Operations Review</a><a href="catalogue-operations.html#hoc-018">Operations, process &amp; governance services</a></nav>
   </main>
 
-  <footer class="site-footer">
-    <div class="shell footer-layout">
-      <div>
-        <div class="footer-brand">HOUSE OF CAROL</div>
-        <p>Independent business services · Bristol, United Kingdom</p>
-      </div>
-      <nav class="footer-links" aria-label="Footer navigation">
-        <a href="index.html">Home</a>
-        <a href="how-it-works.html">How it works</a>
-        <a href="catalogue.html">Catalogue</a>
-        <a href="about.html">About</a>
-        <a href="contact.html">Contact</a>
-        <a href="privacy.html">Privacy</a>
-        <a href="terms.html">Website terms</a>
-      </nav>
-    </div>
-  </footer>
+  <footer class="site-footer"><div class="shell footer-layout"><div><div class="footer-brand">HOUSE OF CAROL</div><p>Independent business services · Bristol, United Kingdom</p></div><nav class="footer-links" aria-label="Footer navigation"><a href="index.html">Home</a><a href="how-it-works.html">How it works</a><a href="catalogue.html">Catalogue</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="terms.html">Website terms</a></nav></div></footer>
 </body>
 </html>
