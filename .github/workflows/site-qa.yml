@@ -21,8 +21,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Build product-specific illustrative case-study artefact
+        run: python scripts/build_case_studies.py
       - name: Production-site static integrity and containment checks
         run: python scripts/site_check.py
+      - name: Case-study route, evidence and reciprocal-navigation checks
+        run: python scripts/case_study_check.py
 
   product-standardisation:
     runs-on: ubuntu-latest
@@ -34,6 +38,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Build product-specific illustrative case-study artefact
+        run: python scripts/build_case_studies.py
       - name: Product-page standardisation and source-boundary checks
         run: python scripts/product_page_standardisation_check.py
 
@@ -47,12 +53,14 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Build product-specific illustrative case-study artefact
+        run: python scripts/build_case_studies.py
       - name: QA storefront containment and brand checks
         run: python scripts/qa_site_check.py
 
   browser-regression:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 24
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,6 +68,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Build product-specific illustrative case-study artefact
+        run: python scripts/build_case_studies.py
       - name: Install browser assurance tools
         run: |
           npm install --no-save playwright@1.55.0 @axe-core/playwright@4.10.2
@@ -73,6 +83,10 @@ jobs:
         id: production_browser
         continue-on-error: true
         run: node scripts/render_check.mjs
+      - name: Case-study desktop, laptop, mobile and accessibility regression
+        id: case_study_browser
+        continue-on-error: true
+        run: node scripts/case_study_render_check.mjs
       - name: QA storefront responsive and enlarged-text regression
         id: qa_storefront_browser
         continue-on-error: true
@@ -89,9 +103,11 @@ jobs:
         if: always()
         env:
           PRODUCTION_BROWSER: ${{ steps.production_browser.outcome }}
+          CASE_STUDY_BROWSER: ${{ steps.case_study_browser.outcome }}
           QA_STOREFRONT_BROWSER: ${{ steps.qa_storefront_browser.outcome }}
         run: |
           test "$PRODUCTION_BROWSER" = "success" || { echo "Production browser/accessibility regression failed: $PRODUCTION_BROWSER"; exit 1; }
+          test "$CASE_STUDY_BROWSER" = "success" || { echo "Case-study browser/accessibility regression failed: $CASE_STUDY_BROWSER"; exit 1; }
           test "$QA_STOREFRONT_BROWSER" = "success" || { echo "QA storefront browser regression failed: $QA_STOREFRONT_BROWSER"; exit 1; }
 
   performance-regression:
@@ -104,6 +120,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Build product-specific illustrative case-study artefact
+        run: python scripts/build_case_studies.py
       - name: Install Playwright
         run: |
           npm install --no-save playwright@1.55.0
