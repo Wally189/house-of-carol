@@ -1,0 +1,23 @@
+.customer-pathway-visual{
+  margin:20px -24px 0;
+  border-top:1px solid var(--stone);
+  border-bottom:1px solid var(--stone);
+  background:var(--mist);
+  overflow:hidden;
+}
+.customer-pathway-visual img{
+  display:block;
+  width:100%;
+  height:auto;
+  aspect-ratio:16/9;
+  object-fit:cover;
+}
+.customer-pathway-visual + .customer-pathway-links{
+  margin-top:18px;
+}
+@media(max-width:760px){
+  .customer-pathway-visual{
+    margin-left:-20px;
+    margin-right:-20px;
+  }
+}
