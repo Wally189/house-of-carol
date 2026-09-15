@@ -95,4 +95,5 @@
 @media(max-width:420px){
   .catalogue-index-page .area-card-link{padding:22px 20px!important}
   .catalogue-index-page .service-directory .shell{padding-left:20px;padding-right:20px}
+  .catalogue-index-page .area-directory{margin-left:-20px;margin-right:-20px}
 }
