@@ -31,6 +31,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build exact QA-tested case-study artefact
+        run: python scripts/build_case_studies.py
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload exact QA-passed site
