@@ -1,6 +1,6 @@
 name: pages-direct-once
 
-# production trigger: current main authorised by King Alan 2026-09-15 — website commercial journey deployment
+# production trigger: current main authorised by King Alan 2026-09-15 — catalogue real-mobile repair deployment
 on:
   push:
     branches:
