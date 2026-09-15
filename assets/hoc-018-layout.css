@@ -1,0 +1,5 @@
+/* HOC-018 bounded responsive layout correction — 2026-09-15 */
+body.hoc-018-page .deliverable-groups article:last-child {
+  grid-column: auto;
+  max-width: none;
+}
