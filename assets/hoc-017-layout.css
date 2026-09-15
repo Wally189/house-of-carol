@@ -2,13 +2,13 @@
 
 /* In the two-column hero, use the full height of the left column and anchor the audience block lower. */
 @media (min-width: 761px) {
-  .product-hero-identity {
+  body.canonical-product-page .product-hero-identity {
     align-self: stretch;
     display: flex;
     flex-direction: column;
   }
 
-  .product-hero-identity .product-audience {
+  body.canonical-product-page .product-hero-identity .product-audience {
     margin-top: auto;
     margin-bottom: 0;
     padding-top: 28px;
@@ -16,30 +16,26 @@
 }
 
 /* Keep the sixth deliverable in the right-hand cell beside the fifth. */
-.generic-deliverables > .product-card:last-child {
+body.canonical-product-page .generic-deliverables > .product-card:last-child {
   grid-column: auto;
   max-width: none;
 }
 
 /* HOC-017 intentionally retains the paired deliverable-card rhythm on mobile. */
 @media (max-width: 760px) {
-  .generic-deliverables {
+  body.canonical-product-page .generic-deliverables {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px;
   }
 
-  .generic-deliverables > .product-card:last-child {
+  body.canonical-product-page .generic-deliverables > .product-card:last-child {
     grid-column: auto;
     max-width: none;
   }
 }
 
 @media (max-width: 420px) {
-  .generic-deliverables {
+  body.canonical-product-page .generic-deliverables {
     gap: 12px;
-  }
-
-  .generic-deliverables > .product-card {
-    padding: 18px 16px;
   }
 }
