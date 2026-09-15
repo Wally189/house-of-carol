@@ -8,6 +8,7 @@ await fs.mkdir('qa-artifacts',{recursive:true});
 const EXPECTED_NAV=['index.html','how-it-works.html','catalogue.html','about.html','contact.html'];
 const CORE_PAGES=['index.html','how-it-works.html','about.html','contact.html','privacy.html','terms.html','404.html'];
 const AREA_PAGES=["catalogue-operations.html","catalogue-ai-digital.html","catalogue-commercial.html","catalogue-learning.html","catalogue-research.html","catalogue-charity-public.html","catalogue-church-parish.html"];
+const REMEDIATED_AREA_PAGES=new Set(['catalogue-operations.html','catalogue-ai-digital.html']);
 const AREA_LINKS='.area-entry .area-card-link';
 const SERVICE_LINKS='.service-entry .service-card-link';
 
@@ -47,13 +48,60 @@ async function noStickyInset(locator,label){
   if(shadow!=='none') throw new Error(label+': touch navigation left an inset/hover shadow '+shadow);
 }
 
-async function baseline(page,path,label,runAccessibility){
+async function compactCatalogueComposition(page,path,label,viewportWidth){
+  if(viewportWidth>1100) return;
+
+  if(path==='catalogue.html'){
+    if(await page.locator('.customer-pathway-grid').count()!==0) throw new Error(label+': retired three-stage pathway UI is still present');
+    const cards=page.locator('.area-card-link');
+    for(let i=0;i<await cards.count();i++){
+      const state=await cards.nth(i).evaluate(el=>{
+        const divs=[...el.children].filter(x=>x.tagName==='DIV');
+        const figure=[...el.children].find(x=>x.tagName==='FIGURE');
+        const a=divs[0]?.getBoundingClientRect();
+        const b=divs[1]?.getBoundingClientRect();
+        return {
+          stacked:!!(a&&b&&Math.abs(a.left-b.left)<2&&b.top>=a.bottom-2),
+          visualHidden:!figure||getComputedStyle(figure).display==='none',
+          width:el.getBoundingClientRect().width
+        };
+      });
+      if(!state.stacked) throw new Error(label+': practice-area card '+i+' is not a readable single-column composition '+JSON.stringify(state));
+      if(!state.visualHidden) throw new Error(label+': practice-area card '+i+' retains a cramped compact-width image '+JSON.stringify(state));
+      if(state.width<240) throw new Error(label+': practice-area card '+i+' is implausibly narrow '+JSON.stringify(state));
+    }
+    const problem=await page.locator('.problem .content-grid').evaluate(el=>{
+      const kids=[...el.children].map(x=>x.getBoundingClientRect());
+      return kids.length<2||Math.abs(kids[0].left-kids[1].left)<2;
+    });
+    if(!problem) throw new Error(label+': closing CTA is not stacked at compact width');
+  }
+
+  if(REMEDIATED_AREA_PAGES.has(path)){
+    const choices=page.locator('.catalogue-choice');
+    for(let i=0;i<await choices.count();i++){
+      const stacked=await choices.nth(i).evaluate(el=>{
+        const kids=[...el.children].map(x=>x.getBoundingClientRect());
+        return kids.length<2||Math.abs(kids[0].left-kids[1].left)<2;
+      });
+      if(!stacked) throw new Error(label+': buyer-situation row '+i+' is not stacked at compact width');
+    }
+    const serviceLinks=page.locator(SERVICE_LINKS);
+    for(let i=0;i<await serviceLinks.count();i++){
+      const display=await serviceLinks.nth(i).evaluate(el=>getComputedStyle(el).display);
+      if(display==='grid') throw new Error(label+': service row '+i+' remains multi-column at compact width');
+    }
+  }
+}
+
+async function baseline(page,path,label,runAccessibility,viewportWidth){
   const response=await page.goto(BASE+'/'+path,{waitUntil:'networkidle'});
   if(!response||!response.ok()) throw new Error(label+': HTTP '+response?.status());
   if(await page.locator('h1').count()!==1) throw new Error(label+': H1 count');
   const nav=await page.locator('.main-nav a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
   if(JSON.stringify(nav)!==JSON.stringify(EXPECTED_NAV)) throw new Error(label+': nav '+JSON.stringify(nav));
   await noOverflow(page,label);
+  await compactCatalogueComposition(page,path,label,viewportWidth);
   if(runAccessibility) await noSeriousAccessibilityDefects(page,label);
 }
 
@@ -77,7 +125,7 @@ async function run(viewport,name){
   const runAccessibility=name==='desktop'||name==='mobile';
 
   for(const core of CORE_PAGES){
-    await baseline(page,core,name+' '+core,runAccessibility);
+    await baseline(page,core,name+' '+core,runAccessibility,viewport.width);
     if(core==='contact.html'){
       if(await page.locator('form').count()!==1) throw new Error(name+': contact form count');
       if(await page.locator('form fieldset[disabled]').count()!==1) throw new Error(name+': held contact form fieldset');
@@ -88,7 +136,7 @@ async function run(viewport,name){
     await noOverflow(page,name+' '+core+' 200%');
   }
 
-  await baseline(page,'catalogue.html',name+' catalogue',runAccessibility);
+  await baseline(page,'catalogue.html',name+' catalogue',runAccessibility,viewport.width);
   if((await page.locator(AREA_LINKS).count())!==7) throw new Error(name+': main catalogue area count');
   if((await page.locator('.service-entry').count())!==0) throw new Error(name+': main catalogue exposes service entries');
   if((await page.locator('body').innerText()).match(/£\s?\d/)) throw new Error(name+': main catalogue displays a price');
@@ -100,7 +148,7 @@ async function run(viewport,name){
   const products=[];
   const reps=[];
   for(const area of AREA_PAGES){
-    await baseline(page,area,name+' '+area,runAccessibility);
+    await baseline(page,area,name+' '+area,runAccessibility,viewport.width);
     const serviceCount=await page.locator(SERVICE_LINKS).count();
     if(serviceCount<1) throw new Error(name+' '+area+': no service links');
     if((await page.locator('body').innerText()).match(/£\s?\d/)) throw new Error(name+' '+area+': area displays a price');
@@ -116,7 +164,7 @@ async function run(viewport,name){
   if(new Set(products).size!==53) throw new Error(name+': expected 53 unique product routes, found '+new Set(products).size);
 
   for(const href of products){
-    await baseline(page,href,name+' '+href,runAccessibility);
+    await baseline(page,href,name+' '+href,runAccessibility,viewport.width);
     if((await page.locator('.service-breadcrumbs').count())!==1) throw new Error(name+' '+href+': breadcrumb missing');
     if((await page.locator('.service-context-nav').count())!==1) throw new Error(name+' '+href+': context nav missing');
     const body=(await page.locator('body').innerText()).toLowerCase();
@@ -145,4 +193,4 @@ const VIEWPORTS=[
 ];
 for(const [v,n] of VIEWPORTS) await run(v,n);
 await browser.close();
-console.log('PASS: core pages, 7-area catalogue hierarchy and all 53 product pages pass browser regression at 1440x900, 1280x800, 1024x768, 800x1280, 760x1000, 430x932, 390x844 and 320x900 plus 200% text reflow; serious/critical axe checks cover every core, catalogue, area and product page on desktop and 390px mobile; mobile tap-return checks cover every catalogue service link');
+console.log('PASS: core pages, 7-area catalogue hierarchy and all 53 product pages pass browser regression at 1440x900, 1280x800, 1024x768, 800x1280, 760x1000, 430x932, 390x844 and 320x900 plus 200% text reflow; catalogue and remediated area pages also pass compact-width composition checks; serious/critical axe checks cover every core, catalogue, area and product page on desktop and 390px mobile; mobile tap-return checks cover every catalogue service link');
