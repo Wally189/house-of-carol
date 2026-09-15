@@ -11,6 +11,8 @@ const AREA_PAGES=["catalogue-operations.html","catalogue-ai-digital.html","catal
 const EXAMPLE_PAGES=['worked-examples.html','worked-example-process-handover.html','worked-example-trade-account-customer-journey.html','worked-example-ai-workflow.html'];
 const REMEDIATED_AREA_PAGES=new Set(['catalogue-operations.html','catalogue-ai-digital.html']);
 const EXAMPLE_PRODUCT_PAGES=new Set(['process-design-sprint.html','customer-journey-and-service-operations-review.html','ai-workflow-opportunity-review.html','ai-workflow-implementation-sprint.html','ai-adoption-support-retainer.html']);
+const REVIEW_SCREENSHOT_VIEWPORTS=new Set(['desktop','desktop-1024','tablet','mobile-760','mobile']);
+const FOCUS_PRODUCT='process-design-sprint.html';
 const AREA_LINKS='.area-entry .area-card-link';
 const SERVICE_LINKS='.service-entry .service-card-link';
 
@@ -75,15 +77,20 @@ async function compactCatalogueComposition(page,path,label,viewportWidth){
     if(path==='catalogue-operations.html'){
       const visuals=page.locator('.service-entry-visual');
       if(await visuals.count()!==9) throw new Error(label+': operations catalogue does not expose nine visual service rows');
-      if(viewportWidth<=760){
-        for(let i=0;i<await visuals.count();i++){
-          const state=await visuals.nth(i).locator('.service-card-link').evaluate(el=>{
-            const figure=el.querySelector('figure'); const heading=el.querySelector('.service-card-heading'); const copy=el.querySelector('.service-card-copy');
-            const a=figure?.getBoundingClientRect(); const b=heading?.getBoundingClientRect(); const c=copy?.getBoundingClientRect();
-            return {visualVisible:!!figure&&getComputedStyle(figure).display!=='none',stacked:!!(a&&b&&c&&Math.abs(a.left-b.left)<2&&Math.abs(b.left-c.left)<2&&b.top>=a.bottom-2&&c.top>=b.bottom-2)};
-          });
-          if(!state.visualVisible||!state.stacked) throw new Error(label+': operations service '+i+' is not a visual single-column mobile card '+JSON.stringify(state));
-        }
+      for(let i=0;i<await visuals.count();i++){
+        const state=await visuals.nth(i).locator('.service-card-link').evaluate(el=>{
+          const figure=el.querySelector('figure'); const heading=el.querySelector('.service-card-heading'); const copy=el.querySelector('.service-card-copy');
+          const a=figure?.getBoundingClientRect(); const b=heading?.getBoundingClientRect(); const c=copy?.getBoundingClientRect();
+          const overlaps=(x,y)=>!!(x&&y&&Math.min(x.right,y.right)-Math.max(x.left,y.left)>1&&Math.min(x.bottom,y.bottom)-Math.max(x.top,y.top)>1);
+          return {
+            visualVisible:!!figure&&getComputedStyle(figure).display!=='none',
+            stacked:!!(a&&b&&c&&Math.abs(a.left-b.left)<2&&Math.abs(b.left-c.left)<2&&b.top>=a.bottom-2&&c.top>=b.bottom-2),
+            overlap:overlaps(a,b)||overlaps(a,c)||overlaps(b,c)
+          };
+        });
+        if(!state.visualVisible) throw new Error(label+': operations service '+i+' hides its photograph '+JSON.stringify(state));
+        if(state.overlap) throw new Error(label+': operations service '+i+' has overlapping visual/text regions '+JSON.stringify(state));
+        if(viewportWidth<=760&&!state.stacked) throw new Error(label+': operations service '+i+' is not a visual single-column mobile card '+JSON.stringify(state));
       }
     }
   }
@@ -158,7 +165,7 @@ async function run(viewport,name){
     if((await page.locator('body').innerText()).match(/£\s?\d/)) throw new Error(name+' '+area+': area displays a price');
     const hrefs=await page.locator(SERVICE_LINKS).evaluateAll(a=>a.map(x=>x.getAttribute('href'))); products.push(...hrefs); reps.push(hrefs[0]);
     if(name==='mobile') await tapAllAndReturn(page,SERVICE_LINKS,name+' '+area);
-    if(['desktop','mobile','mobile-760','mobile-430'].includes(name)) await page.screenshot({path:'qa-artifacts/'+name+'-'+area.replace('.html','')+'.png',fullPage:true});
+    if(REVIEW_SCREENSHOT_VIEWPORTS.has(name)) await page.screenshot({path:'qa-artifacts/'+name+'-'+area.replace('.html','')+'.png',fullPage:true});
     await page.evaluate(()=>{document.documentElement.style.fontSize='200%'}); await noOverflow(page,name+' '+area+' 200%');
   }
   if(new Set(products).size!==53) throw new Error(name+': expected 53 unique product routes, found '+new Set(products).size);
@@ -168,6 +175,7 @@ async function run(viewport,name){
     if((await page.locator('.service-breadcrumbs').count())!==1) throw new Error(name+' '+href+': breadcrumb missing');
     if((await page.locator('.service-context-nav').count())!==1) throw new Error(name+' '+href+': context nav missing');
     const body=(await page.locator('body').innerText()).toLowerCase(); if(!body.includes('pricing')&&!/£\s?\d/.test(body)) throw new Error(name+' '+href+': pricing information missing');
+    if(href===FOCUS_PRODUCT&&REVIEW_SCREENSHOT_VIEWPORTS.has(name)) await page.screenshot({path:'qa-artifacts/'+name+'-process-design-sprint.png',fullPage:true});
     await page.evaluate(()=>{document.documentElement.style.fontSize='200%'}); await noOverflow(page,name+' '+href+' 200%');
   }
 
@@ -180,7 +188,7 @@ async function run(viewport,name){
 
   for(const href of reps){
     await page.goto(BASE+'/'+href,{waitUntil:'networkidle'});
-    if(['desktop','mobile','mobile-760','mobile-430'].includes(name)) await page.screenshot({path:'qa-artifacts/'+name+'-rep-'+href.replace('.html','')+'.png',fullPage:true});
+    if(REVIEW_SCREENSHOT_VIEWPORTS.has(name)) await page.screenshot({path:'qa-artifacts/'+name+'-rep-'+href.replace('.html','')+'.png',fullPage:true});
   }
   await context.close();
 }
@@ -188,4 +196,4 @@ async function run(viewport,name){
 const VIEWPORTS=[[{width:1440,height:900},'desktop'],[{width:1280,height:800},'desktop-1280'],[{width:1024,height:768},'desktop-1024'],[{width:800,height:1280},'tablet'],[{width:760,height:1000},'mobile-760'],[{width:430,height:932},'mobile-430'],[{width:390,height:844},'mobile'],[{width:320,height:900},'reflow-320']];
 for(const [v,n] of VIEWPORTS) await run(v,n);
 await browser.close();
-console.log('PASS: visual catalogue, non-duplicative service areas, 53 canonical product pages and worked-example journey pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390 and 320px plus 200% text reflow; compact products stack rather than compress; catalogue and operations imagery remains visible on mobile; serious/critical axe checks cover desktop and 390px mobile.');
+console.log('PASS: visual catalogue, non-duplicative service areas, non-overlapping operations cards, 53 canonical product pages and worked-example journey pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390 and 320px plus 200% text reflow; compact products stack rather than compress; catalogue and operations imagery remains visible on mobile; serious/critical axe checks cover desktop and 390px mobile.');
