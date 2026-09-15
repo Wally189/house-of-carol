@@ -241,3 +241,31 @@ body.hoc-018-page .deliverable-groups article:last-child{
   .customer-pathways .pathway-intro{font-size:18px}
   .customer-pathway-card,.commercial-route .route-step,.next-service-panel{padding:22px 20px}
 }
+
+/* Canonical compact product contract — all product pages must recompose rather than compress. */
+@media(max-width:1100px){
+  body.canonical-product-page .product-hero>.shell{
+    grid-template-columns:minmax(0,1fr)!important;
+    row-gap:28px;
+  }
+  body.canonical-product-page .recognition-grid,
+  body.canonical-product-page .deliverable-groups,
+  body.canonical-product-page .generic-deliverables{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:16px;
+  }
+  body.canonical-product-page .recognition-grid>article,
+  body.canonical-product-page .deliverable-groups>article,
+  body.canonical-product-page .deliverable-groups>article:last-child,
+  body.canonical-product-page .generic-deliverables>article,
+  body.canonical-product-page .generic-deliverables>article:last-child{
+    grid-column:auto!important;
+    width:auto!important;
+    max-width:none!important;
+  }
+  body.canonical-product-page .cta-panel{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:18px;
+    align-items:start;
+  }
+}
