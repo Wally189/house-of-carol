@@ -1,8 +1,0 @@
-/* HOC-015 owner-returned layout correction — 2026-09-15 */
-body.hoc-015-page .hoc015-current-process{width:100%;max-width:980px;margin:0 0 18px}
-body.hoc-015-page .hoc015-current-process>.product-card{width:100%;max-width:none;box-sizing:border-box}
-body.hoc-015-page .hoc015-deliverable-grid,body.hoc-015-page .hoc015-input-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;width:100%;max-width:980px}
-body.hoc-015-page .hoc015-deliverable-grid>article:first-child{grid-column:1/-1;max-width:none}
-body.hoc-015-page .hoc015-deliverable-grid>article:last-child{grid-column:auto;max-width:none}
-body.hoc-015-page .hoc015-input-grid>article:last-child{grid-column:1/-1;max-width:none}
-@media(max-width:760px){body.hoc-015-page .hoc015-deliverable-grid,body.hoc-015-page .hoc015-input-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}body.hoc-015-page .hoc015-current-process{margin-bottom:14px}}
