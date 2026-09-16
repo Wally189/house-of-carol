@@ -21,12 +21,14 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build canonical product commercial modules
-        run: python scripts/build_case_studies.py
+      - name: Build canonical customer experience
+        run: python scripts/build_customer_experience.py
       - name: Production-site static integrity and containment checks
         run: python scripts/site_check.py
       - name: Retained worked-example evidence and route checks
         run: python scripts/case_study_check.py
+      - name: Customer-experience source and rendered acceptance checks
+        run: python scripts/customer_experience_check.py
 
   product-standardisation:
     runs-on: ubuntu-latest
@@ -38,8 +40,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build canonical product commercial modules
-        run: python scripts/build_case_studies.py
+      - name: Build canonical customer experience
+        run: python scripts/build_customer_experience.py
       - name: Existing product-page standardisation and source-boundary checks
         run: python scripts/product_page_standardisation_check.py
       - name: 53-product commercial journey and adjacency checks
@@ -55,14 +57,14 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build canonical product commercial modules
-        run: python scripts/build_case_studies.py
+      - name: Build canonical customer experience
+        run: python scripts/build_customer_experience.py
       - name: QA storefront containment and brand checks
         run: python scripts/qa_site_check.py
 
   browser-regression:
     runs-on: ubuntu-latest
-    timeout-minutes: 24
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -70,8 +72,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build canonical product commercial modules
-        run: python scripts/build_case_studies.py
+      - name: Build canonical customer experience
+        run: python scripts/build_customer_experience.py
       - name: Install browser assurance tools
         run: |
           npm install --no-save playwright@1.55.0 @axe-core/playwright@4.10.2
@@ -93,6 +95,10 @@ jobs:
         id: qa_storefront_browser
         continue-on-error: true
         run: node scripts/qa_render_check.mjs
+      - name: All 53 customer-experience pages at desktop and mobile
+        id: customer_experience_browser
+        continue-on-error: true
+        run: node scripts/customer_experience_render_check.mjs
       - name: Upload QA screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -107,10 +113,12 @@ jobs:
           PRODUCTION_BROWSER: ${{ steps.production_browser.outcome }}
           WORKED_EXAMPLE_BROWSER: ${{ steps.case_study_browser.outcome }}
           QA_STOREFRONT_BROWSER: ${{ steps.qa_storefront_browser.outcome }}
+          CUSTOMER_EXPERIENCE_BROWSER: ${{ steps.customer_experience_browser.outcome }}
         run: |
           test "$PRODUCTION_BROWSER" = "success" || { echo "Production browser/accessibility regression failed: $PRODUCTION_BROWSER"; exit 1; }
           test "$WORKED_EXAMPLE_BROWSER" = "success" || { echo "Worked-example browser/accessibility regression failed: $WORKED_EXAMPLE_BROWSER"; exit 1; }
           test "$QA_STOREFRONT_BROWSER" = "success" || { echo "QA storefront browser regression failed: $QA_STOREFRONT_BROWSER"; exit 1; }
+          test "$CUSTOMER_EXPERIENCE_BROWSER" = "success" || { echo "53-product customer-experience browser regression failed: $CUSTOMER_EXPERIENCE_BROWSER"; exit 1; }
 
   performance-regression:
     runs-on: ubuntu-latest
@@ -122,8 +130,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build canonical product commercial modules
-        run: python scripts/build_case_studies.py
+      - name: Build canonical customer experience
+        run: python scripts/build_customer_experience.py
       - name: Install Playwright
         run: |
           npm install --no-save playwright@1.55.0
