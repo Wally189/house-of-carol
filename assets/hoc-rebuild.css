@@ -14,7 +14,7 @@
   --max:1120px;
 }
 *{box-sizing:border-box}
-html{background:var(--mist);color:var(--ink)}
+html{background:var(--mist);color:var(--ink);scrollbar-gutter:stable}
 body{margin:0;background:var(--mist);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-underline-offset:.18em}
 .skip{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
