@@ -222,7 +222,7 @@ async function run(viewport,name){
     const body=(await page.locator('body').innerText()).toLowerCase();
     if(href==='worked-examples.html'){
       if(!body.includes('worked example')) throw new Error(name+' '+href+': worked-example index terminology missing');
-    }else if(!body.includes('illustrative example')||!body.includes('not a customer testimonial')||!body.includes('not a measured result')){
+    }else if(!body.includes('illustrative example')||!body.includes('not a customer testimonial or measured result')){
       throw new Error(name+' '+href+': evidence-honest worked-example disclosure missing');
     }
     if(['desktop','mobile'].includes(name)) await page.screenshot({path:'qa-artifacts/'+name+'-'+href.replace('.html','')+'.png',fullPage:true});
