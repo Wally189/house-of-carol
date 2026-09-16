@@ -1,6 +1,6 @@
 /* Learning catalogue — problem-led service directory.
    Mirrors the proven Operations and Commercial catalogue layout contract while
-   preserving Learning-specific content and the approved photographic hero. */
+   preserving Learning-specific content and the existing photographic hero. */
 .learning-catalogue-page{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 body.learning-catalogue-page .category-hero-visual img{object-position:50% 50%}
