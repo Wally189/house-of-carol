@@ -53,17 +53,27 @@ async function noStickyInset(locator,label){
 async function compactCatalogueComposition(page,path,label,viewportWidth){
   if(path==='catalogue.html'){
     if(await page.locator('.customer-pathway-grid').count()!==0) throw new Error(label+': retired three-stage pathway UI is still present');
-    if(await page.locator('.worked-example-card').count()!==3) throw new Error(label+': catalogue must expose three worked examples');
+    if(await page.locator('.worked-example-card').count()!==0) throw new Error(label+': main catalogue must not expose worked-example cards');
+    if(await page.locator('.worked-examples').count()!==0) throw new Error(label+': main catalogue must remain separate from worked examples');
+    if(await page.locator('a[href="case-studies.html"]').count()!==0) throw new Error(label+': main catalogue must remain separate from the case-study index');
+    const hero=page.locator('.catalogue-hero-visual img');
+    if(await hero.count()!==1) throw new Error(label+': main catalogue must expose exactly one controlled hero illustration');
+    const heroState=await hero.evaluate(img=>({alt:(img.getAttribute('alt')||'').trim()}));
+    if(!heroState.alt) throw new Error(label+': main catalogue hero illustration requires useful alternative text');
     const cards=page.locator('.area-card-link');
+    if(await cards.count()!==7) throw new Error(label+': main catalogue must expose exactly seven problem-led service-area choices');
     for(let i=0;i<await cards.count();i++){
       const state=await cards.nth(i).evaluate(el=>{
-        const figure=el.querySelector('figure'); const copy=el.querySelector('.area-card-copy');
-        const a=figure?.getBoundingClientRect(); const b=copy?.getBoundingClientRect();
-        return {visualVisible:!!figure&&getComputedStyle(figure).display!=='none',stacked:!!(a&&b&&Math.abs(a.left-b.left)<2&&b.top>=a.bottom-2),width:el.getBoundingClientRect().width};
+        const heading=el.querySelector('.area-card-heading'); const copy=el.querySelector('.area-card-copy'); const figure=el.querySelector('figure');
+        const a=heading?.getBoundingClientRect(); const b=copy?.getBoundingClientRect();
+        const overlaps=(x,y)=>!!(x&&y&&Math.min(x.right,y.right)-Math.max(x.left,y.left)>1&&Math.min(x.bottom,y.bottom)-Math.max(x.top,y.top)>1);
+        return {hasHeading:!!heading?.querySelector('h3'),hasProblem:!!copy?.querySelector('p'),hasFigure:!!figure,stacked:!!(a&&b&&Math.abs(a.left-b.left)<2&&b.top>=a.bottom-2),overlap:overlaps(a,b),width:el.getBoundingClientRect().width};
       });
-      if(!state.visualVisible) throw new Error(label+': practice-area card '+i+' hides the service-area photograph '+JSON.stringify(state));
-      if(viewportWidth<=760&&!state.stacked) throw new Error(label+': practice-area card '+i+' is not a visual single-column mobile composition '+JSON.stringify(state));
-      if(state.width<240) throw new Error(label+': practice-area card '+i+' is implausibly narrow '+JSON.stringify(state));
+      if(!state.hasHeading||!state.hasProblem) throw new Error(label+': service-area choice '+i+' is missing its heading or problem description '+JSON.stringify(state));
+      if(state.hasFigure) throw new Error(label+': service-area choice '+i+' must remain text-led without per-area card imagery '+JSON.stringify(state));
+      if(state.overlap) throw new Error(label+': service-area choice '+i+' has overlapping heading and problem text '+JSON.stringify(state));
+      if(viewportWidth<=760&&!state.stacked) throw new Error(label+': service-area choice '+i+' is not a clear single-column mobile row '+JSON.stringify(state));
+      if(state.width<240) throw new Error(label+': service-area choice '+i+' is implausibly narrow '+JSON.stringify(state));
     }
     if(viewportWidth<=760){
       const problem=await page.locator('.problem .content-grid').evaluate(el=>{const kids=[...el.children].map(x=>x.getBoundingClientRect());return kids.length<2||Math.abs(kids[0].left-kids[1].left)<2;});
@@ -197,4 +207,4 @@ async function run(viewport,name){
 const VIEWPORTS=[[{width:1440,height:900},'desktop'],[{width:1280,height:800},'desktop-1280'],[{width:1024,height:768},'desktop-1024'],[{width:800,height:1280},'tablet'],[{width:760,height:1000},'mobile-760'],[{width:430,height:932},'mobile-430'],[{width:390,height:844},'mobile'],[{width:320,height:900},'reflow-320']];
 for(const [v,n] of VIEWPORTS) await run(v,n);
 await browser.close();
-console.log('PASS: visual catalogue, non-duplicative service areas, text-led operations directory, 53 canonical product pages and worked-example journey pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390 and 320px plus 200% text reflow; compact products stack rather than compress; the approved operations category illustration remains controlled and decorative; serious/critical axe checks cover desktop and 390px mobile.');
+console.log('PASS: problem-led main catalogue remains separate from case studies and worked examples; seven text-led service-area choices, 53 canonical product pages, remediated area directories and worked-example journeys pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390 and 320px plus 200% text reflow; compact layouts stack rather than compress; serious/critical axe checks cover desktop and 390px mobile.');
