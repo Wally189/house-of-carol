@@ -11,7 +11,7 @@ const AREA_PAGES=["catalogue-operations.html","catalogue-ai-digital.html","catal
 const EXAMPLE_PAGES=['worked-examples.html','worked-example-process-handover.html','worked-example-trade-account-customer-journey.html','worked-example-ai-workflow.html'];
 const REMEDIATED_AREA_PAGES=new Set(['catalogue-operations.html','catalogue-ai-digital.html']);
 const EXAMPLE_PRODUCT_PAGES=new Set(['process-design-sprint.html','customer-journey-and-service-operations-review.html','ai-workflow-opportunity-review.html','ai-workflow-implementation-sprint.html','ai-adoption-support-retainer.html']);
-const REVIEW_SCREENSHOT_VIEWPORTS=new Set(['desktop','desktop-1024','tablet','mobile-760','mobile']);
+const REVIEW_SCREENSHOT_VIEWPORTS=new Set(['desktop','desktop-1024','tablet','mobile-760','mobile','mobile-360','reflow-320']);
 const FOCUS_PRODUCT='process-design-sprint.html';
 const AREA_LINKS='.area-entry .area-card-link';
 const SERVICE_LINKS='.service-entry .service-card-link';
@@ -73,26 +73,27 @@ async function compactCatalogueComposition(page,path,label,viewportWidth){
 
   if(REMEDIATED_AREA_PAGES.has(path)){
     if(await page.locator('.catalogue-choice').count()!==0) throw new Error(label+': duplicative buyer-situation list remains');
-    if(path==='catalogue-ai-digital.html' && await page.locator('.service-cluster').count()!==3) throw new Error(label+': AI services are not grouped into three customer jobs');
-    if(path==='catalogue-operations.html'){
-      const services=page.locator('.service-entry');
-      if(await services.count()!==9) throw new Error(label+': operations catalogue must expose exactly nine service choices');
-      if(await page.locator('.service-entry figure').count()!==0) throw new Error(label+': operations service rows must remain text-led without decorative per-service imagery');
-      if(await page.locator('.worked-examples').count()!==0) throw new Error(label+': operations selection page must not contain fictional worked-example cards');
-      const hero=page.locator('.category-hero-visual img');
-      if(await hero.count()!==1) throw new Error(label+': operations catalogue must expose one controlled category illustration');
-      const heroState=await hero.evaluate(img=>({src:img.getAttribute('src'),alt:img.getAttribute('alt'),hidden:img.closest('figure')?.getAttribute('aria-hidden')}));
-      if(heroState.src!=='assets/catalogue-operations.svg'||heroState.alt!==''||heroState.hidden!=='true') throw new Error(label+': operations category illustration is not the approved decorative asset '+JSON.stringify(heroState));
-      for(let i=0;i<await services.count();i++){
-        const state=await services.nth(i).locator('.service-card-link').evaluate(el=>{
-          const heading=el.querySelector('.service-card-heading'); const copy=el.querySelector('.service-card-copy');
-          const a=heading?.getBoundingClientRect(); const b=copy?.getBoundingClientRect();
-          const overlaps=(x,y)=>!!(x&&y&&Math.min(x.right,y.right)-Math.max(x.left,y.left)>1&&Math.min(x.bottom,y.bottom)-Math.max(x.top,y.top)>1);
-          return {stacked:!!(a&&b&&Math.abs(a.left-b.left)<2&&b.top>=a.bottom-2),overlap:overlaps(a,b)};
-        });
-        if(state.overlap) throw new Error(label+': operations service '+i+' has overlapping text regions '+JSON.stringify(state));
-        if(viewportWidth<=760&&!state.stacked) throw new Error(label+': operations service '+i+' is not a clear single-column mobile row '+JSON.stringify(state));
-      }
+    const expectedServices=path==='catalogue-operations.html'?9:15;
+    const expectedHero=path==='catalogue-operations.html'?'assets/catalogue-operations.svg':'assets/catalogue-ai-digital.svg';
+    const services=page.locator('.service-entry');
+    if(await services.count()!==expectedServices) throw new Error(label+': expected '+expectedServices+' service choices');
+    if(await page.locator('.service-entry figure').count()!==0) throw new Error(label+': service rows must remain text-led without decorative per-service imagery');
+    if(await page.locator('.worked-examples').count()!==0) throw new Error(label+': selection page must not contain fictional worked-example cards');
+    if(path==='catalogue-ai-digital.html' && await page.locator('.service-cluster').count()!==0) throw new Error(label+': legacy AI service clusters remain');
+    if(await page.locator('.service-card-heading').count()!==expectedServices || await page.locator('.service-card-copy').count()!==expectedServices) throw new Error(label+': service heading/copy contract is incomplete');
+    const hero=page.locator('.category-hero-visual img');
+    if(await hero.count()!==1) throw new Error(label+': catalogue must expose one controlled category illustration');
+    const heroState=await hero.evaluate(img=>({src:img.getAttribute('src'),alt:img.getAttribute('alt'),hidden:img.closest('figure')?.getAttribute('aria-hidden')}));
+    if(heroState.src!==expectedHero||heroState.alt!==''||heroState.hidden!=='true') throw new Error(label+': category illustration is not the approved decorative asset '+JSON.stringify(heroState));
+    for(let i=0;i<await services.count();i++){
+      const state=await services.nth(i).locator('.service-card-link').evaluate(el=>{
+        const heading=el.querySelector('.service-card-heading'); const copy=el.querySelector('.service-card-copy');
+        const a=heading?.getBoundingClientRect(); const b=copy?.getBoundingClientRect();
+        const overlaps=(x,y)=>!!(x&&y&&Math.min(x.right,y.right)-Math.max(x.left,y.left)>1&&Math.min(x.bottom,y.bottom)-Math.max(x.top,y.top)>1);
+        return {stacked:!!(a&&b&&Math.abs(a.left-b.left)<2&&b.top>=a.bottom-2),overlap:overlaps(a,b)};
+      });
+      if(state.overlap) throw new Error(label+': service '+i+' has overlapping text regions '+JSON.stringify(state));
+      if(viewportWidth<=860&&!state.stacked) throw new Error(label+': service '+i+' is not a clear single-column compact row '+JSON.stringify(state));
     }
   }
 }
@@ -138,7 +139,7 @@ async function tapAllAndReturn(page,selector,label){
 }
 
 async function run(viewport,name){
-  const context=await browser.newContext({viewport,hasTouch:name==='mobile'||name==='reflow-320'}); const page=await context.newPage();
+  const context=await browser.newContext({viewport,hasTouch:name==='mobile'||name==='mobile-360'||name==='reflow-320'}); const page=await context.newPage();
   const runAccessibility=name==='desktop'||name==='mobile';
   for(const core of CORE_PAGES){
     await baseline(page,core,name+' '+core,runAccessibility,viewport.width);
@@ -194,7 +195,7 @@ async function run(viewport,name){
   await context.close();
 }
 
-const VIEWPORTS=[[{width:1440,height:900},'desktop'],[{width:1280,height:800},'desktop-1280'],[{width:1024,height:768},'desktop-1024'],[{width:800,height:1280},'tablet'],[{width:760,height:1000},'mobile-760'],[{width:430,height:932},'mobile-430'],[{width:390,height:844},'mobile'],[{width:320,height:900},'reflow-320']];
+const VIEWPORTS=[[{width:1440,height:900},'desktop'],[{width:1280,height:800},'desktop-1280'],[{width:1024,height:768},'desktop-1024'],[{width:800,height:1280},'tablet'],[{width:760,height:1000},'mobile-760'],[{width:430,height:932},'mobile-430'],[{width:390,height:844},'mobile'],[{width:360,height:800},'mobile-360'],[{width:320,height:900},'reflow-320']];
 for(const [v,n] of VIEWPORTS) await run(v,n);
 await browser.close();
-console.log('PASS: visual catalogue, non-duplicative service areas, text-led operations directory, 53 canonical product pages and worked-example journey pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390 and 320px plus 200% text reflow; compact products stack rather than compress; the approved operations category illustration remains controlled and decorative; serious/critical axe checks cover desktop and 390px mobile.');
+console.log('PASS: visual catalogue, non-duplicative problem-led Operations and AI service areas, 53 canonical product pages and worked-example journey pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390, 360 and 320px plus 200% text reflow; compact products stack rather than compress; approved category illustrations remain controlled and decorative; serious/critical axe checks cover desktop and 390px mobile.');
