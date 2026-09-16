@@ -1,28 +1,46 @@
-/* Operations catalogue — problem-led service directory. Scoped to this page. */
-.operations-catalogue-page{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+/* Problem-led catalogue layout — shared by Operations and AI/digital category pages. */
+.operations-catalogue-page,.ai-catalogue-page{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
-body.operations-catalogue-page .service-card-link{display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,1.2fr);gap:36px;align-items:start;padding:28px 0}
-body.operations-catalogue-page .service-card-heading{grid-column:1;grid-row:1;min-width:0}
-body.operations-catalogue-page .service-card-copy{grid-column:2;grid-row:1;min-width:0}
-body.operations-catalogue-page .service-card-heading h3{margin:0 0 7px;font-size:21px;line-height:1.25}
-body.operations-catalogue-page .service-card-heading .service-for{margin:0;font-size:14px;line-height:1.5;color:#52616b}
-body.operations-catalogue-page .service-card-copy>p{margin:0;max-width:64ch;color:#3B4A54;font-size:16px;line-height:1.55}
-body.operations-catalogue-page .service-card-copy .service-cue{display:inline-block;margin-top:13px;font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+body.operations-catalogue-page .service-card-link,
+body.ai-catalogue-page .service-card-link{display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,1.2fr);gap:36px;align-items:start;padding:28px 0}
+body.operations-catalogue-page .service-card-heading,
+body.ai-catalogue-page .service-card-heading{grid-column:1;grid-row:1;min-width:0}
+body.operations-catalogue-page .service-card-copy,
+body.ai-catalogue-page .service-card-copy{grid-column:2;grid-row:1;min-width:0}
+body.operations-catalogue-page .service-card-heading h3,
+body.ai-catalogue-page .service-card-heading h3{margin:0 0 7px;font-size:21px;line-height:1.25}
+body.operations-catalogue-page .service-card-heading .service-for,
+body.ai-catalogue-page .service-card-heading .service-for{margin:0;font-size:14px;line-height:1.5;color:#52616b}
+body.operations-catalogue-page .service-card-copy>p,
+body.ai-catalogue-page .service-card-copy>p{margin:0;max-width:64ch;color:#3B4A54;font-size:16px;line-height:1.55}
+body.operations-catalogue-page .service-card-copy .service-cue,
+body.ai-catalogue-page .service-card-copy .service-cue{display:inline-block;margin-top:13px;font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
 
 @media(max-width:860px){
-  body.operations-catalogue-page .service-card-link{grid-template-columns:1fr;gap:10px;padding:22px 0}
-  body.operations-catalogue-page .service-card-heading{grid-column:1;grid-row:1;padding:0}
-  body.operations-catalogue-page .service-card-copy{grid-column:1;grid-row:2;padding:0;margin:0}
+  body.operations-catalogue-page .service-card-link,
+  body.ai-catalogue-page .service-card-link{grid-template-columns:1fr;gap:10px;padding:22px 0}
+  body.operations-catalogue-page .service-card-heading,
+  body.ai-catalogue-page .service-card-heading{grid-column:1;grid-row:1;padding:0}
+  body.operations-catalogue-page .service-card-copy,
+  body.ai-catalogue-page .service-card-copy{grid-column:1;grid-row:2;padding:0;margin:0}
 }
 
 @media(max-width:760px){
-  body.operations-catalogue-page .service-list{margin-left:0;margin-right:0}
-  body.operations-catalogue-page .area-catalogue>.shell{padding-left:22px;padding-right:22px}
-  body.operations-catalogue-page .service-card-heading h3{font-size:20px}
+  body.operations-catalogue-page .service-list,
+  body.ai-catalogue-page .service-list{margin-left:0;margin-right:0}
+  body.operations-catalogue-page .area-catalogue>.shell,
+  body.ai-catalogue-page .area-catalogue>.shell{padding-left:22px;padding-right:22px}
+  body.operations-catalogue-page .service-card-heading h3,
+  body.ai-catalogue-page .service-card-heading h3{font-size:20px}
 }
 
 @media(max-width:390px){
-  body.operations-catalogue-page .area-catalogue>.shell{padding-left:18px;padding-right:18px}
-  body.operations-catalogue-page .service-list{margin-left:0;margin-right:0}
-  body.operations-catalogue-page .service-card-heading,body.operations-catalogue-page .service-card-copy{padding-left:0;padding-right:0}
+  body.operations-catalogue-page .area-catalogue>.shell,
+  body.ai-catalogue-page .area-catalogue>.shell{padding-left:18px;padding-right:18px}
+  body.operations-catalogue-page .service-list,
+  body.ai-catalogue-page .service-list{margin-left:0;margin-right:0}
+  body.operations-catalogue-page .service-card-heading,
+  body.operations-catalogue-page .service-card-copy,
+  body.ai-catalogue-page .service-card-heading,
+  body.ai-catalogue-page .service-card-copy{padding-left:0;padding-right:0}
 }
