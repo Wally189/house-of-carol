@@ -53,8 +53,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build reviewed customer experience
-        run: python scripts/build_customer_experience.py
+      - name: Build existing canonical commercial modules for retained-example browser contract
+        run: python scripts/build_case_studies.py
       - name: Install browser assurance tools
         run: |
           npm install --no-save playwright@1.55.0 @axe-core/playwright@4.10.2
@@ -64,14 +64,16 @@ jobs:
           python -m http.server 8000 --bind 127.0.0.1 > /tmp/hoc-http.log 2>&1 &
           echo $! > /tmp/hoc-http.pid
           sleep 2
-      - name: Existing production browser accessibility responsive and enlarged-text suite
-        id: production_browser
-        continue-on-error: true
-        run: node scripts/render_check.mjs
       - name: Existing retained worked-example visual and accessibility suite
         id: example_browser
         continue-on-error: true
         run: node scripts/case_study_render_check.mjs
+      - name: Build reviewed customer experience for final-artifact browser assurance
+        run: python scripts/build_customer_experience.py
+      - name: Existing production browser accessibility responsive and enlarged-text suite
+        id: production_browser
+        continue-on-error: true
+        run: node scripts/render_check.mjs
       - name: Existing QA storefront browser suite
         id: qa_browser
         continue-on-error: true
