@@ -1,6 +1,6 @@
 name: pages-direct-once
 
-# production trigger: current main authorised by King Alan 2026-09-15 — catalogue real-mobile repair deployment
+# production trigger: current main authorised by King Alan 2026-09-16 — WEB-004 owner production test deployment
 on:
   push:
     branches:
