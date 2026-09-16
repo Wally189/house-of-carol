@@ -1,0 +1,71 @@
+/* House of Carol — catalogue index remediation — 2026-09-16
+   Purpose-led service directory. Services only. */
+
+.catalogue-clean-page .catalogue-hero>.shell{padding:68px 56px 64px}
+.catalogue-clean-page .catalogue-hero-grid{display:flex;flex-wrap:wrap;gap:56px;align-items:center}
+.catalogue-clean-page .catalogue-hero-copy{flex:1.05 1 440px;min-width:0}
+.catalogue-clean-page .catalogue-hero h1{max-width:13ch}
+.catalogue-clean-page .catalogue-hero .lede{max-width:34ch}
+.catalogue-clean-page .catalogue-hero-visual{flex:.95 1 360px;min-width:0;margin:0;aspect-ratio:5/4;overflow:hidden;border-radius:4px;background:var(--stone);box-shadow:0 16px 38px rgba(8,29,45,.10)}
+.catalogue-clean-page .catalogue-hero-visual img{display:block;width:100%;height:100%;object-fit:cover}
+.catalogue-clean-page .catalogue-hero-actions{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;margin-top:24px}
+
+.catalogue-clean-page .service-directory{background:#fff}
+.catalogue-clean-page .catalogue-section-intro{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-end;margin-bottom:28px}
+.catalogue-clean-page .catalogue-section-intro>div,.catalogue-clean-page .catalogue-section-intro>p{flex:1 1 300px;min-width:0}
+.catalogue-clean-page .catalogue-section-intro h2{margin-bottom:0}
+.catalogue-clean-page .catalogue-section-intro>p{margin:0;max-width:42ch;font-size:19px;line-height:1.6;color:#31404A}
+
+.catalogue-clean-page .area-directory{margin:0;border-top:1px solid var(--line)}
+.catalogue-clean-page .area-entry{display:block;padding:0;border-bottom:1px solid var(--line);background:#fff}
+.catalogue-clean-page .area-entry:nth-child(even){background:var(--pale)}
+.catalogue-clean-page .area-card-link{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;padding:28px 30px;color:inherit;text-decoration:none}
+.catalogue-clean-page .area-card-heading{flex:.82 1 300px;min-width:0}
+.catalogue-clean-page .area-card-copy{flex:1.18 1 320px;min-width:0}
+.catalogue-clean-page .area-card-heading .eyebrow{margin-bottom:7px}
+.catalogue-clean-page .area-card-heading h3{margin:0;font-size:clamp(24px,2.2vw,30px);line-height:1.14;color:var(--carol-blue);max-width:20ch}
+.catalogue-clean-page .area-card-copy>p{margin:1px 0 0;max-width:58ch;color:#31404A;font-size:17px;line-height:1.62}
+.catalogue-clean-page .area-cue{display:inline-block;margin-top:14px;font-weight:800;color:var(--carol-blue);border-bottom:2px solid var(--carol-blue);line-height:1.35}
+.catalogue-clean-page .area-card-link:focus-visible{outline:4px solid var(--claret);outline-offset:-4px}
+@media (hover:hover) and (pointer:fine){
+  .catalogue-clean-page .area-card-link:hover{box-shadow:inset 4px 0 0 var(--claret)}
+}
+
+.catalogue-clean-page .problem .content-grid{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start}
+.catalogue-clean-page .problem .content-grid>div{flex:1 1 300px;min-width:0}
+.catalogue-clean-page .problem .copy p{font-size:19px;line-height:1.65}
+
+@media(max-width:1100px){
+  .catalogue-clean-page .catalogue-hero-grid{gap:30px}
+  .catalogue-clean-page .catalogue-hero h1{max-width:18ch}
+  .catalogue-clean-page .catalogue-hero .lede{max-width:46ch}
+  .catalogue-clean-page .catalogue-hero-visual{aspect-ratio:16/8.5}
+}
+
+@media(max-width:760px){
+  .catalogue-clean-page .catalogue-hero>.shell{padding:40px 22px 44px}
+  .catalogue-clean-page .catalogue-hero-grid{gap:26px}
+  .catalogue-clean-page .catalogue-hero-copy,.catalogue-clean-page .catalogue-hero-visual{flex-basis:100%}
+  .catalogue-clean-page .catalogue-hero h1{font-size:clamp(36px,10vw,48px);max-width:none}
+  .catalogue-clean-page .catalogue-hero .lede{font-size:19px;max-width:none}
+  .catalogue-clean-page .catalogue-hero-visual{aspect-ratio:16/8}
+  .catalogue-clean-page .service-directory>.shell{padding-left:20px;padding-right:20px}
+  .catalogue-clean-page .catalogue-section-intro{gap:10px;margin-bottom:24px}
+  .catalogue-clean-page .catalogue-section-intro>div,.catalogue-clean-page .catalogue-section-intro>p{flex-basis:100%}
+  .catalogue-clean-page .catalogue-section-intro>p{font-size:17px}
+  .catalogue-clean-page .area-directory{margin-left:-20px;margin-right:-20px}
+  .catalogue-clean-page .area-card-link{gap:10px;padding:24px 20px}
+  .catalogue-clean-page .area-card-heading,.catalogue-clean-page .area-card-copy{flex-basis:100%}
+  .catalogue-clean-page .area-card-heading h3{font-size:23px;max-width:none}
+  .catalogue-clean-page .area-card-copy>p{font-size:16px;line-height:1.58}
+  .catalogue-clean-page .area-cue{margin-top:12px}
+  .catalogue-clean-page .problem .content-grid{gap:16px}
+  .catalogue-clean-page .problem .content-grid>div{flex-basis:100%}
+  .catalogue-clean-page .problem .copy p{font-size:17px}
+}
+
+@media(max-width:390px){
+  .catalogue-clean-page .service-directory>.shell{padding-left:18px;padding-right:18px}
+  .catalogue-clean-page .area-directory{margin-left:-18px;margin-right:-18px}
+  .catalogue-clean-page .area-card-link{padding-left:18px;padding-right:18px}
+}
