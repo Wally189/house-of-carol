@@ -21,11 +21,11 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build product-specific illustrative case-study artefact
+      - name: Build canonical product commercial modules
         run: python scripts/build_case_studies.py
       - name: Production-site static integrity and containment checks
         run: python scripts/site_check.py
-      - name: Case-study route, evidence and reciprocal-navigation checks
+      - name: Retained worked-example evidence and route checks
         run: python scripts/case_study_check.py
 
   product-standardisation:
@@ -38,10 +38,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build product-specific illustrative case-study artefact
+      - name: Build canonical product commercial modules
         run: python scripts/build_case_studies.py
-      - name: Product-page standardisation and source-boundary checks
+      - name: Existing product-page standardisation and source-boundary checks
         run: python scripts/product_page_standardisation_check.py
+      - name: 53-product commercial journey and adjacency checks
+        run: python scripts/commercial_standardisation_check.py
 
   qa-storefront-static:
     runs-on: ubuntu-latest
@@ -53,7 +55,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build product-specific illustrative case-study artefact
+      - name: Build canonical product commercial modules
         run: python scripts/build_case_studies.py
       - name: QA storefront containment and brand checks
         run: python scripts/qa_site_check.py
@@ -68,7 +70,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build product-specific illustrative case-study artefact
+      - name: Build canonical product commercial modules
         run: python scripts/build_case_studies.py
       - name: Install browser assurance tools
         run: |
@@ -83,7 +85,7 @@ jobs:
         id: production_browser
         continue-on-error: true
         run: node scripts/render_check.mjs
-      - name: Case-study desktop, laptop, mobile and accessibility regression
+      - name: Retained worked-example desktop, laptop, mobile and accessibility regression
         id: case_study_browser
         continue-on-error: true
         run: node scripts/case_study_render_check.mjs
@@ -103,11 +105,11 @@ jobs:
         if: always()
         env:
           PRODUCTION_BROWSER: ${{ steps.production_browser.outcome }}
-          CASE_STUDY_BROWSER: ${{ steps.case_study_browser.outcome }}
+          WORKED_EXAMPLE_BROWSER: ${{ steps.case_study_browser.outcome }}
           QA_STOREFRONT_BROWSER: ${{ steps.qa_storefront_browser.outcome }}
         run: |
           test "$PRODUCTION_BROWSER" = "success" || { echo "Production browser/accessibility regression failed: $PRODUCTION_BROWSER"; exit 1; }
-          test "$CASE_STUDY_BROWSER" = "success" || { echo "Case-study browser/accessibility regression failed: $CASE_STUDY_BROWSER"; exit 1; }
+          test "$WORKED_EXAMPLE_BROWSER" = "success" || { echo "Worked-example browser/accessibility regression failed: $WORKED_EXAMPLE_BROWSER"; exit 1; }
           test "$QA_STOREFRONT_BROWSER" = "success" || { echo "QA storefront browser regression failed: $QA_STOREFRONT_BROWSER"; exit 1; }
 
   performance-regression:
@@ -120,7 +122,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build product-specific illustrative case-study artefact
+      - name: Build canonical product commercial modules
         run: python scripts/build_case_studies.py
       - name: Install Playwright
         run: |
