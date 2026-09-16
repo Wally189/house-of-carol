@@ -35,7 +35,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build exact QA-tested case-study artefact
+      - name: Build exact QA-tested canonical product commercial modules
         run: python scripts/build_case_studies.py
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
