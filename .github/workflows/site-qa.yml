@@ -21,12 +21,14 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Build canonical commercial modules for retained-example evidence check
+        run: python scripts/build_case_studies.py
+      - name: Retained worked-example evidence and route checks
+        run: python scripts/case_study_check.py
       - name: Build canonical customer experience
         run: python scripts/build_customer_experience.py
       - name: Production-site static integrity and containment checks
         run: python scripts/site_check.py
-      - name: Retained worked-example evidence and route checks
-        run: python scripts/case_study_check.py
       - name: Customer-experience source and rendered acceptance checks
         run: python scripts/customer_experience_check.py
 
