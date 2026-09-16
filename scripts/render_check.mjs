@@ -15,6 +15,7 @@ const REVIEW_SCREENSHOT_VIEWPORTS=new Set(['desktop','desktop-1024','tablet','mo
 const FOCUS_PRODUCT='process-design-sprint.html';
 const AREA_LINKS='.area-entry .area-card-link';
 const SERVICE_LINKS='.service-entry .service-card-link';
+let HEADER_REFERENCE=null;
 
 async function noOverflow(page,label){
   const g=await page.evaluate(()=>{
@@ -48,6 +49,29 @@ async function noSeriousAccessibilityDefects(page,label){
 async function noStickyInset(locator,label){
   const shadow=await locator.evaluate(el=>getComputedStyle(el).boxShadow);
   if(shadow!=='none') throw new Error(label+': touch navigation left an inset/hover shadow '+shadow);
+}
+
+async function stableHeaderAlignment(page,label){
+  const state=await page.evaluate(()=>{
+    const metric=(selector)=>{
+      const el=document.querySelector(selector);
+      if(!el) return null;
+      const r=el.getBoundingClientRect();
+      const round=(n)=>Math.round(n*10)/10;
+      return {left:round(r.left),top:round(r.top),width:round(r.width),height:round(r.height)};
+    };
+    return {header:metric('.site-header'),brand:metric('.brand'),nav:metric('.main-nav')};
+  });
+  if(!state.header||!state.brand||!state.nav) throw new Error(label+': site header geometry unavailable '+JSON.stringify(state));
+  if(!HEADER_REFERENCE){HEADER_REFERENCE=state;return;}
+  const tolerance=1;
+  for(const part of ['header','brand','nav']){
+    for(const field of ['left','top','width','height']){
+      if(Math.abs(state[part][field]-HEADER_REFERENCE[part][field])>tolerance){
+        throw new Error(label+': menu/header alignment moved at '+part+'.'+field+'; expected '+HEADER_REFERENCE[part][field]+' got '+state[part][field]);
+      }
+    }
+  }
 }
 
 async function compactCatalogueComposition(page,path,label,viewportWidth){
@@ -129,6 +153,7 @@ async function baseline(page,path,label,runAccessibility,viewportWidth){
   if(await page.locator('h1').count()!==1) throw new Error(label+': H1 count');
   const nav=await page.locator('.main-nav a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
   if(JSON.stringify(nav)!==JSON.stringify(EXPECTED_NAV)) throw new Error(label+': nav '+JSON.stringify(nav));
+  await stableHeaderAlignment(page,label);
   await noOverflow(page,label);
   await compactCatalogueComposition(page,path,label,viewportWidth);
   await compactProductComposition(page,path,label,viewportWidth);
@@ -149,6 +174,7 @@ async function tapAllAndReturn(page,selector,label){
 }
 
 async function run(viewport,name){
+  HEADER_REFERENCE=null;
   const context=await browser.newContext({viewport,hasTouch:name==='mobile'||name==='mobile-360'||name==='reflow-320'}); const page=await context.newPage();
   const runAccessibility=name==='desktop'||name==='mobile';
   for(const core of CORE_PAGES){
@@ -194,7 +220,11 @@ async function run(viewport,name){
   for(const href of EXAMPLE_PAGES){
     await baseline(page,href,name+' '+href,runAccessibility,viewport.width);
     const body=(await page.locator('body').innerText()).toLowerCase();
-    if(!body.includes('illustrat') || (!body.includes('fictional') && href!=='worked-examples.html')) throw new Error(name+' '+href+': worked-example disclosure missing');
+    if(href==='worked-examples.html'){
+      if(!body.includes('worked example')) throw new Error(name+' '+href+': worked-example index terminology missing');
+    }else if(!body.includes('illustrative example')||!body.includes('not a customer testimonial')||!body.includes('not a measured result')){
+      throw new Error(name+' '+href+': evidence-honest worked-example disclosure missing');
+    }
     if(['desktop','mobile'].includes(name)) await page.screenshot({path:'qa-artifacts/'+name+'-'+href.replace('.html','')+'.png',fullPage:true});
   }
 
@@ -208,4 +238,4 @@ async function run(viewport,name){
 const VIEWPORTS=[[{width:1440,height:900},'desktop'],[{width:1280,height:800},'desktop-1280'],[{width:1024,height:768},'desktop-1024'],[{width:800,height:1280},'tablet'],[{width:760,height:1000},'mobile-760'],[{width:430,height:932},'mobile-430'],[{width:390,height:844},'mobile'],[{width:360,height:800},'mobile-360'],[{width:320,height:900},'reflow-320']];
 for(const [v,n] of VIEWPORTS) await run(v,n);
 await browser.close();
-console.log('PASS: problem-led main catalogue remains separate from case studies and worked examples; seven text-led service-area choices, non-duplicative problem-led Operations and AI service areas, 53 canonical product pages and worked-example journeys pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390, 360 and 320px plus 200% text reflow; compact layouts stack rather than compress; approved category illustrations remain controlled and decorative; serious/critical axe checks cover desktop and 390px mobile.');
+console.log('PASS: problem-led main catalogue remains separate from case studies and worked examples; seven text-led service-area choices, non-duplicative problem-led Operations and AI service areas, 53 canonical product pages and worked-example journeys pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390, 360 and 320px plus 200% text reflow; site-header, brand and primary-menu geometry remain aligned across pages within each viewport; compact layouts stack rather than compress; approved category illustrations remain controlled and decorative; serious/critical axe checks cover desktop and 390px mobile.');
