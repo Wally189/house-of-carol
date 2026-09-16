@@ -34,5 +34,6 @@ if index_text.count('class="case-family-head"') != 7: fail('case study index fam
 if '53 services · 53 separate illustrations' not in index_text: fail('case study index current-count statement missing')
 if 'not testimonials' not in index_text.lower() or 'invented customer results' not in index_text.lower(): fail('case study index evidence disclosure missing')
 catalogue = (ROOT / 'catalogue.html').read_text(encoding='utf-8')
-if 'href="case-studies.html"' not in catalogue: fail('catalogue does not route to case-study index')
-print('PASS: 53 distinct product pages each have a separate, clearly illustrative case-study route; case index, reciprocal navigation, evidence disclosure and containment checks pass')
+if 'href="case-studies.html"' in catalogue: fail('catalogue must remain separate from the case-study index')
+if 'worked-example-card' in catalogue or 'class="worked-examples"' in catalogue: fail('catalogue contains worked-example material')
+print('PASS: 53 distinct product pages retain separate illustrative case-study routes; case index, reciprocal product navigation, evidence disclosure and containment checks pass; the main catalogue remains deliberately separate from case studies and worked examples')
