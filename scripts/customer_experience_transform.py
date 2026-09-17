@@ -36,7 +36,7 @@ VISIBLE_REPLACEMENTS = (
     ('indicative scope band', 'indicative range'), ('Final price is confirmed after scope fit.', 'We confirm the exact fee after checking what you need.'),
     ('scope fit', 'what you need'), ('bounded', 'focused'), ('Bounded', 'Focused'),
     ('first-test', 'initial'), ('First-test', 'Initial'), ('service unit', 'service'), ('Service unit', 'Service'),
-    ('source universe', 'source set'), ('Source universe', 'Source set'), ('temporal', 'current'), ('Temporal', 'Current'),
+    ('source universe', 'source set'), ('Source universe', 'Source set'),
     ('internal QA', 'quality review'), ('Internal QA', 'Quality review'), ('proprietor-approved', 'approved'), ('Proprietor-approved', 'Approved'),
 )
 
