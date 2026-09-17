@@ -19,6 +19,10 @@ CHURCH_ROUTES = {
         ('Temporal application support', 'Practical application support'),
     ),
     'church-building-funding-and-maintenance-roadmap.html': (
+        ('temporal needs', 'building needs'),
+        ('Temporal needs', 'Building needs'),
+        ('recurring temporal administration', 'recurring parish administration'),
+        ('Recurring temporal administration', 'Recurring parish administration'),
         ('temporal works-and-funding', 'works-and-funding'),
         ('Temporal works-and-funding', 'Works-and-funding'),
         ('temporal works', 'building works'),
