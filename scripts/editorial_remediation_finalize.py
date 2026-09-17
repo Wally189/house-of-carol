@@ -47,6 +47,10 @@ CHURCH_ROUTES = {
         ('Temporal service only', 'Practical digital-governance support only'),
     ),
     'parish-communications-service.html': (
+        ('customer-approved temporal copy', 'customer-approved parish copy'),
+        ('Customer-approved temporal copy', 'Customer-approved parish copy'),
+        ('wider temporal administration', 'wider parish administration'),
+        ('Wider temporal administration', 'Wider parish administration'),
         ('temporal communications', 'parish communications'),
         ('Temporal communications', 'Parish communications'),
         ('temporal service only', 'practical communications support only'),
