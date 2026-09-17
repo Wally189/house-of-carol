@@ -45,7 +45,7 @@ jobs:
       - name: Build canonical customer experience
         run: python scripts/build_customer_experience.py
       - name: Existing product-page standardisation and source-boundary checks
-        run: python scripts/product_page_standardisation_check.py
+        run: python scripts/product_page_standardisation_check_editorial.py
       - name: 53-product commercial journey and adjacency checks
         run: python scripts/commercial_standardisation_check.py
 
