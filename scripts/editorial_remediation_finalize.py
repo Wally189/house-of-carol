@@ -33,6 +33,8 @@ CHURCH_ROUTES = {
         ('Temporal service only', 'Practical planning support only'),
     ),
     'parish-operations-and-administration-improvement.html': (
+        ('the temporal side of parish life', 'the operational side of parish life'),
+        ('The temporal side of parish life', 'The operational side of parish life'),
         ('temporal parish administration', 'parish administration'),
         ('Temporal parish administration', 'Parish administration'),
         ('temporal administration', 'parish administration'),
