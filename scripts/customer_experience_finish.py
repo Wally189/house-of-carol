@@ -3,14 +3,13 @@ import re
 ROOT=Path(__file__).resolve().parents[1]
 
 META_REPLACEMENTS=(
-    ('first-test research fee','research fee'),
-    ('First-test research fee','Research fee'),
-    ('first-test','initial'),
-    ('First-test','Initial'),
-    ('governance kernel','governance framework'),
-    ('Governance kernel','Governance framework'),
-    ('source universe','source set'),
-    ('Source universe','Source set'),
+    ('first-test research fee','research fee'), ('First-test research fee','Research fee'),
+    ('indicative scope band','indicative range'), ('Final price is confirmed after scope fit.','We confirm the exact fee after checking what you need.'),
+    ('scope fit','what you need'), ('bounded','focused'), ('Bounded','Focused'),
+    ('first-test','initial'), ('First-test','Initial'), ('service unit','service'), ('Service unit','Service'),
+    ('governance kernel','governance framework'), ('Governance kernel','Governance framework'),
+    ('source universe','source set'), ('Source universe','Source set'), ('temporal','current'), ('Temporal','Current'),
+    ('internal QA','quality review'), ('Internal QA','Quality review'), ('proprietor-approved','approved'), ('Proprietor-approved','Approved'),
 )
 
 def add_css(html):
