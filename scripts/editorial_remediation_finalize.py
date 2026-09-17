@@ -73,4 +73,14 @@ for route, replacements in CHURCH_ROUTES.items():
         raise SystemExit(f"EDITORIAL REMEDIATION FAIL: {route} still contains customer-facing temporal language: {' | '.join(snippets)}")
     path.write_text(html, encoding='utf-8')
 
+hoc017 = ROOT / 'management-information-and-kpi-setup.html'
+hoc017_html = hoc017.read_text(encoding='utf-8')
+hoc017_html = hoc017_html.replace('Management Information & KPI Setup', 'Management Information &amp; KPI Setup')
+if 'Management Reporting Setup' in hoc017_html:
+    raise SystemExit('EDITORIAL REMEDIATION FAIL: HOC-017 superseded public name remains')
+if 'Management Information &amp; KPI Setup' not in hoc017_html:
+    raise SystemExit('EDITORIAL REMEDIATION FAIL: HOC-017 canonical public name missing')
+hoc017.write_text(hoc017_html, encoding='utf-8')
+
 print('PASS: Church/parish customer wording uses plain operational language with authority boundaries preserved')
+print('PASS: HOC-017 canonical public name is HTML-safe in the final artefact')
