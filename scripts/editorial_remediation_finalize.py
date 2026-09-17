@@ -11,6 +11,8 @@ CHURCH_ROUTES = {
         ('Temporal service only', 'Practical funding research only'),
     ),
     'church-grant-application-development-support.html': (
+        ('prioritised temporal works-and-funding roadmap', 'prioritised works-and-funding roadmap'),
+        ('Prioritised temporal works-and-funding roadmap', 'Prioritised works-and-funding roadmap'),
         ('temporal service only', 'practical application support only'),
         ('Temporal service only', 'Practical application support only'),
         ('temporal application support', 'practical application support'),
