@@ -1,0 +1,7 @@
+.product-price-detail{display:block;margin-top:.65rem;font-family:var(--sans);font-size:15px;font-weight:500;line-height:1.45;color:var(--muted)}
+.customer-service-visual{margin:0 0 28px;overflow:hidden;background:var(--mist);border:1px solid var(--line)}
+.customer-service-visual img{display:block;width:100%;height:auto;max-height:420px;object-fit:cover}
+.customer-service-visual figcaption{padding:10px 14px;font-size:13px;line-height:1.45;color:var(--muted)}
+.customer-order-journey .customer-order-steps{margin-top:0}
+.customer-order-reassurance{margin-top:22px;font-weight:700}
+@media(max-width:760px){.product-price-detail{font-size:14px}.customer-service-visual{margin-bottom:22px}.customer-service-visual img{max-height:300px}}

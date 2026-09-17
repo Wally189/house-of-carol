@@ -35,8 +35,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build exact QA-tested canonical product commercial modules
-        run: python scripts/build_case_studies.py
+      - name: Build exact QA-tested canonical customer experience
+        run: python scripts/build_customer_experience.py
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload exact QA-passed site

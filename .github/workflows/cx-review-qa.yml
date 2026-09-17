@@ -1,0 +1,148 @@
+name: cx-review-qa
+
+on:
+  push:
+    branches:
+      - hoc-53-customer-experience-review-20260916
+
+permissions:
+  contents: read
+
+jobs:
+  existing-assurance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build existing canonical commercial modules
+        run: python scripts/build_case_studies.py
+      - name: Existing static integrity
+        run: python scripts/site_check.py
+      - name: Existing retained worked-example checks
+        run: python scripts/case_study_check.py
+      - name: Existing 53-product standardisation
+        run: python scripts/product_page_standardisation_check.py
+      - name: Existing commercial journey and adjacency
+        run: python scripts/commercial_standardisation_check.py
+      - name: Existing QA storefront containment
+        run: python scripts/qa_site_check.py
+
+  candidate-static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build reviewed customer experience
+        run: python scripts/build_customer_experience.py
+      - name: Candidate static integrity
+        run: python scripts/site_check.py
+      - name: Candidate customer-experience acceptance
+        run: python scripts/customer_experience_check.py
+
+  candidate-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build existing canonical commercial modules for retained-example browser contract
+        run: python scripts/build_case_studies.py
+      - name: Install browser assurance tools
+        run: |
+          npm install --no-save playwright@1.55.0 @axe-core/playwright@4.10.2
+          npx playwright install --with-deps chromium
+      - name: Serve candidate locally inside runner
+        run: |
+          python -m http.server 8000 --bind 127.0.0.1 > /tmp/hoc-http.log 2>&1 &
+          echo $! > /tmp/hoc-http.pid
+          sleep 2
+      - name: Existing retained worked-example visual and accessibility suite
+        id: example_browser
+        continue-on-error: true
+        run: node scripts/case_study_render_check.mjs
+      - name: Build reviewed customer experience for final-artifact browser assurance
+        run: python scripts/build_customer_experience.py
+      - name: Existing production browser accessibility responsive and enlarged-text suite
+        id: production_browser
+        continue-on-error: true
+        run: node scripts/render_check.mjs
+      - name: Existing QA storefront browser suite
+        id: qa_browser
+        continue-on-error: true
+        run: node scripts/qa_render_check.mjs
+      - name: All 53 customer-experience desktop and mobile traversal
+        id: cx_browser
+        continue-on-error: true
+        run: node scripts/customer_experience_render_check.mjs
+      - name: Upload review screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hoc-cx-review-${{ github.sha }}
+          path: qa-artifacts/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Enforce browser results
+        if: always()
+        env:
+          PRODUCTION: ${{ steps.production_browser.outcome }}
+          EXAMPLES: ${{ steps.example_browser.outcome }}
+          STOREFRONT: ${{ steps.qa_browser.outcome }}
+          CX53: ${{ steps.cx_browser.outcome }}
+        run: |
+          failed=0
+          for result in "$PRODUCTION" "$EXAMPLES" "$STOREFRONT" "$CX53"; do
+            if [ "$result" != "success" ]; then failed=1; fi
+          done
+          if [ "$failed" -ne 0 ]; then
+            printf 'production=%s\nexamples=%s\nstorefront=%s\ncx53=%s\n' "$PRODUCTION" "$EXAMPLES" "$STOREFRONT" "$CX53"
+            exit 1
+          fi
+          echo 'PASS: existing browser suites plus all-53 CX traversal succeeded.'
+
+  candidate-performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build reviewed customer experience
+        run: python scripts/build_customer_experience.py
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Serve candidate locally inside runner
+        run: |
+          python -m http.server 8000 --bind 127.0.0.1 > /tmp/hoc-http.log 2>&1 &
+          sleep 2
+      - name: Existing performance regression guard on candidate
+        run: node scripts/performance_check.mjs
+
+  quality-gate:
+    if: always()
+    needs: [existing-assurance, candidate-static, candidate-browser, candidate-performance]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all review assurance jobs to pass
+        env:
+          EXISTING: ${{ needs.existing-assurance.result }}
+          STATIC: ${{ needs.candidate-static.result }}
+          BROWSER: ${{ needs.candidate-browser.result }}
+          PERFORMANCE: ${{ needs.candidate-performance.result }}
+        run: |
+          test "$EXISTING" = success
+          test "$STATIC" = success
+          test "$BROWSER" = success
+          test "$PERFORMANCE" = success
+          echo 'PASS: complete existing assurance and reviewed candidate assurance succeeded.'
