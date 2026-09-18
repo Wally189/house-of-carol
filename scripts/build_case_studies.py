@@ -337,7 +337,6 @@ STANDALONE_EXAMPLES = {
     'ai-workflow-opportunity-review.html': ('worked-example-ai-workflow.html', 'See the AI workflow example →'),
     'ai-workflow-implementation-sprint.html': ('worked-example-ai-workflow.html', 'See the AI workflow example →'),
     'process-design-sprint.html': ('worked-example-process-handover.html', 'See the process example →'),
-    'managed-business-administration.html': ('worked-example-process-handover.html', 'See the process example →'),
     'customer-journey-and-service-operations-review.html': ('worked-example-trade-account-customer-journey.html', 'See the customer-journey example →'),
 }
 
@@ -403,6 +402,10 @@ def build_worked_example(route, source, title):
     problem = first_class_paragraph(source, 'intro') or first_class_paragraph(source, 'product-hook')
     target = first_body_paragraph(source, 'What changes') or first_class_paragraph(source, 'product-hook')
     deliverables = sentence_list(deliverable_names(source))
+    if route == 'managed-business-administration.html':
+        problem = 'A four-person consultancy has recurring meeting preparation, action updates and CRM upkeep that are understood, but the owner still spends time chasing the same routine work each week.'
+        target = 'Routine administration has one intake, an agreed rhythm and a clear exception route, so the owner sees the decisions and out-of-scope work that genuinely need them rather than every routine update.'
+        deliverables = 'up to three agreed recurring workflows, a monthly status review, and a controlled exit and handover record'
     extra = ''
     if route in STANDALONE_EXAMPLES:
         href, label = STANDALONE_EXAMPLES[route]
