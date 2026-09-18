@@ -233,9 +233,9 @@ def remediate_product(path):
 def transform_catalogues():
     replacements = {
         'catalogue.html': (
-            ('Fifty-three practical House of Carol services across operations, AI and digital work, commercial processes, learning, research, charities, public-sector organisations, churches and parishes.',
+            ('Fifty-four practical House of Carol services across operations, AI and digital work, commercial processes, learning, research, charities, public-sector organisations, churches and parishes.',
              'Practical House of Carol services across seven areas of work, organised around the problem you need to solve.'),
-            ('<p class="eyebrow">53 services · seven areas</p>', '<p class="eyebrow">Seven practical service areas</p>'),
+            ('<p class="eyebrow">54 services · seven areas</p>', '<p class="eyebrow">Seven practical service areas</p>'),
             ('<p class="service-note">Each service page explains what the work is for, what you receive and the boundaries of the service.</p>',
              '<p class="service-note">Each service page explains the work and its boundaries. If you are not sure which one fits, tell us the problem and we’ll identify the smallest sensible starting point.</p>'),
             ('Temporal parish work — funding, buildings, administration, governance, digital choices or communications — needs practical support.',
@@ -289,8 +289,8 @@ for path in ROOT.glob('*.html'):
     text = path.read_text(encoding='utf-8')
     if re.search(r'<body\b[^>]*class="[^"]*\bcanonical-product-page\b', text, re.I) and 'product-fee-text' in text:
         products.append(path)
-if len(products) != 53:
-    raise SystemExit(f'CX FINISH FAIL: expected 53 products, found {len(products)}')
+if len(products) != 54:
+    raise SystemExit(f'CX FINISH FAIL: expected 54 products, found {len(products)}')
 for p in products:
     finish_product(p)
     remediate_product(p)

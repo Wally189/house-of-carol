@@ -1,6 +1,6 @@
 import { chromium } from "playwright";
 import fs from "fs";
-const txt=fs.readFileSync("scripts/build_case_studies.py","utf8"); const block=txt.match(/PRODUCTS = \[(.*?)\]\n/s)?.[1]||""; const routes=[...block.matchAll(/'([^']+\.html)'/g)].map(m=>m[1]); if(routes.length!==53) throw new Error(`Expected 53 routes, got ${routes.length}`);
+const txt=fs.readFileSync("scripts/build_case_studies.py","utf8"); const block=txt.match(/PRODUCTS = \[(.*?)\]\n/s)?.[1]||""; const routes=[...block.matchAll(/'([^']+\.html)'/g)].map(m=>m[1]); if(routes.length!==54) throw new Error(`Expected 54 routes, got ${routes.length}`);
 const browser=await chromium.launch({headless:true}); const page=await browser.newPage(); const defects=[];
 for(const vp of [{n:"desktop",width:1440,height:1000},{n:"mobile",width:390,height:844}]){
   await page.setViewportSize(vp);
@@ -19,4 +19,4 @@ for(const vp of [{n:"desktop",width:1440,height:1000},{n:"mobile",width:390,heig
 }
 await browser.close();
 if(defects.length){console.error("CUSTOMER EXPERIENCE BROWSER QA: FAIL"); defects.forEach(x=>console.error("- "+x)); process.exit(1);}
-console.log("CUSTOMER EXPERIENCE BROWSER QA: PASS — 53/53 at desktop and mobile.");
+console.log("CUSTOMER EXPERIENCE BROWSER QA: PASS — 54/54 at desktop and mobile.");

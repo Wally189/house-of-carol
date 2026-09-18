@@ -46,7 +46,7 @@ jobs:
         run: python scripts/build_customer_experience.py
       - name: Existing product-page standardisation and source-boundary checks
         run: python scripts/product_page_standardisation_check_editorial.py
-      - name: 53-product commercial journey and adjacency checks
+      - name: 54-product commercial journey and adjacency checks
         run: python scripts/commercial_standardisation_check_editorial.py
 
   qa-storefront-static:
@@ -99,7 +99,7 @@ jobs:
         id: qa_storefront_browser
         continue-on-error: true
         run: node scripts/qa_render_check.mjs
-      - name: All 53 customer-experience pages at desktop and mobile
+      - name: All 54 customer-experience pages at desktop and mobile
         id: customer_experience_browser
         continue-on-error: true
         run: node scripts/customer_experience_render_check.mjs
@@ -122,7 +122,7 @@ jobs:
           test "$PRODUCTION_BROWSER" = "success" || { echo "Production browser/accessibility regression failed: $PRODUCTION_BROWSER"; exit 1; }
           test "$WORKED_EXAMPLE_BROWSER" = "success" || { echo "Worked-example browser/accessibility regression failed: $WORKED_EXAMPLE_BROWSER"; exit 1; }
           test "$QA_STOREFRONT_BROWSER" = "success" || { echo "QA storefront browser regression failed: $QA_STOREFRONT_BROWSER"; exit 1; }
-          test "$CUSTOMER_EXPERIENCE_BROWSER" = "success" || { echo "53-product customer-experience browser regression failed: $CUSTOMER_EXPERIENCE_BROWSER"; exit 1; }
+          test "$CUSTOMER_EXPERIENCE_BROWSER" = "success" || { echo "54-product customer-experience browser regression failed: $CUSTOMER_EXPERIENCE_BROWSER"; exit 1; }
 
   performance-regression:
     runs-on: ubuntu-latest

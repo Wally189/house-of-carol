@@ -4,7 +4,7 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# Current 53 DEVELOP routes. The Business Plan remains authoritative for the
+# Current 54 DEVELOP routes. The Business Plan remains authoritative for the
 # portfolio; this build list mirrors the current website contract and is checked
 # by product_page_standardisation_check.py.
 PRODUCTS = [
@@ -25,6 +25,7 @@ PRODUCTS = [
     'process-design-sprint.html',
     'shared-drive-cleanup.html',
     'management-information-and-kpi-setup.html',
+    'managed-business-administration.html',
     'customer-journey-and-service-operations-review.html',
     'customer-support-knowledge-base-build.html',
     'business-continuity-and-operational-readiness-pack.html',
@@ -147,6 +148,11 @@ RELATIONS = {
         ('process-design-sprint.html', 'the measures expose a recurring process that lacks clear ownership, hand-offs or control points', 'redesign the underlying process rather than only reporting on it'),
         ('cash-flow-and-financial-operations-setup.html', 'the management-information gap is specifically about liquidity, cash timing and financial operating routines', 'create a practical cash-management baseline'),
         ('evidence-based-executive-briefing-service.html', 'leaders have reliable measures but need concise current intelligence and implications around a defined subject', 'turn the wider evidence into a sourced executive briefing'),
+    ],
+    'managed-business-administration.html': [
+        ('process-design-sprint.html', 'the recurring admin keeps failing because the underlying process is unclear or dependent on informal hand-offs', 'redesign the process before continuing routine administration'),
+        ('shared-drive-cleanup.html', 'routine administration is being slowed by duplicate, stale or poorly controlled documents and records', 'simplify the information estate before recurring maintenance continues'),
+        ('management-information-and-kpi-setup.html', 'the real need is to define management measures or reporting rather than maintain an existing tracker or register', 'design the management-information layer as a separate piece of work'),
     ],
     'customer-journey-and-service-operations-review.html': [
         ('process-design-sprint.html', 'the journey review identifies one recurring operational process as the specific source of friction', 'redesign that bounded process and create a practical SOP'),
@@ -461,8 +467,8 @@ def standardise(route, titles):
     path.write_text(source, encoding='utf-8')
 
 
-if len(PRODUCTS) != 53 or len(set(PRODUCTS)) != 53:
-    fail('current product list must contain exactly 53 unique routes')
+if len(PRODUCTS) != 54 or len(set(PRODUCTS)) != 54:
+    fail('current product list must contain exactly 54 unique routes')
 if set(RELATIONS) != set(PRODUCTS):
     missing = sorted(set(PRODUCTS) - set(RELATIONS))
     extra = sorted(set(RELATIONS) - set(PRODUCTS))
@@ -499,4 +505,4 @@ index = ROOT / 'case-studies.html'
 if index.exists():
     index.unlink()
 
-print('PASS: built one evidence-honest inline worked-example and one conditional next-service module across all 53 current DEVELOP product pages; retained only explicit current product routes and removed the superseded generated 53-case-study layer from the build workspace')
+print('PASS: built one evidence-honest inline worked-example and one conditional next-service module across all 54 current DEVELOP product pages; retained only explicit current product routes and removed the superseded generated 53-case-study layer from the build workspace')

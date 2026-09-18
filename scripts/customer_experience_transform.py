@@ -16,6 +16,7 @@ ASSET_GROUPS = {
     'assets/hoc015-deliverables-preview.webp': {'process-design-sprint.html'},
     'assets/operations-document-control.webp': {'shared-drive-cleanup.html'},
     'assets/operations-management-information.webp': {'management-information-and-kpi-setup.html'},
+    'assets/catalogue-operations.svg': {'managed-business-administration.html'},
     'assets/operations-customer-journey.webp': {'customer-journey-and-service-operations-review.html'},
     'assets/operations-support-knowledge-base.webp': {'customer-support-knowledge-base-build.html'},
     'assets/operations-business-continuity.webp': {'business-continuity-and-operational-readiness-pack.html'},
@@ -143,8 +144,8 @@ for path in ROOT.glob('*.html'):
     text=path.read_text(encoding='utf-8')
     if re.search(r'<body\b[^>]*class="[^"]*\bcanonical-product-page\b', text, re.I) and re.search(r'class="[^"]*\bproduct-price\b[^"]*\bproduct-fee-text\b', text, re.I):
         products.append(path)
-if len(products)!=53: fail(f'expected 53 product pages after commercial build, found {len(products)}')
-if set(ROUTE_ASSET)!={p.name for p in products}: fail('service visual map does not match 53 current product routes')
+if len(products)!=54: fail(f'expected 54 product pages after commercial build, found {len(products)}')
+if set(ROUTE_ASSET)!={p.name for p in products}: fail('service visual map does not match 54 current product routes')
 for path in products: transform_product(path)
 transform_examples()
-print('PASS: applied customer-experience journey, language, pricing presentation and service visuals across 53 products and retained worked examples')
+print('PASS: applied customer-experience journey, language, pricing presentation and service visuals across 54 products and retained worked examples')

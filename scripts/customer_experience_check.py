@@ -79,7 +79,7 @@ for route in EXAMPLES:
 
 catalogue = (ROOT/'catalogue.html').read_text(encoding='utf-8')
 if 'Seven practical service areas' not in catalogue: errors.append('catalogue.html: corrected problem-led hero eyebrow missing')
-if '53 services · seven areas' in catalogue: errors.append('catalogue.html: old 53-service hero emphasis remains')
+if '54 services · seven areas' in catalogue: errors.append('catalogue.html: old 54-service hero emphasis remains')
 if 'smallest sensible starting point' not in catalogue: errors.append('catalogue.html: problem-led service-note correction missing')
 
 ai_catalogue = (ROOT/'catalogue-ai-digital.html').read_text(encoding='utf-8')
@@ -106,5 +106,5 @@ if errors:
     for e in errors: print('- ' + e, file=sys.stderr)
     raise SystemExit(1)
 print('CUSTOMER EXPERIENCE QA: PASS')
-print('Verified 53/53 product pages for customer language, metadata, canonical names, sentence-case headings, service visuals, ordering journey and commercial modules')
+print('Verified 54/54 product pages for customer language, metadata, canonical names, sentence-case headings, service visuals, ordering journey and commercial modules')
 print('Verified catalogue remediation, Church-language correction, retained worked examples and unchanged contact/indexing controls')
