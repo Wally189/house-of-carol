@@ -57,8 +57,8 @@ for category in CATEGORY_PAGES:
             fail('duplicate current offer id ' + offer_id)
         routes[offer_id] = href
 
-if len(routes) != 53 or len(set(routes.values())) != 53:
-    fail(f'expected 53 unique current DEVELOP routes, found {len(routes)}/{len(set(routes.values()))}')
+if len(routes) != 54 or len(set(routes.values())) != 54:
+    fail(f'expected 54 unique current DEVELOP routes, found {len(routes)}/{len(set(routes.values()))}')
 current = set(routes.values())
 
 for offer_id, href in sorted(routes.items()):
@@ -164,6 +164,6 @@ for offer_id, href in sorted(routes.items()):
             fail(f'{offer_id} {href}: broken local {attr} {target}')
 
 if list(ROOT.glob('case-study-*.html')) or (ROOT / 'case-studies.html').exists():
-    fail('superseded generated 53-case-study layer remains in build workspace')
+    fail('superseded generated legacy case-study layer remains in build workspace')
 
-print('PASS: 53/53 current DEVELOP routes use the locked commercial module order; 53/53 identity banners, worked examples and conditional next-service modules are present exactly once; recommendation targets are current, bounded and non-self; internal language, generated case-study artefacts and broken local links/assets are absent')
+print('PASS: 54/54 current DEVELOP routes use the locked commercial module order; 54/54 identity banners, worked examples and conditional next-service modules are present exactly once; recommendation targets are current, bounded and non-self; internal language, generated case-study artefacts and broken local links/assets are absent')

@@ -108,7 +108,7 @@ async function compactCatalogueComposition(page,path,label,viewportWidth){
 
   if(REMEDIATED_AREA_PAGES.has(path)){
     if(await page.locator('.catalogue-choice').count()!==0) throw new Error(label+': duplicative buyer-situation list remains');
-    const expectedServices=path==='catalogue-operations.html'?9:15;
+    const expectedServices=path==='catalogue-operations.html'?10:15;
     const expectedHero=path==='catalogue-operations.html'?'assets/catalogue-operations.svg':'assets/catalogue-ai-digital.svg';
     const services=page.locator('.service-entry');
     if(await services.count()!==expectedServices) throw new Error(label+': expected '+expectedServices+' service choices');
@@ -209,7 +209,7 @@ async function run(viewport,name){
     if(REVIEW_SCREENSHOT_VIEWPORTS.has(name)) await page.screenshot({path:'qa-artifacts/'+name+'-'+area.replace('.html','')+'.png',fullPage:true});
     await page.evaluate(()=>{document.documentElement.style.fontSize='200%'}); await noOverflow(page,name+' '+area+' 200%');
   }
-  if(new Set(products).size!==53) throw new Error(name+': expected 53 unique product routes, found '+new Set(products).size);
+  if(new Set(products).size!==54) throw new Error(name+': expected 54 unique product routes, found '+new Set(products).size);
 
   for(const href of products){
     await baseline(page,href,name+' '+href,runAccessibility,viewport.width);
@@ -241,4 +241,4 @@ async function run(viewport,name){
 const VIEWPORTS=[[{width:1440,height:900},'desktop'],[{width:1280,height:800},'desktop-1280'],[{width:1024,height:768},'desktop-1024'],[{width:800,height:1280},'tablet'],[{width:760,height:1000},'mobile-760'],[{width:430,height:932},'mobile-430'],[{width:390,height:844},'mobile'],[{width:360,height:800},'mobile-360'],[{width:320,height:900},'reflow-320']];
 for(const [v,n] of VIEWPORTS) await run(v,n);
 await browser.close();
-console.log('PASS: problem-led main catalogue remains separate from case studies and worked examples; seven text-led service-area choices, non-duplicative problem-led Operations and AI service areas, 53 canonical product pages and worked-example journeys pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390, 360 and 320px plus 200% text reflow; site-header, brand and primary-menu geometry remain aligned across pages within each viewport; compact layouts stack rather than compress; approved category illustrations remain controlled and decorative; active temporary Formspree contact form remains accessible and enabled; serious/critical axe checks cover desktop and 390px mobile.');
+console.log('PASS: problem-led main catalogue remains separate from case studies and worked examples; seven text-led service-area choices, non-duplicative problem-led Operations and AI service areas, 54 canonical product pages and worked-example journeys pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390, 360 and 320px plus 200% text reflow; site-header, brand and primary-menu geometry remain aligned across pages within each viewport; compact layouts stack rather than compress; approved category illustrations remain controlled and decorative; active temporary Formspree contact form remains accessible and enabled; serious/critical axe checks cover desktop and 390px mobile.');

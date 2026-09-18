@@ -56,9 +56,9 @@ for area in AREA_PAGES:
     if not found: fail(area+': no service entries')
     area_products[area]=[x[1] for x in found]
     entries.extend(found)
-if len(entries)!=53: fail(f'area catalogue service-link count {len(entries)}')
+if len(entries)!=54: fail(f'area catalogue service-link count {len(entries)}')
 ids=[x[0] for x in entries]; products=[x[1] for x in entries]
-if len(set(ids))!=53 or len(set(products))!=53: fail('service IDs/routes are not unique')
+if len(set(ids))!=54 or len(set(products))!=54: fail('service IDs/routes are not unique')
 
 PUBLIC_PAGES=CORE_PAGES+AREA_PAGES+products
 for name in PUBLIC_PAGES+REQUIRED_ASSETS:
@@ -159,4 +159,4 @@ for _area in AREA_PAGES:
     if _txt.count('class="service-cue"') != _service_count:
         fail(_area+': service cue count mismatch')
 
-print('PASS: 7-area catalogue -> 7 area catalogues -> 53 service pages; hierarchy, pricing separation, metadata, CSP-compatible styling, noindex crawlability, navigation, links, authorised temporary Formspree contact route, branded identity and legal checks pass')
+print('PASS: 7-area catalogue -> 7 area catalogues -> 54 service pages; hierarchy, pricing separation, metadata, CSP-compatible styling, noindex crawlability, navigation, links, authorised temporary Formspree contact route, branded identity and legal checks pass')

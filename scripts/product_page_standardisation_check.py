@@ -17,7 +17,7 @@ TBD_IDS = {
     "HOC-027", "HOC-036", "HOC-044", "HOC-054", "HOC-057",
     "HOC-058", "HOC-059", "HOC-060", "HOC-061", "HOC-062", "HOC-063",
 }
-EXPECTED_IDS = {f"HOC-{n:03d}" for n in range(1, 65)} - TBD_IDS
+EXPECTED_IDS = {f"HOC-{n:03d}" for n in range(1, 66)} - TBD_IDS
 
 # Owner-approved website pricing settlement, 12 September 2026.
 # Each DEVELOP route must expose exactly this set of GBP amounts. Sets are
@@ -41,6 +41,7 @@ EXPECTED_PRICES = {
     "process-design-sprint.html": {"£1,500"},
     "shared-drive-cleanup.html": {"£1,250"},
     "management-information-and-kpi-setup.html": {"£1,250"},
+    "managed-business-administration.html": {"£950"},
     "customer-journey-and-service-operations-review.html": {"£1,250"},
     "customer-support-knowledge-base-build.html": {"£1,250", "£1,750", "£2,500"},
     "business-continuity-and-operational-readiness-pack.html": {"£1,250", "£1,750", "£2,500"},
@@ -79,7 +80,7 @@ EXPECTED_PRICES = {
     "website-completion-sprint.html": {"£1,250"},
 }
 
-# All 53 current DEVELOP product pages use one canonical structural contract.
+# All 54 current DEVELOP product pages use one canonical structural contract.
 REFERENCE_PAGES = set()
 
 CANONICAL_PAGES = set(EXPECTED_PRICES)
@@ -235,13 +236,13 @@ if set(routes) != EXPECTED_IDS:
     if extra:
         errors.append("Unexpected/TBD routes exposed: " + ", ".join(extra))
 
-if len(routes) != 53:
-    errors.append(f"Expected 53 current DEVELOP product routes; found {len(routes)}")
+if len(routes) != 54:
+    errors.append(f"Expected 54 current DEVELOP product routes; found {len(routes)}")
 
 route_hrefs = set(routes.values())
 price_hrefs = set(EXPECTED_PRICES)
-if len(EXPECTED_PRICES) != 53:
-    errors.append(f"Expected 53 approved pricing entries; found {len(EXPECTED_PRICES)}")
+if len(EXPECTED_PRICES) != 54:
+    errors.append(f"Expected 54 approved pricing entries; found {len(EXPECTED_PRICES)}")
 if route_hrefs != price_hrefs:
     missing_prices = sorted(route_hrefs - price_hrefs)
     extra_prices = sorted(price_hrefs - route_hrefs)
@@ -524,9 +525,9 @@ if errors:
 
 print("PRODUCT PAGE STANDARDISATION QA: PASS")
 print(f"Verified {len(routes)} current DEVELOP product routes")
-print(f"Verified {len(EXPECTED_PRICES)}/53 DEVELOP routes against their exact approved numerical GBP price sets")
-print("Verified all 53 current DEVELOP pages against one common product-page contract, one-H1, noindex, CSP, skip-link and contact-route requirements")
-print("Verified all 53 current DEVELOP pages against one canonical structure, module order, mandatory disclosures, global shell and optional-module controls")
+print(f"Verified {len(EXPECTED_PRICES)}/54 DEVELOP routes against their exact approved numerical GBP price sets")
+print("Verified all 54 current DEVELOP pages against one common product-page contract, one-H1, noindex, CSP, skip-link and contact-route requirements")
+print("Verified all 54 current DEVELOP pages against one canonical structure, module order, mandatory disclosures, global shell and optional-module controls")
 print("Verified HOC-016 accepted Candidate 01 content markers while permitting canonical structural normalisation")
 print("Verified HOC-017 approved customer-facing markers and superseded-copy drift checks")
 print("Verified all 11 TBD offers remain unexposed and BrandLab is not a product route")
