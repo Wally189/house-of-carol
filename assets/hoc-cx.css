@@ -19,3 +19,7 @@
 .worked-example-decision strong{color:var(--carol-blue)}
 .worked-example-decision span{color:#31404A}
 @media(max-width:760px){.worked-example-decision>div{grid-template-columns:1fr;gap:6px}}
+
+body:has(.service-context-nav a[href="catalogue-operations.html#hoc-065"]) .deliverable-groups.generic-deliverables article:nth-child(6),
+body:has(.service-context-nav a[href="catalogue-operations.html#hoc-065"]) .deliverable-groups.generic-deliverables article:nth-child(7){margin-top:30px;border-top-color:var(--claret)}
+@media(max-width:760px){body:has(.service-context-nav a[href="catalogue-operations.html#hoc-065"]) .deliverable-groups.generic-deliverables article:nth-child(7){margin-top:0}}
