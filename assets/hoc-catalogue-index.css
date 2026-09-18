@@ -72,9 +72,9 @@
 
 
 /* Managed Business Administration — separate catalogue feature, not an eighth service area */
-.catalogue-clean-page .admin-service-section{background:var(--pale)}
+.catalogue-clean-page .admin-service-section{background:#fff;border-top:1px solid var(--line)}
 .catalogue-clean-page .admin-service-directory{margin:0;border-top:1px solid var(--line)}
-.catalogue-clean-page .admin-service-entry{display:block;padding:0;border-bottom:1px solid var(--line);background:#fff}
+.catalogue-clean-page .admin-service-entry{display:block;padding:0;border-bottom:1px solid var(--line);border-left:4px solid var(--claret);background:var(--pale)}
 .catalogue-clean-page .admin-service-card-link{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;padding:28px 30px;color:inherit;text-decoration:none}
 .catalogue-clean-page .admin-service-heading{flex:.82 1 300px;min-width:0}
 .catalogue-clean-page .admin-service-copy{flex:1.18 1 320px;min-width:0}
