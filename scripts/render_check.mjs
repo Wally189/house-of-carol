@@ -108,7 +108,7 @@ async function compactCatalogueComposition(page,path,label,viewportWidth){
 
   if(REMEDIATED_AREA_PAGES.has(path)){
     if(await page.locator('.catalogue-choice').count()!==0) throw new Error(label+': duplicative buyer-situation list remains');
-    const expectedServices=path==='catalogue-operations.html'?9:15;
+    const expectedServices=path==='catalogue-operations.html'?10:15;
     const expectedHero=path==='catalogue-operations.html'?'assets/catalogue-operations.svg':'assets/catalogue-ai-digital.svg';
     const services=page.locator('.service-entry');
     if(await services.count()!==expectedServices) throw new Error(label+': expected '+expectedServices+' service choices');
