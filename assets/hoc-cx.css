@@ -5,3 +5,10 @@
 .customer-order-journey .customer-order-steps{margin-top:0}
 .customer-order-reassurance{margin-top:22px;font-weight:700}
 @media(max-width:760px){.product-price-detail{font-size:14px}.customer-service-visual{margin-bottom:22px}.customer-service-visual img{max-height:300px}}
+
+
+/* HOC-065 catalogue parity */
+.admin-included-service{max-width:980px;margin-top:34px;padding-top:28px;border-top:1px solid var(--line)}
+.admin-included-title{max-width:720px;margin:0 0 20px;font-family:var(--serif);font-size:clamp(24px,3vw,32px);line-height:1.25;color:var(--carol-blue)}
+.admin-service-inclusions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+@media(max-width:760px){.admin-service-inclusions{grid-template-columns:1fr}}
