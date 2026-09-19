@@ -245,3 +245,17 @@ body.hoc-017-page .product-hero-offer .button,
 body.hoc-017-page .cta-panel .button{max-width:none}
 body.hoc-017-page .footer-layout{padding-left:20px;padding-right:20px}
 }
+
+/* Contact and call-request owner-review candidate — 2026-09-19 */
+.contact-form fieldset{border:0;padding:0;margin:0;display:grid;gap:18px;min-width:0}
+.call-request-form{margin-top:18px}
+.call-choice-legend{font-weight:800;color:var(--carol-blue);margin:0 0 10px}
+.call-choice-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.call-choice{position:relative;display:block}
+.call-choice input{position:absolute;opacity:0;width:1px;height:1px}
+.call-choice span{display:flex;align-items:center;justify-content:center;min-height:52px;padding:12px;border:2px solid var(--carol-blue);background:#fff;color:var(--carol-blue);font-weight:800;text-align:center;cursor:pointer}
+.call-choice span:hover{border-color:var(--claret)}
+.call-choice input:checked+span{background:var(--carol-blue);color:#fff}
+.call-choice input:focus-visible+span{outline:3px solid var(--claret);outline-offset:3px}
+@media(max-width:760px){.call-choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.call-choice-grid{grid-template-columns:minmax(0,1fr)}}
