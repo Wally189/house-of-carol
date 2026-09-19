@@ -181,11 +181,16 @@ async function run(viewport,name){
   for(const core of CORE_PAGES){
     await baseline(page,core,name+' '+core,runAccessibility,viewport.width);
     if(core==='contact.html'){
-      if(await page.locator('form').count()!==1) throw new Error(name+': contact form count');
-      if(await page.locator('form').getAttribute('action')!==FORM_ENDPOINT) throw new Error(name+': contact form endpoint');
+      const enquiry=page.locator('form[aria-label="Website enquiry form"]');
+      const callRequest=page.locator('form[aria-label="Introductory call request form"]');
+      if(await page.locator('form').count()!==2 || await enquiry.count()!==1 || await callRequest.count()!==1) throw new Error(name+': contact form count');
+      if(await enquiry.getAttribute('action')!==FORM_ENDPOINT || await callRequest.getAttribute('action')!==FORM_ENDPOINT) throw new Error(name+': contact form endpoint');
       if(await page.locator('form fieldset[disabled]').count()!==0) throw new Error(name+': contact form fieldset remains held');
       if(await page.locator('form button[type="submit"][disabled]').count()!==0) throw new Error(name+': contact submit button remains held');
-      if(await page.locator('form input[required], form textarea[required]').count()!==3) throw new Error(name+': contact required controls');
+      if(await enquiry.locator('input[required], textarea[required]').count()!==3) throw new Error(name+': enquiry required controls');
+      if(await callRequest.locator('input[type="radio"][name="preferred_call_time"]').count()!==4) throw new Error(name+': call-request time option count');
+      if(await callRequest.locator('input[type="radio"][name="preferred_call_time"][required]').count()!==1) throw new Error(name+': call-request time group required state');
+      if(await callRequest.locator('input[required], textarea[required]').count()!==4) throw new Error(name+': call-request required controls');
     }
     if(name==='desktop'||name==='mobile') await page.screenshot({path:'qa-artifacts/'+name+'-'+core.replace('.html','')+'.png',fullPage:true});
     await page.evaluate(()=>{document.documentElement.style.fontSize='200%'}); await noOverflow(page,name+' '+core+' 200%');
@@ -241,4 +246,4 @@ async function run(viewport,name){
 const VIEWPORTS=[[{width:1440,height:900},'desktop'],[{width:1280,height:800},'desktop-1280'],[{width:1024,height:768},'desktop-1024'],[{width:800,height:1280},'tablet'],[{width:760,height:1000},'mobile-760'],[{width:430,height:932},'mobile-430'],[{width:390,height:844},'mobile'],[{width:360,height:800},'mobile-360'],[{width:320,height:900},'reflow-320']];
 for(const [v,n] of VIEWPORTS) await run(v,n);
 await browser.close();
-console.log('PASS: problem-led main catalogue remains separate from case studies and worked examples; seven text-led service-area choices, non-duplicative problem-led Operations and AI service areas, 54 canonical product pages and worked-example journeys pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390, 360 and 320px plus 200% text reflow; site-header, brand and primary-menu geometry remain aligned across pages within each viewport; compact layouts stack rather than compress; approved category illustrations remain controlled and decorative; active temporary Formspree contact form remains accessible and enabled; serious/critical axe checks cover desktop and 390px mobile.');
+console.log('PASS: problem-led main catalogue remains separate from case studies and worked examples; seven text-led service-area choices, non-duplicative problem-led Operations and AI service areas, 54 canonical product pages and worked-example journeys pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390, 360 and 320px plus 200% text reflow; site-header, brand and primary-menu geometry remain aligned across pages within each viewport; compact layouts stack rather than compress; approved category illustrations remain controlled and decorative; active Formspree enquiry and call-request forms remain accessible and enabled; serious/critical axe checks cover desktop and 390px mobile.');
