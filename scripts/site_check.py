@@ -97,16 +97,25 @@ for area,plist in area_products.items():
 contact=parsers['contact.html']
 contact_text=(ROOT/'contact.html').read_text(encoding='utf-8')
 all_forms=[(n,f) for n,p in parsers.items() for f in p.forms]
-if len(all_forms)!=1 or all_forms[0][0]!='contact.html': fail('contact form location/count')
-form=contact.forms[0]
-if form.get('action')!=FORM_ENDPOINT: fail('contact form temporary Formspree endpoint')
-if form.get('method','').lower()!='post': fail('contact form method')
+if len(all_forms)!=2 or any(n!='contact.html' for n,_ in all_forms): fail('contact form location/count')
+if len(contact.forms)!=2: fail('contact form count')
+for form in contact.forms:
+    if form.get('action')!=FORM_ENDPOINT: fail('contact form Formspree endpoint')
+    if form.get('method','').lower()!='post': fail('contact form method')
 if 'form-action https://formspree.io' not in (contact.csp or ''): fail('contact CSP must allow only the authorised Formspree form origin')
-if FORM_ENDPOINT not in contact_text: fail('contact page missing authorised Formspree endpoint')
-if '<fieldset disabled' in contact_text or re.search(r'<button[^>]*type="submit"[^>]*disabled', contact_text): fail('contact form remains technically held')
-if contact.controls!={'name','email','message'} or contact.controls-contact.labels: fail('contact controls')
-for required_control in ('name','email','message'):
+if contact_text.count(FORM_ENDPOINT)!=2: fail('contact page must contain the authorised Formspree endpoint twice')
+if '<fieldset disabled' in contact_text or re.search(r'<button[^>]*type="submit"[^>]*disabled', contact_text): fail('contact forms remain technically held')
+expected_controls={'name','email','message','call-name','call-telephone','call-email'}
+if contact.controls!=expected_controls or contact.controls-contact.labels: fail('contact controls')
+for required_control in expected_controls:
     if not re.search(r'<(?:input|textarea)[^>]*id="'+required_control+r'"[^>]*\brequired\b', contact_text): fail('contact required control '+required_control)
+if len(re.findall(r'<input[^>]*type="radio"[^>]*name="preferred_call_time"', contact_text))!=4: fail('call-request time option count')
+for value in ('8:00am','12 noon','4:30pm',"I'm flexible"):
+    if f'value="{value}"' not in contact_text: fail('call-request time option '+value)
+if not re.search(r'<input[^>]*type="radio"[^>]*name="preferred_call_time"[^>]*value="8:00am"[^>]*\brequired\b', contact_text): fail('call-request time group required state')
+if 'name="_subject" value="Website enquiry — House of Carol"' not in contact_text: fail('enquiry subject discriminator')
+if 'name="_subject" value="Introductory call request — House of Carol"' not in contact_text: fail('call-request subject discriminator')
+if 'name="request_type" value="Introductory call request"' not in contact_text: fail('call-request type discriminator')
 
 for product in products:
     text=(ROOT/product).read_text(encoding='utf-8').lower()
@@ -116,10 +125,10 @@ all_text='\n'.join((ROOT/n).read_text(encoding='utf-8').lower() for n in PUBLIC_
 for claim in ('industry-leading','world-class','52 departments','customer 000'):
     if claim in all_text: fail('unsupported/internal claim '+claim)
 if 'alanwgallagher1@gmail.com' in all_text: fail('underlying personal Gmail exposed in customer-facing estate')
-if all_text.count(FORM_ENDPOINT)!=1: fail('temporary Formspree endpoint must appear exactly once in customer-facing estate')
+if all_text.count(FORM_ENDPOINT)!=2: fail('Formspree endpoint must appear exactly twice in customer-facing estate')
 
 privacy=' '.join((ROOT/'privacy.html').read_text(encoding='utf-8').lower().split())
-for t in ('data controller','alan@houseofcarol.co.uk','legitimate interests','right to object','information commissioner','cookies and analytics','formspree, inc.','temporary website-form processor','united states','standard contractual clauses'):
+for t in ('data controller','alan@houseofcarol.co.uk','legitimate interests','right to object','information commissioner','cookies and analytics','formspree, inc.','website-form processor','united states','standard contractual clauses','telephone number','preferred call time'):
     if t not in privacy: fail('privacy missing '+t)
 terms=' '.join((ROOT/'terms.html').read_text(encoding='utf-8').lower().split())
 for t in ('alan@houseofcarol.co.uk','no automatic offer','intellectual property','nothing in these terms excludes','law of england and wales'):
@@ -159,4 +168,4 @@ for _area in AREA_PAGES:
     if _txt.count('class="service-cue"') != _service_count:
         fail(_area+': service cue count mismatch')
 
-print('PASS: 7-area catalogue -> 7 area catalogues -> 54 service pages; hierarchy, pricing separation, metadata, CSP-compatible styling, noindex crawlability, navigation, links, authorised temporary Formspree contact route, branded identity and legal checks pass')
+print('PASS: 7-area catalogue -> 7 area catalogues -> 54 service pages; hierarchy, pricing separation, metadata, CSP-compatible styling, noindex crawlability, navigation, links, authorised Formspree enquiry and call-request routes, branded identity and legal checks pass')
