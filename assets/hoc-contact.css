@@ -245,3 +245,12 @@ body.hoc-017-page .product-hero-offer .button,
 body.hoc-017-page .cta-panel .button{max-width:none}
 body.hoc-017-page .footer-layout{padding-left:20px;padding-right:20px}
 }
+/* Contact call-request controls — candidate only, 2026-09-19 */
+.field-label{font-weight:800;color:var(--carol-blue)}
+.call-time-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:2px}
+.call-time-option{position:relative;min-width:0}
+.call-time-option input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.call-time-option label{display:flex;align-items:center;justify-content:center;min-height:54px;padding:12px 16px;border:2px solid var(--carol-blue);background:#fff;color:var(--carol-blue);font-weight:800;text-align:center;cursor:pointer}
+.call-time-option input:checked+label{background:var(--carol-blue);color:#fff}
+.call-time-option input:focus-visible+label{outline:3px solid var(--claret);outline-offset:3px}
+@media(max-width:420px){.call-time-options{grid-template-columns:1fr}}
