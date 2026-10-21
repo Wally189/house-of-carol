@@ -31,6 +31,8 @@ jobs:
         run: python scripts/site_check.py
       - name: Commercial catalogue lifecycle and sale-authority regression
         run: python scripts/commercial_visibility_check.py
+      - name: Netlify public build output boundary check
+        run: python scripts/build_netlify_dist.py
       - name: Customer-experience source and rendered acceptance checks
         run: python scripts/customer_experience_check.py
 

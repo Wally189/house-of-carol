@@ -1,0 +1,4 @@
+# WEB-008 build contract candidate; NOT authorised for production without owner release.
+[build]
+  command = "python3 scripts/build_customer_experience.py && python3 scripts/build_netlify_dist.py"
+  publish = "dist"
