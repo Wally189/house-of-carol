@@ -15,7 +15,10 @@ const REVIEW_SCREENSHOT_VIEWPORTS=new Set(['desktop','desktop-1024','tablet','mo
 const FOCUS_PRODUCT='process-design-sprint.html';
 const FORM_ENDPOINT='https://formspree.io/f/mgvgrgvb';
 const AREA_LINKS='.area-entry .area-card-link';
-const SERVICE_LINKS='.service-entry .service-card-link';
+const SERVICE_LINKS='.service-entry[data-offer-id] .service-card-link';
+const VISIBILITY=JSON.parse(await fs.readFile('data/commercial_visibility_20261021.json','utf8'));
+const ALL_PRODUCTS=VISIBILITY.offers.map(x=>x.source_route);
+const ELIGIBLE=VISIBILITY.offers.filter(x=>x.directory_eligible).map(x=>x.source_route);
 let HEADER_REFERENCE=null;
 
 async function noOverflow(page,label){
@@ -108,9 +111,9 @@ async function compactCatalogueComposition(page,path,label,viewportWidth){
 
   if(REMEDIATED_AREA_PAGES.has(path)){
     if(await page.locator('.catalogue-choice').count()!==0) throw new Error(label+': duplicative buyer-situation list remains');
-    const expectedServices=path==='catalogue-operations.html'?10:15;
+    const expectedServices=path==='catalogue-operations.html'?4:6;
     const expectedHero=path==='catalogue-operations.html'?'assets/catalogue-operations.svg':'assets/catalogue-ai-digital.svg';
-    const services=page.locator('.service-entry');
+    const services=page.locator('.service-entry[data-offer-id]');
     if(await services.count()!==expectedServices) throw new Error(label+': expected '+expectedServices+' service choices');
     if(await page.locator('.service-entry figure').count()!==0) throw new Error(label+': service rows must remain text-led without decorative per-service imagery');
     if(await page.locator('.worked-examples').count()!==0) throw new Error(label+': selection page must not contain fictional worked-example cards');
@@ -207,19 +210,25 @@ async function run(viewport,name){
   const products=[]; const reps=[];
   for(const area of AREA_PAGES){
     await baseline(page,area,name+' '+area,runAccessibility,viewport.width);
-    const serviceCount=await page.locator(SERVICE_LINKS).count(); if(serviceCount<1) throw new Error(name+' '+area+': no service links');
+    const serviceCount=await page.locator(SERVICE_LINKS).count(); if(serviceCount===0 && (await page.locator('.service-enquiry-entry a[href="contact.html"]').count())!==1) throw new Error(name+' '+area+': missing general enquiry option');
     if((await page.locator('body').innerText()).match(/£\s?\d/)) throw new Error(name+' '+area+': area displays a price');
-    const hrefs=await page.locator(SERVICE_LINKS).evaluateAll(a=>a.map(x=>x.getAttribute('href'))); products.push(...hrefs); reps.push(hrefs[0]);
+    const hrefs=await page.locator(SERVICE_LINKS).evaluateAll(a=>a.map(x=>x.getAttribute('href'))); products.push(...hrefs); if(hrefs.length) reps.push(hrefs[0]);
     if(name==='mobile') await tapAllAndReturn(page,SERVICE_LINKS,name+' '+area);
     if(REVIEW_SCREENSHOT_VIEWPORTS.has(name)) await page.screenshot({path:'qa-artifacts/'+name+'-'+area.replace('.html','')+'.png',fullPage:true});
     await page.evaluate(()=>{document.documentElement.style.fontSize='200%'}); await noOverflow(page,name+' '+area+' 200%');
   }
-  if(new Set(products).size!==54) throw new Error(name+': expected 54 unique product routes, found '+new Set(products).size);
+  if(new Set(products).size!==12 || ELIGIBLE.some(x=>!products.includes(x))) throw new Error(name+': twelve exact customer enquiry routes required');
 
-  for(const href of products){
+  for(const href of ALL_PRODUCTS){
     await baseline(page,href,name+' '+href,runAccessibility,viewport.width);
     if((await page.locator('.service-breadcrumbs').count())!==1) throw new Error(name+' '+href+': breadcrumb missing');
     if((await page.locator('.service-context-nav').count())!==1) throw new Error(name+' '+href+': context nav missing');
+    const availability=page.locator('.commercial-eligibility-notice');
+    if((await availability.count())!==1) throw new Error(name+' '+href+': visible status note count');
+    const item=VISIBILITY.offers.find(x=>x.source_route===href);
+    const note=(await availability.innerText()).toLowerCase();
+    if(item.directory_eligible && !note.includes('defined service for enquiry')) throw new Error(name+' '+href+': enquiry claim boundary');
+    if(!item.directory_eligible && !note.includes('not available to commission')) throw new Error(name+' '+href+': held claim boundary');
     const body=(await page.locator('body').innerText()).toLowerCase(); if(!body.includes('pricing')&&!/£\s?\d/.test(body)) throw new Error(name+' '+href+': pricing information missing');
     if(href===FOCUS_PRODUCT&&REVIEW_SCREENSHOT_VIEWPORTS.has(name)) await page.screenshot({path:'qa-artifacts/'+name+'-process-design-sprint.png',fullPage:true});
     await page.evaluate(()=>{document.documentElement.style.fontSize='200%'}); await noOverflow(page,name+' '+href+' 200%');
@@ -246,4 +255,4 @@ async function run(viewport,name){
 const VIEWPORTS=[[{width:1440,height:900},'desktop'],[{width:1280,height:800},'desktop-1280'],[{width:1024,height:768},'desktop-1024'],[{width:800,height:1280},'tablet'],[{width:760,height:1000},'mobile-760'],[{width:430,height:932},'mobile-430'],[{width:390,height:844},'mobile'],[{width:360,height:800},'mobile-360'],[{width:320,height:900},'reflow-320']];
 for(const [v,n] of VIEWPORTS) await run(v,n);
 await browser.close();
-console.log('PASS: problem-led main catalogue remains separate from case studies and worked examples; seven text-led service-area choices, non-duplicative problem-led Operations and AI service areas, 54 canonical product pages and worked-example journeys pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390, 360 and 320px plus 200% text reflow; site-header, brand and primary-menu geometry remain aligned across pages within each viewport; compact layouts stack rather than compress; approved category illustrations remain controlled and decorative; active Formspree enquiry and call-request forms remain accessible and enabled; serious/critical axe checks cover desktop and 390px mobile.');
+console.log('PASS: problem-led main catalogue remains separate from case studies and worked examples; seven text-led service-area choices, non-duplicative problem-led Operations and AI service areas, 12 eligible directory links and all 54 product pages pass browser regression at 1440, 1280, 1024, 800, 760, 430, 390, 360 and 320px plus 200% text reflow; site-header, brand and primary-menu geometry remain aligned across pages within each viewport; compact layouts stack rather than compress; approved category illustrations remain controlled and decorative; active Formspree enquiry and call-request forms remain accessible and enabled; serious/critical axe checks cover desktop and 390px mobile.');

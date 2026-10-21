@@ -1,3 +1,4 @@
+import json
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
@@ -8,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CORE_PAGES = ['index.html','how-it-works.html','catalogue.html','about.html','contact.html','privacy.html','terms.html','404.html']
 AREA_PAGES = ["catalogue-operations.html","catalogue-ai-digital.html","catalogue-commercial.html","catalogue-learning.html","catalogue-research.html","catalogue-charity-public.html","catalogue-church-parish.html"]
 EXPECTED_NAV = ['index.html','how-it-works.html','catalogue.html','about.html','contact.html']
-REQUIRED_ASSETS = ['assets/hoc-rebuild.css','assets/hoc-contact.css','assets/hoc-catalogue.css','assets/hoc-service.css','assets/hoc-mark.svg','robots.txt']
+REQUIRED_ASSETS = ['assets/hoc-commercial-eligibility.css','assets/hoc-rebuild.css','assets/hoc-contact.css','assets/hoc-catalogue.css','assets/hoc-service.css','assets/hoc-mark.svg','robots.txt']
 FORM_ENDPOINT = 'https://formspree.io/f/mgvgrgvb'
 
 class Parser(HTMLParser):
@@ -48,18 +49,20 @@ if re.search(r'£\s?\d', catalogue_text): fail('catalogue contains a displayed p
 area_links=re.findall(r'<article class="area-entry">\s*<a class="area-card-link" href="([^"]+\.html)">', catalogue_text)
 if area_links!=AREA_PAGES: fail('main catalogue area links/order')
 
-entries=[]
-area_products={}
+v=json.loads((ROOT/'data/commercial_visibility_20261021.json').read_text())['offers']
+if len(v)!=54 or len({x['offer_id'] for x in v})!=54 or sum(x['directory_eligible'] for x in v)!=12:fail('54/12 portfolio contract')
+entries=[];area_products={}
 for area in AREA_PAGES:
-    text=(ROOT/area).read_text(encoding='utf-8')
-    if re.search(r'£\s?\d', text): fail(area+': area catalogue contains a displayed price')
-    found=re.findall(r'<article class="service-entry(?: [^"]*)?"(?: id="hoc-\d{3}")? data-offer-id="(HOC-\d{3})">\s*<a class="service-card-link" href="([^"]+\.html)">', text, flags=re.S)
-    if not found: fail(area+': no service entries')
-    area_products[area]=[x[1] for x in found]
-    entries.extend(found)
-if len(entries)!=54: fail(f'area catalogue service-link count {len(entries)}')
-ids=[x[0] for x in entries]; products=[x[1] for x in entries]
-if len(set(ids))!=54 or len(set(products))!=54: fail('service IDs/routes are not unique')
+ t=(ROOT/area).read_text()
+ if re.search(r'£\s?\d',t):fail(area+': prices must remain on product pages')
+ found=re.findall(r'<article class="service-entry(?: [^"]*)?"(?: id="hoc-\d{3}")? data-offer-id="(HOC-\d{3})">\s*<a class="service-card-link" href="([^"]+\.html)">',t,re.S)
+ items=[x for x in v if 'catalogue-'+x['family']+'.html'==area]
+ expected=[(x['offer_id'],x['source_route']) for x in items if x['directory_eligible']]
+ if found!=expected:fail(area+': verified only ready enquiry choices')
+ area_products[area]=items;entries.extend(found)
+if len(entries)!=12 or len(set(x[0] for x in entries))!=12:fail('12 eligible links')
+products=[x['source_route'] for x in v]
+if len(set(products))!=54:fail('all 54 source pages')
 
 PUBLIC_PAGES=CORE_PAGES+AREA_PAGES+products
 for name in PUBLIC_PAGES+REQUIRED_ASSETS:
@@ -88,13 +91,15 @@ for name,p in parsers.items():
         target=ROOT/(u.path or name)
         if not target.exists(): fail(f'{name}: broken link {href}')
 
-for area,plist in area_products.items():
-    ap=parsers[area]
-    for product in plist:
-        if ap.hrefs.count(product)!=1: fail(area+': expected one link to '+product)
-        pp=parsers[product]
-        if not any(href == area or href.startswith(area+'#') for href in pp.hrefs): fail(product+': service area route missing')
-        if 'catalogue.html' not in pp.hrefs or 'index.html' not in pp.hrefs: fail(product+': hierarchy route missing')
+for area,items in area_products.items():
+ ap=parsers[area]
+ for x in items:
+  product=x['source_route'];expected=1 if x['directory_eligible'] else 0
+  if ap.hrefs.count(product)!=expected:fail(area+': wrong promotion '+product)
+  pp=parsers[product]
+  if not any(href==area or href.startswith(area+'#') for href in pp.hrefs):fail(product+': family backlink')
+  if 'catalogue.html' not in pp.hrefs or 'index.html' not in pp.hrefs:fail(product+': hierarchy')
+  if ('Defined service for enquiry' if x['directory_eligible'] else 'Not available to commission') not in (ROOT/product).read_text():fail(product+': availability disclosure')
 
 contact=parsers['contact.html']
 contact_text=(ROOT/'contact.html').read_text(encoding='utf-8')
@@ -142,16 +147,11 @@ for _dest in AREA_PAGES:
     if f'href="{_dest}"' not in _home:
         fail('homepage area route missing '+_dest)
 
-for _area,_plist in area_products.items():
-    _area_text=(ROOT/_area).read_text(encoding='utf-8')
-    for _product in _plist:
-        _m=re.search(r'<article class="service-entry(?: [^"]*)?" id="(hoc-\d{3})" data-offer-id="HOC-\d{3}">\s*<a class="service-card-link" href="'+re.escape(_product)+r'">', _area_text, flags=re.S)
-        if not _m:
-            fail(_area+': anchored service entry missing for '+_product)
-        _target=_area+'#'+_m.group(1)
-        _product_text=(ROOT/_product).read_text(encoding='utf-8')
-        if _product_text.count('href="'+_target+'"') < 2:
-            fail(_product+': exact area return route missing '+_target)
+for _area,items in area_products.items():
+ for x in items:
+  ident='hoc-'+x['offer_id'][4:];product=x['source_route']
+  if ident not in parsers[_area].ids:fail(_area+': missing original anchored ID '+ident)
+  if (ROOT/product).read_text().count('href="'+_area+'#'+ident+'"')<2:fail(product+': family return link')
 
 # INTERACTION CONTRACT: catalogue cards and service rows
 _catalogue=(ROOT/'catalogue.html').read_text(encoding='utf-8')
@@ -170,4 +170,4 @@ for _area in AREA_PAGES:
     if _txt.count('class="service-cue"') != _service_count:
         fail(_area+': service cue count mismatch')
 
-print('PASS: 7-area catalogue -> 7 area catalogues -> 54 service pages; hierarchy, pricing separation, metadata, CSP-compatible styling, noindex crawlability, navigation, links, authorised Formspree enquiry and call-request routes, branded identity and legal checks pass')
+print('PASS: 7-area catalogue -> 7 area catalogues -> 12 enquiry entries and 42 held pages, all 54 product pages verified; hierarchy, pricing separation, metadata, CSP-compatible styling, noindex crawlability, navigation, links, authorised Formspree enquiry and call-request routes, branded identity and legal checks pass')

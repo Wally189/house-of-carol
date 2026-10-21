@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from html import unescape
 from urllib.parse import urlparse
@@ -45,17 +46,13 @@ def plain(fragment):
     return re.sub(r'\s+', ' ', unescape(fragment)).strip()
 
 
-routes = {}
+visibility=json.loads((ROOT/'data/commercial_visibility_20261021.json').read_text())['offers']
+routes={x['offer_id']:x['source_route'] for x in visibility}
+visible=[]
 for category in CATEGORY_PAGES:
-    text = (ROOT / category).read_text(encoding='utf-8')
-    for offer_id, href in re.findall(
-        r'<article class="service-entry(?: [^"]*)?" id="hoc-\d+" data-offer-id="(HOC-\d{3})">\s*<a class="service-card-link" href="([^"]+)">',
-        text,
-        re.I,
-    ):
-        if offer_id in routes:
-            fail('duplicate current offer id ' + offer_id)
-        routes[offer_id] = href
+ t=(ROOT/category).read_text()
+ visible+=re.findall(r'<article class="service-entry(?: [^"]*)?" id="hoc-\d+" data-offer-id="(HOC-\d{3})">\s*<a class="service-card-link"',t,re.I)
+if sorted(visible)!=sorted(x['offer_id'] for x in visibility if x['directory_eligible']) or len(visible)!=12:fail('noneligible product promotion')
 
 if len(routes) != 54 or len(set(routes.values())) != 54:
     fail(f'expected 54 unique current DEVELOP routes, found {len(routes)}/{len(set(routes.values()))}')

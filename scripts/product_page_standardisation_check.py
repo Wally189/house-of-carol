@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 import re
 import sys
@@ -212,21 +213,14 @@ def placeholder_deliverables(markup: str):
             defects.append(h)
     return defects
 
+visibility=json.loads((ROOT/'data/commercial_visibility_20261021.json').read_text())['offers']
+routes={x['offer_id']:x['source_route'] for x in visibility}
+if len(visibility)!=54 or len(routes)!=54:errors.append('product source identity count')
+actual=[]
 for category in CATEGORY_PAGES:
-    path = ROOT / category
-    if not path.exists():
-        errors.append(f"Missing category page: {category}")
-        continue
-    html = path.read_text(encoding="utf-8")
-    for match in re.finditer(
-        r'<article class="service-entry(?: [^"]*)?" id="hoc-\d+" data-offer-id="(HOC-\d{3})">\s*<a class="service-card-link" href="([^"]+)">',
-        html,
-        re.I,
-    ):
-        offer_id, href = match.groups()
-        if offer_id in routes:
-            errors.append(f"Duplicate catalogue offer id: {offer_id}")
-        routes[offer_id] = href
+ text=(ROOT/category).read_text()
+ actual+=re.findall(r'<article class="service-entry(?: [^"]*)?" id="hoc-\d+" data-offer-id="(HOC-\d{3})">\s*<a class="service-card-link"',text,re.I)
+if sorted(actual)!=sorted(x['offer_id'] for x in visibility if x['directory_eligible']) or len(actual)!=12:errors.append('incorrect product catalogue promotion')
 
 if set(routes) != EXPECTED_IDS:
     missing = sorted(EXPECTED_IDS - set(routes))

@@ -1,0 +1,6 @@
+.commercial-eligibility-notice{border-block:1px solid rgba(8,29,45,.2);background:#f4f0e8;color:#081d2d;padding:.65rem 0}
+.commercial-eligibility-notice .shell{max-width:72rem}
+.commercial-eligibility-notice p{margin:.3rem 0;line-height:1.55}
+.commercial-eligibility-notice .availability-label{font-weight:700}
+.related-availability{font-weight:600}
+@media(prefers-reduced-motion:reduce){.commercial-eligibility-notice{scroll-behavior:auto}}
