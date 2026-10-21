@@ -337,7 +337,7 @@
       "directory_eligible": true,
       "maturity": "S4_TRANSACTION_CANDIDATE",
       "transaction_authorised": false,
-      "reason": "No external transaction authority"
+      "reason": "Specific PI confirmation pending"
     },
     {
       "offer_id": "HOC-052",
