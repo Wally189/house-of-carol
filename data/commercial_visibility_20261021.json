@@ -1,0 +1,496 @@
+{
+  "evidence": "Controlled Saleability Register 01 / WEB-008 21 Oct; implementation snapshot, not new authority",
+  "source_main": "45e1ac84a60873621bdb5f0726cd1cb7e2c75207",
+  "release_scope": "UNRELEASED",
+  "portfolio_total": 65,
+  "held_unlisted_offers": 11,
+  "offers": [
+    {
+      "offer_id": "HOC-015",
+      "source_route": "process-design-sprint.html",
+      "family": "operations",
+      "directory_eligible": true,
+      "maturity": "S4_TRANSACTION_CANDIDATE",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-016",
+      "source_route": "shared-drive-cleanup.html",
+      "family": "operations",
+      "directory_eligible": true,
+      "maturity": "S4_TRANSACTION_CANDIDATE",
+      "transaction_authorised": false,
+      "reason": "Specific PI confirmation pending"
+    },
+    {
+      "offer_id": "HOC-017",
+      "source_route": "management-information-and-kpi-setup.html",
+      "family": "operations",
+      "directory_eligible": true,
+      "maturity": "S4_TRANSACTION_CANDIDATE",
+      "transaction_authorised": false,
+      "reason": "Specific PI confirmation pending"
+    },
+    {
+      "offer_id": "HOC-018",
+      "source_route": "customer-journey-and-service-operations-review.html",
+      "family": "operations",
+      "directory_eligible": true,
+      "maturity": "S4_TRANSACTION_CANDIDATE",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-019",
+      "source_route": "customer-support-knowledge-base-build.html",
+      "family": "operations",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-020",
+      "source_route": "business-continuity-and-operational-readiness-pack.html",
+      "family": "operations",
+      "directory_eligible": false,
+      "maturity": "S3_WEB_CANDIDATE_S2_EXTERNAL_HOLD",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-021",
+      "source_route": "decision-rights-and-governance-review.html",
+      "family": "operations",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-022",
+      "source_route": "complaints-and-redress-process-design.html",
+      "family": "operations",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-023",
+      "source_route": "evidence-and-marketing-claim-substantiation-review.html",
+      "family": "operations",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-065",
+      "source_route": "managed-business-administration.html",
+      "family": "operations",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority",
+      "website_release": "R3 NOINDEX, separate from commercial sale"
+    },
+    {
+      "offer_id": "HOC-006",
+      "source_route": "ai-workflow-opportunity-review.html",
+      "family": "ai-digital",
+      "directory_eligible": true,
+      "maturity": "S4_TRANSACTION_CANDIDATE",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-007",
+      "source_route": "ai-workflow-implementation-sprint.html",
+      "family": "ai-digital",
+      "directory_eligible": false,
+      "maturity": "S3_S4_PI_HOLD",
+      "transaction_authorised": false,
+      "reason": "PI cover pending"
+    },
+    {
+      "offer_id": "HOC-013",
+      "source_route": "no-code-ai-automation-implementation.html",
+      "family": "ai-digital",
+      "directory_eligible": false,
+      "maturity": "S1",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-014",
+      "source_route": "business-knowledge-base-and-ai-retrieval-setup.html",
+      "family": "ai-digital",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-001",
+      "source_route": "ai-data-use-rules-sprint.html",
+      "family": "ai-digital",
+      "directory_eligible": true,
+      "maturity": "S4_TRANSACTION_CANDIDATE",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-002",
+      "source_route": "ai-policy-and-sop-implementation-service.html",
+      "family": "ai-digital",
+      "directory_eligible": true,
+      "maturity": "S4_TRANSACTION_CANDIDATE",
+      "transaction_authorised": false,
+      "reason": "Specific PI confirmation pending"
+    },
+    {
+      "offer_id": "HOC-008",
+      "source_route": "ai-tool-and-account-governance-review.html",
+      "family": "ai-digital",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-009",
+      "source_route": "ai-vendor-tool-selection-review.html",
+      "family": "ai-digital",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-011",
+      "source_route": "ai-operating-model-and-governance-blueprint.html",
+      "family": "ai-digital",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-003",
+      "source_route": "responsible-ai-workplace-training.html",
+      "family": "ai-digital",
+      "directory_eligible": true,
+      "maturity": "S4_TRANSACTION_CANDIDATE",
+      "transaction_authorised": false,
+      "reason": "Specific PI confirmation pending"
+    },
+    {
+      "offer_id": "HOC-004",
+      "source_route": "role-based-ai-skills-workshop.html",
+      "family": "ai-digital",
+      "directory_eligible": true,
+      "maturity": "S4_TRANSACTION_CANDIDATE",
+      "transaction_authorised": false,
+      "reason": "Specific PI confirmation pending"
+    },
+    {
+      "offer_id": "HOC-005",
+      "source_route": "ai-leadership-and-management-workshop.html",
+      "family": "ai-digital",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-012",
+      "source_route": "ai-adoption-support-retainer.html",
+      "family": "ai-digital",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-010",
+      "source_route": "independent-document-review.html",
+      "family": "ai-digital",
+      "directory_eligible": true,
+      "maturity": "S4_TRANSACTION_CANDIDATE",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-064",
+      "source_route": "website-completion-sprint.html",
+      "family": "ai-digital",
+      "directory_eligible": false,
+      "maturity": "S3_S4_PI_HOLD",
+      "transaction_authorised": false,
+      "reason": "PI cover pending"
+    },
+    {
+      "offer_id": "HOC-024",
+      "source_route": "tender-review.html",
+      "family": "commercial",
+      "directory_eligible": false,
+      "maturity": "S3_S4_PI_HOLD",
+      "transaction_authorised": false,
+      "reason": "PI cover pending"
+    },
+    {
+      "offer_id": "HOC-025",
+      "source_route": "tender-readiness-and-bid-evidence-library.html",
+      "family": "commercial",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-026",
+      "source_route": "public-procurement-opportunity-monitoring.html",
+      "family": "commercial",
+      "directory_eligible": false,
+      "maturity": "S1",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-028",
+      "source_route": "invoice-to-cash-process-setup.html",
+      "family": "commercial",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-029",
+      "source_route": "cash-flow-and-financial-operations-setup.html",
+      "family": "commercial",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-030",
+      "source_route": "supplier-and-purchasing-process-setup.html",
+      "family": "commercial",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-031",
+      "source_route": "bespoke-organisational-training-design.html",
+      "family": "learning",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-032",
+      "source_route": "assessment-and-competency-framework-design.html",
+      "family": "learning",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-033",
+      "source_route": "internal-academy-learning-pathway-design.html",
+      "family": "learning",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-034",
+      "source_route": "microlearning-and-scenario-assessment-packs.html",
+      "family": "learning",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-037",
+      "source_route": "training-quality-review.html",
+      "family": "learning",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-035",
+      "source_route": "research-briefing.html",
+      "family": "research",
+      "directory_eligible": true,
+      "maturity": "S4_TRANSACTION_CANDIDATE",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-052",
+      "source_route": "evidence-based-executive-briefing-service.html",
+      "family": "research",
+      "directory_eligible": false,
+      "maturity": "S1",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-053",
+      "source_route": "b2b-charity-newsletter-production.html",
+      "family": "research",
+      "directory_eligible": false,
+      "maturity": "S1",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-055",
+      "source_route": "explainer-and-thought-leadership-production.html",
+      "family": "research",
+      "directory_eligible": false,
+      "maturity": "S1",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-056",
+      "source_route": "research-monitoring-horizon-scanning-subscription.html",
+      "family": "research",
+      "directory_eligible": false,
+      "maturity": "S1",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-045",
+      "source_route": "charity-ai-governance-pack-and-implementation.html",
+      "family": "charity-public",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-046",
+      "source_route": "charity-cyber-and-digital-governance-readiness-review.html",
+      "family": "charity-public",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-047",
+      "source_route": "charity-governance-and-trustee-information-pack-review.html",
+      "family": "charity-public",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-048",
+      "source_route": "public-sector-decision-governance-review.html",
+      "family": "charity-public",
+      "directory_eligible": false,
+      "maturity": "S1",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-049",
+      "source_route": "committee-board-paper-quality-review.html",
+      "family": "charity-public",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-050",
+      "source_route": "public-sector-sop-and-process-modernisation.html",
+      "family": "charity-public",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-051",
+      "source_route": "consultation-and-evidence-synthesis-service.html",
+      "family": "charity-public",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-038",
+      "source_route": "church-and-parish-grant-funding-research.html",
+      "family": "church-parish",
+      "directory_eligible": true,
+      "maturity": "S4_TRANSACTION_CANDIDATE",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-039",
+      "source_route": "church-grant-application-development-support.html",
+      "family": "church-parish",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-040",
+      "source_route": "church-building-funding-and-maintenance-roadmap.html",
+      "family": "church-parish",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-041",
+      "source_route": "parish-operations-and-administration-improvement.html",
+      "family": "church-parish",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-042",
+      "source_route": "parish-digital-and-ai-governance-starter-service.html",
+      "family": "church-parish",
+      "directory_eligible": false,
+      "maturity": "S2_INTERNAL",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    },
+    {
+      "offer_id": "HOC-043",
+      "source_route": "parish-communications-service.html",
+      "family": "church-parish",
+      "directory_eligible": false,
+      "maturity": "S1",
+      "transaction_authorised": false,
+      "reason": "No external transaction authority"
+    }
+  ]
+}

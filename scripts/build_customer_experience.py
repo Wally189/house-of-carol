@@ -7,4 +7,5 @@ subprocess.run([sys.executable, str(ROOT / 'scripts' / 'customer_experience_tran
 subprocess.run([sys.executable, str(ROOT / 'scripts' / 'customer_experience_finish.py')], cwd=ROOT, check=True)
 subprocess.run([sys.executable, str(ROOT / 'scripts' / 'editorial_remediation_finalize.py')], cwd=ROOT, check=True)
 subprocess.run([sys.executable, str(ROOT / 'scripts' / 'seo_policy.py'), '--root', str(ROOT)], cwd=ROOT, check=True)
+subprocess.run([sys.executable, str(ROOT / 'scripts' / 'commercial_visibility.py')], cwd=ROOT, check=True)
 print('PASS: canonical commercial build completed and customer-experience layer applied')
