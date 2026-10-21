@@ -2,6 +2,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
 import re
+from seo_policy import INDEXABLE, canonical
 
 ROOT = Path(__file__).resolve().parents[1]
 CORE_PAGES = ['index.html','how-it-works.html','catalogue.html','about.html','contact.html','privacy.html','terms.html','404.html']
@@ -68,7 +69,8 @@ parsers={name:parsed(name) for name in PUBLIC_PAGES}
 for name,p in parsers.items():
     text=(ROOT/name).read_text(encoding='utf-8')
     if p.lang!='en-GB' or not p.viewport or p.titles!=1 or p.h1s!=1 or len(p.descriptions)!=1: fail(name+': baseline metadata')
-    if p.robots!='noindex,nofollow': fail(name+': indexing containment')
+    if p.robots!=('index,follow' if name in INDEXABLE else 'noindex,nofollow'): fail(name+': route-specific indexing policy')
+    if name in INDEXABLE and f'<link rel="canonical" href="{canonical(name)}">' not in text: fail(name+': canonical missing')
     if not p.csp or any(d not in p.csp for d in ("object-src 'none'","base-uri 'self'","script-src 'none'","style-src 'self'")): fail(name+': CSP')
     if p.scripts: fail(name+': scripts present')
     if re.search(r'\sstyle\s*=', text, re.I): fail(name+': inline style is incompatible with CSP style-src self')

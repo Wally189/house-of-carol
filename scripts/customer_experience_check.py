@@ -98,8 +98,9 @@ if 'action="https://formspree.io/f/mgvgrgvb"' not in contact: errors.append('con
 if 'form-action https://formspree.io' not in contact: errors.append('contact.html: form CSP changed unexpectedly')
 for route in ['contact.html','privacy.html','terms.html']:
     h = (ROOT/route).read_text(encoding='utf-8')
-    if not re.search(r'<meta\s+name="robots"\s+content="noindex,nofollow"|<meta\s+content="noindex,nofollow"\s+name="robots"', h, re.I):
-        errors.append(f'{route}: indexing control changed unexpectedly')
+    required = 'index,follow' if route == 'contact.html' else 'noindex,nofollow'
+    if not re.search(r'<meta\s+name="robots"\s+content="' + re.escape(required) + r'"', h, re.I):
+        errors.append(f'{route}: route-specific indexing control wrong')
 
 if errors:
     print('CUSTOMER EXPERIENCE QA: FAIL', file=sys.stderr)
